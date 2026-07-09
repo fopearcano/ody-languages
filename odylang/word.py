@@ -31,8 +31,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional, Sequence
 
-from .phonology import (Syllable, is_long, is_vowel, romanize, strip_boundaries,
-                        syllabify, tokenize, word_ipa)
+from .phonology import (Syllable, is_long, is_vowel, romanize, seg_ipa,
+                        strip_boundaries, syllabify, tokenize, word_ipa)
 
 # morph categories
 STEM = "stem"          # lexical stem (first member of a compound)
@@ -108,8 +108,8 @@ class Word:
         return segs, owner
 
     def syllables(self) -> List[Syllable]:
-        segs, _ = self._segments_with_morphs()
-        return syllabify(segs)
+        segs, owner = self._segments_with_morphs()
+        return syllabify(segs, owner)
 
     # -- the four rules ----------------------------------------------------------
     def _syll_of_segment(self, sylls: Sequence[Syllable], seg_index: int) -> int:
@@ -133,7 +133,7 @@ class Word:
         if self.stress_override is not None:
             return self.stress_override
         segs, owner = self._segments_with_morphs()
-        sylls = syllabify(segs)
+        sylls = syllabify(segs, owner)
         if not sylls:
             return None
         cats = [m.cat for m in self.morphs]
@@ -181,7 +181,14 @@ class Word:
             m.cat == MOOD for m in self.morphs)
 
     def ipa(self) -> str:
-        return word_ipa(self.solid(), self.stressed_syllable())
+        sylls = self.syllables()
+        stress = self.stressed_syllable()
+        parts = []
+        for i, syl in enumerate(sylls):
+            body = "".join(seg_ipa(s) for s in syl.onset + [syl.nucleus] + syl.coda)
+            stressed = len(sylls) > 1 and stress is not None and i == stress
+            parts.append(("ˈ" if stressed else ("." if i else "")) + body)
+        return "".join(parts)
 
     def syl_beats(self) -> List[str]:
         """docs/04 rhythm notation: CAPS = stressed beat, ':' marks length.

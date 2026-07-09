@@ -126,14 +126,22 @@ def _legal_onset(cluster: List[str]) -> bool:
     return False
 
 
-def syllabify(segs: Sequence[str]) -> List[Syllable]:
+def syllabify(segs: Sequence[str],
+              owners: Optional[Sequence[int]] = None) -> List[Syllable]:
     """Onset-maximising syllabification over the (C)(r/l)V(C) canon.
 
     Boundary markers are ignored.  Consonants that cannot open the next
     syllable close the previous one (permissive codas: ``Sōrn`` -> one
     syllable with coda /rn/).
+
+    ``owners`` (aligned with the boundary-stripped segments) marks which
+    morph each segment belongs to: a two-consonant onset may not span a
+    compound seam — nuv+ran is [ˈnuv.ran], never [ˈnu.vran] — while a
+    single consonant still resyllabifies across it (vel+osh [ˈve.loʃ]).
     """
     plain = strip_boundaries(segs)
+    if owners is not None and len(owners) != len(plain):
+        raise ValueError("owners must align with the boundary-stripped segments")
     nuclei = [i for i, s in enumerate(plain) if is_vowel(s)]
     if not nuclei:
         return []
@@ -147,9 +155,16 @@ def syllabify(segs: Sequence[str]) -> List[Syllable]:
             onset = []
             # maximise a legal onset from the right
             for take in (2, 1, 0):
-                if take <= len(cons) and _legal_onset([plain[i] for i in cons[len(cons) - take:]]):
-                    onset = cons[len(cons) - take:]
-                    break
+                if take > len(cons):
+                    continue
+                cand = cons[len(cons) - take:]
+                if not _legal_onset([plain[i] for i in cand]):
+                    continue
+                if (take == 2 and owners is not None
+                        and owners[cand[0]] != owners[cand[1]]):
+                    continue  # the seam blocks the cluster
+                onset = cand
+                break
             coda_prev = cons[: len(cons) - len(onset)]
             sylls[-1].coda.extend(plain[i] for i in coda_prev)
             sylls[-1].seg_indices.extend(coda_prev)
