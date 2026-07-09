@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUBHEL // The Deep-Speech — Tongue of the Diver Fleet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08070a;--panel:#0e0b10;
+  --red:#e8362a;--red-d:#a3211a;--red-dd:#5e120e;--red-glow:rgba(232,54,42,.55);
+  --amber:#f2b01f;--gold:#f5d76e;--blue-l:#6fa8ff;--violet:#8b7dd8;--green:#7ec885;--teal:#4fc2a8;
+  --ink:#d8d2c8;--ink-d:#8c8a82;--ink-dd:#5a5852;
+  --line:rgba(232,54,42,.22);--line-amber:rgba(242,176,31,.20);--line-blue:rgba(63,125,221,.28);--grid:rgba(232,54,42,.045);
+}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Chakra Petch','Bahnschrift','Segoe UI',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden;letter-spacing:.01em}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse 120% 100% at 50% 0%,#000 30%,transparent 90%)}
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.18) 3px,rgba(0,0,0,0) 4px);mix-blend-mode:multiply;opacity:.5}
+.mono{font-family:'Share Tech Mono',monospace}.jp{font-family:'Zen Kaku Gothic New',sans-serif}
+.frame{position:relative}
+.frame>.br{position:absolute;width:14px;height:14px;border:1px solid var(--red);pointer-events:none;z-index:3}
+.br.tl{top:-1px;left:-1px;border-right:0;border-bottom:0}.br.tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.br.bl{bottom:-1px;left:-1px;border-right:0;border-top:0}.br.br2{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:18px;height:30px;padding:0 16px;background:linear-gradient(180deg,rgba(8,7,10,.96),rgba(8,7,10,.82));border-bottom:1px solid var(--line);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-d);text-transform:uppercase;backdrop-filter:blur(6px)}
+.topbar .dot{width:7px;height:7px;background:var(--red);box-shadow:0 0 8px var(--red-glow);animation:blink 2.4s steps(1) infinite}
+@keyframes blink{0%,70%{opacity:1}71%,100%{opacity:.25}}
+.topbar .sep{color:var(--red-dd)}.topbar .right{margin-left:auto;display:flex;gap:18px;align-items:center}.topbar .clk{color:var(--amber)}
+@media(max-width:680px){.topbar .hideS{display:none}}
+.nav{position:fixed;top:30px;left:0;right:0;z-index:999;display:flex;align-items:center;gap:2px;padding:0 14px;height:38px;background:rgba(10,8,12,.9);border-bottom:1px solid var(--line);backdrop-filter:blur(6px);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav .brand{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:14px;letter-spacing:.22em;color:var(--red);text-shadow:0 0 12px var(--red-glow);margin-right:18px;white-space:nowrap}
+.nav a{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:.13em;color:var(--ink-d);text-decoration:none;text-transform:uppercase;padding:5px 13px;white-space:nowrap;border:1px solid transparent;transition:all .18s}
+.nav a:hover{color:var(--amber);border-color:var(--line-amber)}
+.nav a.on{color:var(--red);border-color:var(--line);background:rgba(232,54,42,.06)}
+.nav .navtag{margin-left:auto;color:var(--ink-dd);font-family:'Share Tech Mono';font-size:9px;letter-spacing:.2em;white-space:nowrap}
+@media(max-width:1120px){.nav .navtag{display:none}}
+
+.wrap{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:0 20px}
+section{padding:60px 0;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.26em;color:var(--red);text-transform:uppercase;flex-wrap:wrap}
+.eyebrow::before{content:'';width:26px;height:1px;background:var(--red);box-shadow:0 0 6px var(--red-glow)}
+.eyebrow .idx{color:var(--amber)}.eyebrow .jp{color:var(--ink-dd);letter-spacing:.1em}
+h2{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:clamp(22px,3.6vw,34px);letter-spacing:.01em;line-height:1.1;color:#f0ebe2}
+h3{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:17px;letter-spacing:.03em;color:#ece7de}
+.lead{max-width:880px;color:var(--ink);font-size:15px;margin-top:12px}
+.muted{color:var(--ink-d)}.amber{color:var(--amber)}.redt{color:var(--red)}.greent{color:var(--green)}.goldt{color:var(--gold)}.bluet{color:var(--blue-l)}.violett{color:var(--violet)}.tealt{color:var(--teal)}
+.su{font-style:italic;color:var(--gold)}
+.nb{font-style:italic;color:var(--teal)}
+.ipa{font-family:'Share Tech Mono',monospace;color:var(--teal);font-size:.92em}
+.pf{font-family:'Share Tech Mono',monospace;color:var(--violet);font-size:.92em}
+
+.hero{min-height:72vh;padding:118px 0 46px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.hero-bloom{position:absolute;top:14%;right:4%;width:min(540px,58vw);height:min(400px,44vw);background:radial-gradient(ellipse at center,rgba(79,194,168,.10),rgba(232,54,42,.06) 45%,transparent 70%);filter:blur(22px);pointer-events:none;z-index:0}
+.hero-inner{position:relative;z-index:2}
+.hero h1{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.02em;line-height:1.0;font-size:clamp(32px,7vw,84px);color:#f4efe6}
+.hero h1 .stroke{color:transparent;-webkit-text-stroke:1.4px var(--red);text-shadow:0 0 26px var(--red-glow);display:block}
+.hero h1 .fill{color:var(--red);text-shadow:0 0 30px var(--red-glow);display:block}
+.hero .sub{font-family:'Share Tech Mono',monospace;font-size:clamp(11px,1.5vw,13.5px);letter-spacing:.22em;color:var(--amber);margin-top:22px;text-transform:uppercase;max-width:860px}
+.hero .desc{max-width:760px;margin-top:18px;color:var(--ink);font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.hchip{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--ink-d);text-transform:uppercase;padding:6px 11px;border:1px solid var(--line);background:rgba(232,54,42,.03)}
+.hchip b{color:var(--amber);font-weight:400}
+
+table{border-collapse:collapse;width:100%;margin-top:14px}
+th{font-family:'Share Tech Mono';font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);background:rgba(232,54,42,.04)}
+td{padding:8px 12px;border-bottom:1px dashed var(--line);font-size:13.5px;color:var(--ink);vertical-align:top}
+tr:hover td{background:rgba(232,54,42,.03)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+@media(max-width:880px){.grid2{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);padding:18px 20px;background:linear-gradient(180deg,rgba(14,11,16,.7),rgba(10,8,12,.5));position:relative}
+.card .cn{font-family:'Share Tech Mono';font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+.card p{font-size:13.5px;color:var(--ink-d)}
+.card p b{color:var(--ink);font-weight:400}
+.card .ex{margin-top:12px;padding:11px 13px;background:rgba(8,7,10,.6);border:1px solid var(--line);border-left:2px solid var(--teal);font-size:13px}
+.card .ex .nb{display:block;font-size:15px;margin-bottom:3px}
+.card .ex .gl{font-family:'Share Tech Mono';font-size:10.5px;color:var(--ink-d);display:block}
+.card .ex .tr{color:var(--ink);display:block;margin-top:4px;font-size:12.5px}
+
+.insight{border:1px solid var(--red);margin-top:22px;padding:20px 22px;background:linear-gradient(90deg,rgba(232,54,42,.07),rgba(38,33,92,.05))}
+.insight .ik{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.insight p{font-family:'Chakra Petch',sans-serif;font-size:clamp(14px,1.9vw,17px);color:#f0ebe2;line-height:1.55;max-width:960px}
+
+.text-block{border:1px solid var(--line);margin-top:20px;background:linear-gradient(180deg,rgba(14,11,16,.7),rgba(10,8,12,.5))}
+.tb-head{padding:13px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+.tb-head .tk{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.tb-head .tj{font-family:'Zen Kaku Gothic New';font-size:11px;color:var(--ink-dd)}
+.tb-body{padding:16px 20px}
+.il{margin-bottom:15px}
+.il:last-child{margin-bottom:0}
+.il .l1{font-size:18px;color:var(--teal);font-style:italic}
+.il .l1 .sw{color:var(--gold)} /* code-switch to Sūchel */
+.il .l1 .gap{color:var(--red);font-style:normal;font-weight:600}
+.il .l1 .sig{color:var(--amber);font-style:normal}
+.il .l2{font-family:'Share Tech Mono';font-size:11px;color:var(--ink-d);margin-top:3px}
+.il .l3{font-size:13.5px;color:var(--ink);margin-top:5px}
+.tb-note{padding:11px 20px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--ink-d)}
+.tb-note b{color:var(--amber);font-weight:400}
+#lexTable td:first-child{color:var(--teal);font-style:italic;white-space:nowrap;font-size:14.5px}
+
+footer{padding:40px 0 70px;text-align:center;border-bottom:0}
+footer .fr{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.2em;color:var(--ink-dd);text-transform:uppercase;line-height:2}
+footer .big{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(16px,2.4vw,22px);color:var(--red-d);letter-spacing:.04em;margin:14px 0;text-shadow:0 0 20px rgba(232,54,42,.3)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="dot"></span><span>NERV//PELAGIAN ASSEMBLY</span>
+  <span class="sep hideS">/</span><span class="hideS">NUBHEL CODEX REV 1.0</span>
+  <div class="right"><span class="hideS mono">THE VERTICAL FLEET</span><span class="sep">/</span><span class="clk mono" id="clk">00:00:00</span><span class="jp" style="color:var(--ink-dd)">深潜の言葉</span></div>
+</div>
+
+<nav class="nav">
+  <span class="brand">NUBHEL</span>
+  <a href="#top" class="on">OVERVIEW</a>
+  <a href="#fleet">TWO FLEETS</a>
+  <a href="#change">SOUND CHANGE</a>
+  <a href="#grammar">GRAMMAR</a>
+  <a href="#friends">FALSE FRIENDS</a>
+  <a href="#lexicon">LEXICON</a>
+  <a href="#texts">TEXTS</a>
+  <span class="navtag jp">縦の艦隊・言語資料体</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-bloom"></div>
+  <div class="wrap hero-inner">
+    <div class="eyebrow"><span class="idx">15</span> LANGUAGE CODEX · THE SECOND DAUGHTER <span class="jp">序章 · 深語</span></div>
+    <h1><span class="stroke">NUBHEL</span><span class="fill">THE DEEP-SPEECH</span></h1>
+    <div class="sub">The rival fleet's tongue — same proto, different wear, and a different physics grammaticalized: the divers built their verbs around the offset, not the gap</div>
+    <p class="desc">Nubhel <span class="ipa">[ˈnub.hel]</span> (<span class="pf">*nub-kel</span>, "deep-speech") is Sūchel's sister and rival: the language of the <b class="tealt">Nūbi</b>, the vertical fleet, who hold that the Speed Law's real teaching is <em>depth, not crossing</em>. Where the crossers live in the indeterminate regime — gaps, T•, unanchored time — the divers live in the determinate one: dilation, arithmetic, coming home older by a number. Their grammar shows it. Nubhel kept only three moods and <b class="redt">cannot say the seam-truth</b>; it replaced the dark anchor with a <b>debt anchor</b>; it grades depth five ways where Sūchel has two; and its speakers sign their names with their accrued cycles.</p>
+    <div class="chips">
+      <span class="hchip">PROTO <b>OLD PELAGIC</b></span>
+      <span class="hchip">SOUND CHANGES <b>7 · ORDERED</b></span>
+      <span class="hchip">MOODS <b>3 — T• LOST</b></span>
+      <span class="hchip">DEPTH WORDS <b>5</b></span>
+      <span class="hchip">SHIBBOLETH <b>yel · hel</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- TWO FLEETS -->
+<section id="fleet">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">01</span> THE TWO FLEETS <span class="jp">二つの艦隊</span></div>
+    <h2>Horizontal and vertical — one rivalry, two grammars</h2>
+    <p class="lead">The split is older than either language remembers: one lineage bet on the seam, the other on the tower. Each thinks the other misread the Speed Law.</p>
+    <div class="grid2">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn" style="color:var(--gold)">THE SĪLI · CROSSERS · SŪCHEL</div>
+        <p><b>The horizontal fleet.</b> Seam-oriented; their prestige is the crossing and the T• mood, their wound is the gap. Their time is the indeterminate regime: lives punctuated by <span class="su">ne</span>-holes no one can narrate. They call the divers <b>nuvi</b> — and, unkindly, "the aged," because divers come home old. Their sneer: <em>"divers go fast to stay in one universe."</em></p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn" style="color:var(--teal)">THE NŪBI · DIVERS · NUBHEL</div>
+        <p><b>The vertical fleet.</b> Depth-oriented; their prestige is class — how deep a hull can hold — and their wound is the offset: they age past everyone they love, by a measurable count. They call the crossers <b>Sūl</b> — and, unkindly, "the gapped" or "hollow-lived," people whose autobiographies have holes. Their sneer: <em>"crossing is a shortcut; depth is the truth."</em> The Speed Law, read plainly, is on their side.</p>
+      </div>
+    </div>
+    <div class="insight frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="ik">THE DESIGN THESIS</div>
+      <p>Same proto-language, same physics — but each fleet <b>grammaticalized the regime it lives in</b>. Sūchel built its verb around the seam: five truth-moods, an unanchorable tense, a particle for the un-narratable. Nubhel built its verb around the dive: fewer moods, a <b class="tealt">debt anchor</b>, five degrees of depth, and the offset worn like a signature. Two daughters of one grammar, shaped by two kinds of time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SOUND CHANGES -->
+<section id="change">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">02</span> DIACHRONY <span class="jp">音変化</span></div>
+    <h2>Seven changes — with one rule ordered before another</h2>
+    <p class="lead">The deep set. Note D-3 is ordered <b class="amber">before</b> D-1: original <span class="pf">*h</span> dies first, then new h is born from <span class="pf">*k</span> — so every medial h in Nubhel is secondary, a diagnostic any philologist in your story can use. And where the capital shortened its vowels, the divers lengthened theirs: <b class="tealt">Nubhel is the tongue that holds its breath.</b></p>
+    <div class="tbl-wrap frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table>
+        <tr><th>#</th><th>Change</th><th>Rule</th><th>Example</th></tr>
+        <tr><td>D-1</td><td>Deep palatalization</td><td><span class="pf">*k</span> → <span class="amber">h</span>, <span class="pf">*g</span> → <span class="amber">y</span> before front vowels — <b>ordered after D-3</b></td><td><span class="pf">*kel</span> → <span class="nb">hel</span> "speech" · <span class="pf">*gel</span> → <span class="nb">yel</span> "the seam" · <span class="pf">*ged-</span> → <span class="nb">yed</span> "go"</td></tr>
+        <tr><td>D-2</td><td>Fortition</td><td>Word-initial <span class="pf">*w</span> → <span class="amber">b</span></td><td><span class="pf">*wer-</span> → <span class="nb">ber</span> "truth" · <span class="pf">*wur-</span> → <span class="nb">bur</span> "spin, madness"</td></tr>
+        <tr><td>D-3</td><td>Breath-loss</td><td>All <span class="pf">*h</span> → ∅, and non-initial <span class="pf">*w</span> → ∅, with compensatory lengthening</td><td><span class="pf">*haw-ol-</span> → <span class="nb">ōl</span> "to surface" · <span class="pf">*suw-kel</span> → <span class="nb">Sūhel</span></td></tr>
+        <tr><td>D-4</td><td>Pressure-rounding</td><td>Stressed <span class="pf">*a</span> → <span class="amber">o</span></td><td><span class="pf">*kad</span> → <span class="nb">kod</span> "beacon" · <span class="pf">*tan-</span> → <span class="nb">ton</span> "hold" · <span class="pf">*ran-</span> → <span class="nb">ron</span> "run"</td></tr>
+        <tr><td>D-5</td><td>Held-breath drift</td><td>Vowels lengthen in open stressed syllables</td><td><span class="pf">*nub-i</span> → <span class="nb">Nūbi</span> "the divers"</td></tr>
+        <tr><td>D-6</td><td>Sinking</td><td><span class="pf">*au</span> → <span class="amber">ū</span></td><td><span class="pf">*hau</span> → <span class="nb">ū</span> "up" — a single exhaled vowel</td></tr>
+        <tr><td>D-7</td><td>Apocope</td><td>Final short vowel lost after a heavy syllable</td><td><span class="pf">*tem-a</span> → <span class="nb">tem</span> "pattern"</td></tr>
+      </table>
+    </div>
+    <div class="grid2">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">THE MINIMAL PAIR</div>
+        <p><span class="pf">*suw-kel</span> gives <b class="goldt">Sūchel</b> in one mouth and <b class="tealt">Sūhel</b> in the other — the whole cognate gap in one phoneme. A crosser hears the divers name her language and hears it <em>almost right</em>, which is worse than wrong. Likewise the drive: <span class="pf">*sow-orn</span> → <span class="nb">Sōrn</span> in <em>both</em> — the family's most stable word. <b>Everyone agrees on the engine.</b></p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">TWO MERGERS, TWO JOKES</div>
+        <p>D-2 merges <span class="pf">*wel</span> "nothing" with <span class="pf">*bel</span> "hearth": in Nubhel, <b class="tealt">bel</b> means both — the divers' own proverb, <em>"the hearth is nothing to us,"</em> is an etymological pun. And D-4 merges <span class="pf">*mar</span> "pearl" into <span class="pf">*mor</span> "rock": <b class="tealt">mor</b> covers both, and surface folk say the divers <em>cannot tell a pearl from a stone</em> — which the divers consider a compliment to their priorities.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GRAMMAR -->
+<section id="grammar">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">03</span> THE GRAMMAR OF DEPTH <span class="jp">深度の文法</span></div>
+    <h2>What the divers did to the four systems</h2>
+    <p class="lead">Same inherited machine, rebuilt for the determinate regime. Verb template unchanged — STEM–(ASP)–MOOD=ANCHOR — but every slot drifted.</p>
+
+    <div class="grid2">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SYSTEM 01 · THREE MOODS — AND A HOLE</div>
+        <p>Nubhel kept three veridical moods: <b class="greent">plain -ó</b> (witnessed, settled), <b class="bluet">approach -im</b> (nearing a limit — the divers' home mood), and <b class="amber">hearsay -ur</b> — old T⁺ "held-from-above" drifted to "held on another's word." But <span class="pf">*-eshe</span> left <b class="redt">no reflex</b>. Nubhel cannot conjugate the seam-truth.</p>
+        <div class="ex"><span class="nb">on nub yed-ó=mi.</span><span class="gl">3SG DOWN go-PLAIN=PROP</span><span class="tr">"She went down." Witnessed, own-clock. The everyday music of the fleet.</span></div>
+        <p style="margin-top:10px"><b class="redt">The code-switch rule:</b> a diver narrating a crossing must borrow Sūchel for the T• clause — mid-sentence, the rival's language appears exactly where the seam does. Enforced humility; on the page, a visible register shift in the balloon.</p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SYSTEM 02 · THE DEBT ANCHOR &amp; THE SIGNATURE</div>
+        <p>Anchors <span class="nb">=ka</span> (beacon) and <span class="nb">=mi</span> (proper) are shared inheritance. But <span class="su">=zu</span> has no Nubhel cognate — divers rarely leave coverage. In its place: <b class="tealt">=nu</b> (from <span class="pf">*nub</span>), the <b>deep-time anchor</b>: "stated in dive-time, conversion owed." Formal register then appends the debt as a numeral — the <b>offset signature</b>.</p>
+        <div class="ex"><span class="nb">en ōl-t-ó=nu, +mek-dok.</span><span class="gl">1SG surface-PFV-PLAIN=DEEP, +four-ten</span><span class="tr">"I surfaced — in dive-time; forty owed." Divers sign letters this way: <b class="amber">Mora, +212</b> — a life's dilation worn as a name-suffix.</span></div>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SYSTEM 03 · FIVE DEGREES OF DEPTH</div>
+        <p>Where Sūchel has two directionals, Nubhel grades five — motion verbs are ungrammatical without one:</p>
+        <div class="tbl-wrap" style="border:0"><table>
+          <tr><th>Word</th><th>From</th><th>Meaning</th></tr>
+          <tr><td class="nb">len</td><td class="pf">*len-</td><td>level; along, at this depth</td></tr>
+          <tr><td class="nb">nub</td><td class="pf">*nub-</td><td>down; a working descent</td></tr>
+          <tr><td class="nb">dolnub</td><td class="pf">*dol-nub</td><td>pitward; a deep, committed dive</td></tr>
+          <tr><td class="nb">ū</td><td class="pf">*hau</td><td>up; surfaceward</td></tr>
+          <tr><td class="nb">ūtel</td><td class="pf">*hau-tel</td><td>breach-up; an overshooting ascent</td></tr>
+        </table></div>
+        <p style="margin-top:8px">Fleet drill answers run <span class="nb">len? nub? dolnub?</span> the way surface children answer left-right. "Up" being one exhaled vowel, <span class="nb">ū</span>, is the language's quiet joke about where its heart is.</p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SYSTEM 04 · NEKS — THE GAP AS COURTESY</div>
+        <p>The gap particle survives, heavier: <b class="tealt">neks</b> (<span class="pf">*nex-</span>, cluster kept). But its pragmatics drifted. In Sūchel, <span class="su">ne</span> marks what physics forbids narrating; in Nubhel, <b>neks marks any interval your listener did not share</b> — a returning diver summarizing years of away-time says it once and moves on. <em>You do not narrate time your listener did not live.</em></p>
+        <div class="ex"><span class="nb">en yed-t-ó=mi. neks. en len ve-ó=ka.</span><span class="gl">1SG go-PFV-PLAIN=PROP · GAP · 1SG level be-PLAIN=BEAC</span><span class="tr">"I left. — . I am here, level, in shared time." The homecoming formula: the away-years folded into one held mark, out of kindness.</span></div>
+      </div>
+    </div>
+
+    <div class="insight frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="ik">THE RECONSTRUCTION PROOF — WHY -Ó MATTERS</div>
+      <p>Nubhel's plain mood is <b class="tealt">-ó</b> where Sūchel has <b class="goldt">-á</b>. D-4 rounds only <em>stressed</em> *a — so the suffix can only have become -ó if it already carried the stress when the daughters split. <b>The sound change is fossil evidence that "the mood carries the beat" was late Old Pelagic prosody</b>, not a Sūchel invention: both fleets inherited the truth-beat from the ancestor. One vowel, and the family's deepest rule is proven ancient.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FALSE FRIENDS -->
+<section id="friends">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">04</span> ACROSS THE COGNATE GAP <span class="jp">偽の友</span></div>
+    <h2>Half-understanding, engineered</h2>
+    <p class="lead">A crosser and a diver understand most of each other — which is exactly what makes the failures dangerous. The core correspondences, and the traps:</p>
+    <div class="tbl-wrap frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table id="ffTable">
+        <tr><th>Proto</th><th>Sūchel</th><th>Nubhel</th><th>Meaning · note</th></tr>
+        <tr><td class="pf">*gel-</td><td class="su">jel</td><td class="nb">yel</td><td>the seam — the shibboleth row extends: gel · jel · ghel · zel · dzel · <b>yel</b></td></tr>
+        <tr><td class="pf">*kel</td><td class="su">chel</td><td class="nb">hel</td><td>speech — in the deep tongue, to speak is to breathe out</td></tr>
+        <tr><td class="pf">*suw-kel</td><td class="su">Sūchel</td><td class="nb">Sūhel</td><td>the crossing-speech — one phoneme apart; the minimal pair of the rivalry</td></tr>
+        <tr><td class="pf">*sow-orn</td><td class="su">Sōrn</td><td class="nb">Sōrn</td><td>the drive — identical. Everyone agrees on the engine.</td></tr>
+        <tr><td class="pf">*kad</td><td class="su">kad</td><td class="nb">kod</td><td>beacon — close enough to catch, far enough to mark the accent</td></tr>
+        <tr><td class="pf">*wer-</td><td class="su">ver</td><td class="nb">ber</td><td>truth — crossers joke that divers "bury the truth"; divers reply that crossers "thin it"</td></tr>
+        <tr><td class="pf">*nub-</td><td class="su">nuv</td><td class="nb">nub</td><td>down — one consonant of drift on the family's favorite direction</td></tr>
+        <tr><td class="pf">*ged-</td><td class="su">jed</td><td class="nb">yed</td><td>to go — transparent both ways</td></tr>
+        <tr><td class="pf">*tan-</td><td class="su">tan</td><td class="nb">ton</td><td>to hold — <b class="redt">trap:</b> Nubhel <i>ton</i> sounds like Sūchel <i>tem</i>-adjacent noise on a bad channel; hold vs pattern confusions are a known accident class</td></tr>
+        <tr><td class="pf">*mar / *mor</td><td class="su">mar · mor</td><td class="nb">mor</td><td><b class="redt">merger:</b> pearl and rock are one word to divers — "they cannot tell a pearl from a stone"</td></tr>
+        <tr><td class="pf">*wel / *bel</td><td class="su">vel · bel</td><td class="nb">bel</td><td><b class="redt">merger:</b> nothing and hearth are one word — "the hearth is nothing to us"</td></tr>
+        <tr><td class="pf">*nex-</td><td class="su">ne</td><td class="nb">neks</td><td>the gap — physics in one mouth, courtesy in the other</td></tr>
+        <tr><td class="pf">*sa, *dak</td><td class="su">sa … dak</td><td class="nb">so … dok</td><td>one … ten — <b class="amber">the counting test:</b> customs makes you count to ten; the vowels file your fleet</td></tr>
+        <tr><td class="pf">*hep</td><td class="su">hep</td><td class="nb">ep</td><td>seven — Sūchel keeps initial h; Nubhel killed all h. The divers surface without breath: <span class="su">hōl</span> vs <span class="nb">ōl</span></td></tr>
+        <tr><td class="pf">*suw-il / *nub-i</td><td class="su">sīl · nuvi</td><td class="nb">Sūl · Nūbi</td><td>crosser · diver — each fleet's name for itself and the other; four words, one rivalry</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- LEXICON -->
+<section id="lexicon">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">05</span> WORKING LEXICON <span class="jp">語彙</span></div>
+    <h2>Thirty entries to speak with</h2>
+    <div class="tbl-wrap frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table id="lexTable">
+        <tr><th>Nubhel</th><th>IPA</th><th>Gloss</th><th>Derivation</th></tr>
+        <tr><td>Nubhel</td><td class="ipa">ˈnub.hel</td><td>the deep-speech; this language</td><td><span class="pf">*nub-kel</span> → D-3 then D-1 (secondary h survives)</td></tr>
+        <tr><td>Nūbi</td><td class="ipa">ˈnuː.bi</td><td>the divers; the vertical fleet</td><td><span class="pf">*nub-i</span> → D-5</td></tr>
+        <tr><td>Sūl</td><td class="ipa">suːl</td><td>crosser (their word for the Sīli)</td><td><span class="pf">*suw-il</span> → D-3</td></tr>
+        <tr><td>Sūhel</td><td class="ipa">ˈsuː.hel</td><td>Sūchel, the crossing-speech</td><td><span class="pf">*suw-kel</span> → D-3, D-1</td></tr>
+        <tr><td>hel</td><td class="ipa">hel</td><td>speech; tongue</td><td><span class="pf">*kel</span> → D-1</td></tr>
+        <tr><td>yel</td><td class="ipa">jel</td><td>the seam 𝔍</td><td><span class="pf">*gel-</span> → D-1</td></tr>
+        <tr><td>yed</td><td class="ipa">jed</td><td>to go (with directional)</td><td><span class="pf">*ged-</span> → D-1</td></tr>
+        <tr><td>kod</td><td class="ipa">kod</td><td>beacon; kept time</td><td><span class="pf">*kad-</span> → D-4</td></tr>
+        <tr><td>kodur</td><td class="ipa">ˈko.dur</td><td>beacon-cycle (the unit of the offset)</td><td>kod + -ur</td></tr>
+        <tr><td>ber</td><td class="ipa">ber</td><td>truth; to speak-true</td><td><span class="pf">*wer-</span> → D-2</td></tr>
+        <tr><td>bur</td><td class="ipa">bur</td><td>to spin; to go mad</td><td><span class="pf">*wur-</span> → D-2</td></tr>
+        <tr><td>bos</td><td class="ipa">bos</td><td>wound</td><td><span class="pf">*wos-</span> → D-2</td></tr>
+        <tr><td>bel</td><td class="ipa">bel</td><td>nothing; hearth (merged)</td><td><span class="pf">*wel-</span> → D-2, = <span class="pf">*bel-</span></td></tr>
+        <tr><td>mor</td><td class="ipa">mor</td><td>rock; pearl (merged)</td><td><span class="pf">*mor- / *mar-</span> → D-4</td></tr>
+        <tr><td>ton</td><td class="ipa">ton</td><td>to hold, keep</td><td><span class="pf">*tan-</span> → D-4</td></tr>
+        <tr><td>ron</td><td class="ipa">ron</td><td>to run</td><td><span class="pf">*ran-</span> → D-4</td></tr>
+        <tr><td>ōl</td><td class="ipa">oːl</td><td>to surface</td><td><span class="pf">*haw-ol-</span> → D-3</td></tr>
+        <tr><td>ū</td><td class="ipa">uː</td><td>up; surfaceward (directional)</td><td><span class="pf">*hau</span> → D-3, D-6</td></tr>
+        <tr><td>ūtel</td><td class="ipa">ˈuː.tel</td><td>breach-up; overshooting ascent</td><td><span class="pf">*hau-tel</span></td></tr>
+        <tr><td>len</td><td class="ipa">len</td><td>level; along this depth</td><td><span class="pf">*len-</span></td></tr>
+        <tr><td>nub</td><td class="ipa">nub</td><td>down (directional)</td><td><span class="pf">*nub-</span></td></tr>
+        <tr><td>dolnub</td><td class="ipa">ˈdol.nub</td><td>pitward; a committed deep dive</td><td><span class="pf">*dol-nub</span></td></tr>
+        <tr><td>neks</td><td class="ipa">neks</td><td>the gap-particle; unshared time</td><td><span class="pf">*nex-</span> (cluster kept)</td></tr>
+        <tr><td>tem</td><td class="ipa">tem</td><td>pattern</td><td><span class="pf">*tem-a</span> → D-7</td></tr>
+        <tr><td>ān</td><td class="ipa">aːn</td><td>breath</td><td><span class="pf">*anh-</span> → D-3</td></tr>
+        <tr><td>nā</td><td class="ipa">naː</td><td>ship</td><td><span class="pf">*nāw-</span> → D-3</td></tr>
+        <tr><td>nāmai</td><td class="ipa">ˈnaː.mai</td><td>one's own ship (entangled)</td><td>nā + -mai (<span class="pf">*mag-i</span>, shared)</td></tr>
+        <tr><td>enmai</td><td class="ipa">ˈen.mai</td><td>we, crew-we (entangled)</td><td>shared inheritance — kin-words are family-stable</td></tr>
+        <tr><td>on</td><td class="ipa">on</td><td>she/he/it (3SG)</td><td><span class="pf">*an-</span> → D-4</td></tr>
+        <tr><td>so … dok</td><td class="ipa">so … dok</td><td>one … ten</td><td><span class="pf">*sa … *dak</span> → D-4 (the counting test)</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- TEXTS -->
+<section id="texts">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">06</span> TEXTS <span class="jp">例文</span></div>
+    <h2>The deep-speech breathing</h2>
+
+    <div class="text-block frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="tb-head"><span class="tk">TEXT 01 // A DIVER'S HOMECOMING</span><span class="tj">帰還</span></div>
+      <div class="tb-body">
+        <div class="il">
+          <div class="l1">en yed-t-ó=mi. <span class="gap">neks.</span></div>
+          <div class="l2">1SG go-PFV-PLAIN=PROP · GAP</div>
+          <div class="l3">I left. — .</div>
+        </div>
+        <div class="il">
+          <div class="l1">en len ve-ó=ka, <span class="sig">+mek-dok kodur</span>.</div>
+          <div class="l2">1SG level be-PLAIN=BEAC · +four-ten cycle</div>
+          <div class="l3">I am here, level, in shared time — forty cycles owed.</div>
+        </div>
+      </div>
+      <div class="tb-note">The whole determinate regime in two lines: the away-years folded into one <b>neks</b> out of courtesy, the return re-anchored to the beacon, and the dilation declared as a number. Where a crosser's homecoming ends in a question no arithmetic settles, a diver's ends in an <b>invoice</b>.</div>
+    </div>
+
+    <div class="text-block frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="tb-head"><span class="tk">TEXT 02 // THE PARALLEL SENTENCE — HALF-UNDERSTANDING</span><span class="tj">対訳</span></div>
+      <div class="tb-body">
+        <div class="il">
+          <div class="l1" style="color:var(--gold)">enmai nav-mai nuv jed-a=mi.</div>
+          <div class="l2">SŪCHEL — 1PL.ENT ship-ENT DOWN go-T=PROP</div>
+          <div class="l3">"We take our ship down, by our own clock."</div>
+        </div>
+        <div class="il">
+          <div class="l1">enmai nā-mai nub yed-ó=mi.</div>
+          <div class="l2">NUBHEL — 1PL.ENT ship-ENT DOWN go-PLAIN=PROP</div>
+          <div class="l3">The same sentence, the sister's mouth.</div>
+        </div>
+      </div>
+      <div class="tb-note">Roughly four words in five land across the gap — <b>enmai, -mai, =mi</b> and the shape of the verb are shared bones. What trips the ear is exactly the rivalry: <b>nav/nā, nuv/nub, jed/yed, -a/-ó</b>. Enough to trade, marry, and mishear a docking order at the worst possible moment.</div>
+    </div>
+
+    <div class="text-block frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="tb-head"><span class="tk">TEXT 03 // THE CODE-SWITCH — SHOWPIECE</span><span class="tj">切替</span></div>
+      <div class="tb-body">
+        <div class="il">
+          <div class="l1">on dolnub yed-t-ó=mi, yel-ol —</div>
+          <div class="l2">3SG PITWARD go-PFV-PLAIN=PROP · seam-DAT</div>
+          <div class="l3">She dove pitward, to the seam —</div>
+        </div>
+        <div class="il">
+          <div class="l1"><span class="sw">an sū-t-eshe=zu.</span></div>
+          <div class="l2">[SŪCHEL] 3SG cross-PFV-T•=DARK</div>
+          <div class="l3">— she crossed: seam-true, in the dark.</div>
+        </div>
+        <div class="il">
+          <div class="l1">on ōl-t-ó=nu, <span class="sig">+so kodur</span>.</div>
+          <div class="l2">3SG surface-PFV-PLAIN=DEEP · +one cycle</div>
+          <div class="l3">She surfaced, in dive-time — one cycle owed.</div>
+        </div>
+      </div>
+      <div class="tb-note">The grammatical hole made visible: Nubhel carries the narration to the seam's edge and <b>must borrow Sūchel for the crossing itself</b> — the rival's mood, the rival's anchor, in the rival's color — then takes the story back on the far side. Letter the middle balloon in the Sūchel style: the language shift <b>is</b> the seam.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">NUBHEL // THE DEEP-SPEECH · SECOND DAUGHTER OF OLD PELAGIC</div>
+    <div class="big">EVERYONE AGREES ON THE ENGINE</div>
+    <div class="fr">THREE MOODS · ONE HOLE · FIVE DEPTHS · THE OFFSET WORN AS A NAME // REV 1.0</div>
+  </div>
+</footer>
+
+<script>
+function tick(){const d=new Date();document.getElementById('clk').textContent=[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');}
+tick();setInterval(tick,1000);
+const links=[...document.querySelectorAll('.nav a')];
+const secs=links.map(l=>document.querySelector(l.getAttribute('href')));
+addEventListener('scroll',()=>{let i=secs.length-1;for(let k=0;k<secs.length;k++){if(secs[k]&&secs[k].getBoundingClientRect().top>90){i=k-1;break;}}if(i<0)i=0;links.forEach((l,k)=>l.classList.toggle('on',k===i));},{passive:true});
+</script>
+</body>
+</html>

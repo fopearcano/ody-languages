@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE SOUND OF SŪCHEL // Pronunciation & Rhythm Key</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08070a;--panel:#0e0b10;
+  --red:#e8362a;--red-d:#a3211a;--red-dd:#5e120e;--red-glow:rgba(232,54,42,.55);
+  --amber:#f2b01f;--gold:#f5d76e;--blue-l:#6fa8ff;--violet:#8b7dd8;--green:#7ec885;--teal:#4fc2a8;
+  --ink:#d8d2c8;--ink-d:#8c8a82;--ink-dd:#5a5852;
+  --line:rgba(232,54,42,.22);--line-amber:rgba(242,176,31,.20);--grid:rgba(232,54,42,.045);
+}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Chakra Petch','Bahnschrift','Segoe UI',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden;letter-spacing:.01em}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse 120% 100% at 50% 0%,#000 30%,transparent 90%)}
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.18) 3px,rgba(0,0,0,0) 4px);mix-blend-mode:multiply;opacity:.5}
+.mono{font-family:'Share Tech Mono',monospace}.jp{font-family:'Zen Kaku Gothic New',sans-serif}
+.frame{position:relative}
+.frame>.br{position:absolute;width:14px;height:14px;border:1px solid var(--red);pointer-events:none;z-index:3}
+.br.tl{top:-1px;left:-1px;border-right:0;border-bottom:0}.br.tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.br.bl{bottom:-1px;left:-1px;border-right:0;border-top:0}.br.br2{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:18px;height:30px;padding:0 16px;background:linear-gradient(180deg,rgba(8,7,10,.96),rgba(8,7,10,.82));border-bottom:1px solid var(--line);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-d);text-transform:uppercase;backdrop-filter:blur(6px)}
+.topbar .dot{width:7px;height:7px;background:var(--red);box-shadow:0 0 8px var(--red-glow);animation:blink 2.4s steps(1) infinite}
+@keyframes blink{0%,70%{opacity:1}71%,100%{opacity:.25}}
+.topbar .sep{color:var(--red-dd)}.topbar .right{margin-left:auto;display:flex;gap:18px;align-items:center}.topbar .clk{color:var(--amber)}
+@media(max-width:680px){.topbar .hideS{display:none}}
+.nav{position:fixed;top:30px;left:0;right:0;z-index:999;display:flex;align-items:center;gap:2px;padding:0 14px;height:38px;background:rgba(10,8,12,.9);border-bottom:1px solid var(--line);backdrop-filter:blur(6px);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav .brand{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:14px;letter-spacing:.22em;color:var(--red);text-shadow:0 0 12px var(--red-glow);margin-right:18px;white-space:nowrap}
+.nav a{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:.13em;color:var(--ink-d);text-decoration:none;text-transform:uppercase;padding:5px 13px;white-space:nowrap;border:1px solid transparent;transition:all .18s}
+.nav a:hover{color:var(--amber);border-color:var(--line-amber)}
+.nav a.on{color:var(--red);border-color:var(--line);background:rgba(232,54,42,.06)}
+.nav .navtag{margin-left:auto;color:var(--ink-dd);font-family:'Share Tech Mono';font-size:9px;letter-spacing:.2em;white-space:nowrap}
+@media(max-width:1120px){.nav .navtag{display:none}}
+
+.wrap{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:0 20px}
+section{padding:58px 0;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.26em;color:var(--red);text-transform:uppercase;flex-wrap:wrap}
+.eyebrow::before{content:'';width:26px;height:1px;background:var(--red);box-shadow:0 0 6px var(--red-glow)}
+.eyebrow .idx{color:var(--amber)}.eyebrow .jp{color:var(--ink-dd);letter-spacing:.1em}
+h2{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:clamp(22px,3.6vw,34px);letter-spacing:.01em;line-height:1.1;color:#f0ebe2}
+.lead{max-width:880px;color:var(--ink);font-size:15px;margin-top:12px}
+.muted{color:var(--ink-d)}.amber{color:var(--amber)}.redt{color:var(--red)}.greent{color:var(--green)}.goldt{color:var(--gold)}.bluet{color:var(--blue-l)}
+.su{font-style:italic;color:var(--gold)}
+.ipa{font-family:'Share Tech Mono',monospace;color:var(--teal);font-size:.92em}
+
+.hero{min-height:60vh;padding:118px 0 42px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.hero-bloom{position:absolute;top:18%;right:6%;width:min(500px,54vw);height:min(360px,40vw);background:radial-gradient(ellipse at center,rgba(126,200,133,.07),rgba(232,54,42,.06) 45%,transparent 70%);filter:blur(22px);pointer-events:none;z-index:0}
+.hero-inner{position:relative;z-index:2}
+.hero h1{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.02em;line-height:1.0;font-size:clamp(30px,6.6vw,80px);color:#f4efe6}
+.hero h1 .stroke{color:transparent;-webkit-text-stroke:1.4px var(--red);text-shadow:0 0 26px var(--red-glow);display:block}
+.hero h1 .fill{color:var(--red);text-shadow:0 0 30px var(--red-glow);display:block}
+.hero .sub{font-family:'Share Tech Mono',monospace;font-size:clamp(11px,1.5vw,13.5px);letter-spacing:.22em;color:var(--amber);margin-top:22px;text-transform:uppercase;max-width:860px}
+.hero .desc{max-width:760px;margin-top:18px;color:var(--ink);font-size:15px}
+
+table{border-collapse:collapse;width:100%;margin-top:16px}
+th{font-family:'Share Tech Mono';font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);background:rgba(232,54,42,.04)}
+td{padding:8px 12px;border-bottom:1px dashed var(--line);font-size:13.5px;color:var(--ink);vertical-align:top}
+td:first-child{color:var(--gold);font-weight:500;white-space:nowrap}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+@media(max-width:880px){.grid2{grid-template-columns:1fr}}
+
+/* stress algorithm */
+.steps{margin-top:22px;border:1px solid var(--line)}
+.step{display:grid;grid-template-columns:110px 1fr;border-bottom:1px solid var(--line)}
+.step:last-child{border-bottom:0}
+.step .sk{padding:16px;border-right:1px solid var(--line);font-family:'Chakra Petch';font-weight:700;font-size:14px;color:var(--amber);background:rgba(242,176,31,.04)}
+.step .sv{padding:15px 18px;font-size:14px;color:var(--ink)}
+.step .sv b{color:var(--red);font-weight:400}
+.step .sv .ex{font-family:'Share Tech Mono';font-size:12px;color:var(--teal);display:block;margin-top:6px}
+@media(max-width:620px){.step{grid-template-columns:1fr}.step .sk{border-right:0;border-bottom:1px dashed var(--line)}}
+
+/* line player */
+.pl-cat{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin:30px 0 4px;display:flex;align-items:center;gap:10px}
+.pl-cat::after{content:'';flex:1;height:1px;background:var(--line)}
+.pl{display:grid;grid-template-columns:44px 1fr auto;gap:0;border:1px solid var(--line);background:linear-gradient(180deg,rgba(14,11,16,.6),rgba(10,8,12,.45));margin-top:10px;align-items:center}
+.pl .n{font-family:'Share Tech Mono';font-size:10px;color:var(--ink-dd);text-align:center;border-right:1px solid var(--line);align-self:stretch;display:flex;align-items:center;justify-content:center}
+.pl .mid{padding:10px 14px;min-width:0}
+.pl .lat{font-size:16px;color:var(--gold);font-style:italic;line-height:1.25}
+.pl .lat .gapc{color:var(--red);font-style:normal;font-weight:600}
+.pl .syl{font-family:'Share Tech Mono';font-size:11.5px;color:var(--ink-d);margin-top:3px;letter-spacing:.04em}
+.pl .syl b{color:var(--green);font-weight:400}
+.pl .syl i{color:var(--teal);font-style:normal;border-bottom:1px solid var(--teal)}
+.pl .btns{display:flex;gap:6px;padding:0 12px}
+button.pbtn{font-family:'Share Tech Mono';font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-d);background:rgba(232,54,42,.04);border:1px solid var(--line);padding:7px 10px;cursor:pointer;transition:all .15s;white-space:nowrap}
+button.pbtn:hover{color:var(--amber);border-color:var(--line-amber)}
+button.pbtn.playing{color:#fff;background:var(--red-dd);border-color:var(--red)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-family:'Share Tech Mono';font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-d)}
+.legend b{color:var(--green);font-weight:400}.legend i{color:var(--teal);font-style:normal;border-bottom:1px solid var(--teal)}
+@media(max-width:640px){.pl{grid-template-columns:38px 1fr}.pl .btns{grid-column:1/3;padding:0 10px 10px;justify-content:flex-end}}
+
+footer{padding:40px 0 70px;text-align:center;border-bottom:0}
+footer .fr{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.2em;color:var(--ink-dd);text-transform:uppercase;line-height:2}
+footer .big{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(16px,2.4vw,22px);color:var(--red-d);letter-spacing:.04em;margin:14px 0;text-shadow:0 0 20px rgba(232,54,42,.3)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="dot"></span><span>NERV//PELAGIAN ASSEMBLY</span>
+  <span class="sep hideS">/</span><span class="hideS">SOUND KEY REV 1.0</span>
+  <div class="right"><span class="hideS mono">PHONEMES · STRESS · RHYTHM</span><span class="sep">/</span><span class="clk mono" id="clk">00:00:00</span><span class="jp" style="color:var(--ink-dd)">音の鍵</span></div>
+</div>
+
+<nav class="nav">
+  <span class="brand">SOUND</span>
+  <a href="#top" class="on">KEY</a>
+  <a href="#phon">PHONEMES</a>
+  <a href="#stress">STRESS</a>
+  <a href="#lines">THE 41 LINES</a>
+  <a href="#voice">VOICE NOTES</a>
+  <span class="navtag jp">発音と律動</span>
+</nav>
+
+<section class="hero" id="top">
+  <div class="hero-bloom"></div>
+  <div class="wrap hero-inner">
+    <div class="eyebrow"><span class="idx">13</span> LANGUAGE CODEX · PRONUNCIATION <span class="jp">序章 · 音</span></div>
+    <h1><span class="stroke">THE SOUND</span><span class="fill">OF SŪCHEL</span></h1>
+    <div class="sub">Phoneme key · the four-rule stress algorithm · every phrasebook line, playable as rhythm</div>
+    <p class="desc">For the letterer, the reader-aloud, and any future voice. The core discovery codified here: <span class="amber">the veridical mood suffix seizes the stress</span> — in Sūchel you can <em>hear</em> the truth-claim, because the mood carries the beat. And since commands assert nothing, imperatives are beatless: flat, stem-stressed, quiet. Every line below has a <span class="greent">rhythm player</span> (synthesized beats: reliable) and a <span class="bluet">rough voice</span> (your browser's speech engine on an English respelling: an approximation, clearly labeled as one).</p>
+  </div>
+</section>
+
+<!-- PHONEMES -->
+<section id="phon">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">01</span> PHONEME KEY <span class="jp">音素</span></div>
+    <h2>Anchors for an English mouth</h2>
+    <div class="grid2">
+      <div class="tbl-wrap frame"><span class="br tl"></span><span class="br br2"></span>
+        <table>
+          <tr><th>Vowel</th><th>IPA</th><th>As in</th><th>Note</th></tr>
+          <tr><td>a</td><td class="ipa">a</td><td>f<em>a</em>ther (short)</td><td>never as in "cat"</td></tr>
+          <tr><td>e</td><td class="ipa">e</td><td>b<em>e</em>d</td><td>crisp, never "ay"-glided</td></tr>
+          <tr><td>i</td><td class="ipa">i</td><td>mach<em>i</em>ne (short)</td><td>never as in "bit"</td></tr>
+          <tr><td>o</td><td class="ipa">o</td><td>st<em>o</em>ry (short)</td><td>pure, no "ow" glide</td></tr>
+          <tr><td>u</td><td class="ipa">u</td><td>r<em>u</em>de (short)</td><td>never as in "cut"</td></tr>
+          <tr><td>ā ē ī ō ū</td><td class="ipa">aː eː iː oː uː</td><td>same vowels, held</td><td><b class="amber">length ≠ quality</b> — hold the sound, do not change it. A long vowel is a held breath.</td></tr>
+        </table>
+      </div>
+      <div class="tbl-wrap frame"><span class="br tl"></span><span class="br br2"></span>
+        <table>
+          <tr><th>Consonant</th><th>IPA</th><th>As in</th><th>Note</th></tr>
+          <tr><td>ch</td><td class="ipa">tʃ</td><td><em>ch</em>urch</td><td></td></tr>
+          <tr><td>j</td><td class="ipa">dʒ</td><td><em>j</em>udge</td><td>so <span class="su">jel</span> = "jell"</td></tr>
+          <tr><td>sh</td><td class="ipa">ʃ</td><td><em>sh</em>ip</td><td></td></tr>
+          <tr><td>s · z</td><td class="ipa">s · z</td><td><em>s</em>ea · <em>z</em>oo</td><td>s is always voiceless</td></tr>
+          <tr><td>r</td><td class="ipa">ɾ / r</td><td>Italian/Spanish r</td><td><b class="amber">tapped</b> between vowels, brief trill at word-start; never the English glide</td></tr>
+          <tr><td>v</td><td class="ipa">v</td><td><em>v</em>ine</td><td></td></tr>
+          <tr><td>g · k</td><td class="ipa">g · k</td><td><em>g</em>o · s<em>k</em>y</td><td>g always hard; k lightly aspirated at most</td></tr>
+          <tr><td>h</td><td class="ipa">h</td><td><em>h</em>old</td><td><b class="amber">word-initial only</b> (hōl, hau, hep); elsewhere old *h has already become vowel length</td></tr>
+          <tr><td>p b t d m n l</td><td class="ipa">—</td><td>as English</td><td>crisp finals; no swallowed stops</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STRESS -->
+<section id="stress">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">02</span> THE STRESS ALGORITHM <span class="jp">強勢</span></div>
+    <h2>Four rules, applied in order</h2>
+    <p class="lead">Run these top to bottom; the first that applies wins. Rule 4 is the one that makes Sūchel sound like nothing else — and it is ideology made audible.</p>
+    <div class="steps frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="step"><div class="sk">RULE 1</div><div class="sv"><b>Compounds stress their first member</b> (on that member's own stressed syllable). The second member is subordinated.
+        <span class="ex">NUV-ran · JEL-mar · SŌRN-mai · E-she-ver · ZU-kad</span></div></div>
+      <div class="step"><div class="sk">RULE 2</div><div class="sv"><b>Finite verbs: the mood seizes the stress.</b> Stress the syllable containing the veridical suffix's first vowel — the truth-claim carries the beat. Anchor clitics (=ka =mi =zu) are weightless and never stressed.
+        <span class="ex">ve-RA-ka (ver-a=ka) · ta-NA-mi (tan-a=mi) · hōl-TE-she-zu (hōl-t-eshe=zu) · i-DE-she-mi (id-eshe=mi)</span></div></div>
+      <div class="step"><div class="sk">RULE 3</div><div class="sv"><b>A long vowel seizes the stress</b> in any other word.
+        <span class="ex">SŪ-chel · HŌ-lu · MĀN · ĀN</span></div></div>
+      <div class="step"><div class="sk">RULE 4</div><div class="sv"><b>Otherwise: stress the penult of the stem</b> — and case suffixes never shift it once set.
+        <span class="ex">I-dre-nes · PEL-gar · VU-rel → VU-re-len (gen.) · ZU-kad → ZU-ka-deth (loc.)</span>
+        <span class="ex" style="color:var(--ink-d)">Corollary — imperatives are beatless: -u adds no beat, commands stay flat. TA-nu, JE-du, I-du: an order asserts nothing, so nothing in it can carry the truth-beat.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LINES -->
+<section id="lines">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">03</span> THE 41 LINES <span class="jp">四十一句</span></div>
+    <h2>Every phrase, playable</h2>
+    <p class="lead">Capitals mark the stressed syllable; <i style="color:var(--teal);font-style:normal;border-bottom:1px solid var(--teal)">underlined</i> syllables hold a long vowel. <span class="greent">▶ RHYTHM</span> beats the stress pattern (stressed = higher &amp; longer; long vowels sustain; line 38 plays as what it is — a rest). <span class="bluet">▶ VOICE</span> is your browser's speech engine on a rough respelling — an approximation for cadence only, never authority.</p>
+    <div class="legend"><span><b>CAPITALS</b> = stressed beat</span><span><i>underline</i> = long vowel (held)</span><span class="redt">| = the gap (silence)</span></div>
+    <div id="player"></div>
+  </div>
+</section>
+
+<!-- VOICE NOTES -->
+<section id="voice">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">04</span> VOICE DIRECTION <span class="jp">演出</span></div>
+    <h2>Register notes for a reader or actor</h2>
+    <div class="tbl-wrap frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table>
+        <tr><th>Register</th><th>Direction</th></tr>
+        <tr><td>Assembly / T=ka</td><td>Measured, resonant, unhurried — the confidence of shared time. Every stress lands square. Think liturgy, not command.</td></tr>
+        <tr><td>Bridge orders (imperatives)</td><td>Flat and fast — beatless by rule, so let them be nearly toneless. The calm of procedure. <span class="su">jel id-u</span> is spoken quietly by custom: you do not shout at the seam.</td></tr>
+        <tr><td>=mi reports</td><td>Intimate, close-miked, slightly inward — the speaker vouches only for their own clock. A private register even in public.</td></tr>
+        <tr><td>T• / =zu lines</td><td>Let the voice thin: quieter, breathier, as if partly elsewhere — because grammatically it is. Never dramatize; underplay. The mood suffix already carries the weight.</td></tr>
+        <tr><td>The gap (ne)</td><td>Line 38 is spoken as a full voiced syllable and then <b class="redt">held as silence</b> — the word, then the thing the word stands for. On the page: a black panel.</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">THE SOUND OF SŪCHEL // PHONEMES · STRESS · RHYTHM · VOICE</div>
+    <div class="big">THE MOOD CARRIES THE BEAT</div>
+    <div class="fr">FOUR RULES · 41 LINES PLAYABLE · COMMANDS ARE BEATLESS // REV 1.0</div>
+  </div>
+</footer>
+
+<script>
+function tick(){const d=new Date();document.getElementById('clk').textContent=[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');}
+tick();setInterval(tick,1000);
+
+/* ---------- LINE DATA ----------
+   syl tokens: UPPERCASE = stressed; ':' inside = long vowel; '|' = gap-rest; '/' = word break (small pause) */
+const LINES=[
+ {cat:'A · HAILS & PARTINGS'},
+ {n:'01',lat:'ver ish-ol.',syl:['ver','/','i','SHOL']},
+ {n:'02',lat:'ver ishmai-ol.',syl:['ver','/','ish','MAI','ol']},
+ {n:'03',lat:'ō mān!',syl:['O:','/','MA:N']},
+ {n:'04',lat:'kad ishen tan-u.',syl:['kad','/','I','shen','/','TA','nu']},
+ {n:'05',lat:'zukad-eth, lesh ishen tan-u.',syl:['ZU','ka','deth','/','lesh','/','I','shen','/','TA','nu']},
+ {n:'06',lat:'hōl-u ret.',syl:['HO:','lu','/','ret']},
+ {n:'07',lat:'en jed-a=mi.',syl:['en','/','je','DA','mi']},
+ {n:'08',lat:'men-u, mān.',syl:['ME','nu','/','MA:N']},
+ {cat:'B · BRIDGE CHATTER'},
+ {n:'09',lat:'nuv jed-u!',syl:['nuv','/','JE','du']},
+ {n:'10',lat:'hau jed-u!',syl:['HAU','/','JE','du']},
+ {n:'11',lat:'jel id-u.',syl:['jel','/','I','du']},
+ {n:'12',lat:'Sōrnmai, tan-u.',syl:['SO:RN','mai','/','TA','nu']},
+ {n:'13',lat:'kad ver-a=ka vu?',syl:['kad','/','ve','RA','ka','/','vu']},
+ {n:'14',lat:'ver-a=ka.',syl:['ve','RA','ka']},
+ {n:'15',lat:'vo ver-a=ka. zukad.',syl:['vo','/','ve','RA','ka','/','ZU','kad']},
+ {n:'16',lat:'tem tan-u, eni om.',syl:['tem','/','TA','nu','/','E','ni','/','om']},
+ {cat:'C · CURSES & OATHS'},
+ {n:'17',lat:'jelvos!',syl:['JEL','vos']},
+ {n:'18',lat:'velosh ishen oshu!',syl:['VE','losh','/','I','shen','/','O','shu']},
+ {n:'19',lat:'vo-tem!',syl:['VO','tem']},
+ {n:'20',lat:'kru jel-eth!',syl:['kru','/','JE','leth']},
+ {n:'21',lat:'an vo hōl-u!',syl:['an','/','vo','/','HO:','lu']},
+ {n:'22',lat:'gal ishen tan-u!',syl:['gal','/','I','shen','/','TA','nu']},
+ {n:'23',lat:'vurel-en chel!',syl:['VU','re','len','/','chel']},
+ {n:'24',lat:'en ver-a=mi: …',syl:['en','/','ve','RA','mi']},
+ {cat:'D · PRAYERS & BLESSINGS'},
+ {n:'25',lat:'Turmai, enen tan-u.',syl:['TUR','mai','/','E','nen','/','TA','nu']},
+ {n:'26',lat:'kad om-ol ver-u.',syl:['kad','/','O','mol','/','VE','ru']},
+ {n:'27',lat:'jel lesh-eth id-u.',syl:['jel','/','LE','sheth','/','I','du']},
+ {n:'28',lat:'enmai nexath-mai tan-a=mi.',syl:['EN','mai','/','NE','ksath','mai','/','ta','NA','mi']},
+ {n:'29',lat:'an zu jed-t-a=mi.',syl:['an','/','zu','/','jed','TA','mi']},
+ {n:'30',lat:'hōl-eshe=zu, maiel.',syl:['ho:','LE','she','zu','/','MAI','el']},
+ {n:'31',lat:'ver enmai-eth ve-a=ka.',syl:['ver','/','en','MAI','eth','/','ve','A','ka']},
+ {n:'32',lat:'eshe-ver men-a=zu.',syl:['E','she','ver','/','me','NA','zu']},
+ {cat:'E · THE DRIVE-LITANY'},
+ {n:'33',lat:'Sōrnmai, ān tan-u.',syl:['SO:RN','mai','/','A:N','/','TA','nu']},
+ {n:'34',lat:'ān tan-a=mi.',syl:['A:N','/','ta','NA','mi']},
+ {n:'35',lat:'nuv, nuv, jel-ol.',syl:['nuv','/','nuv','/','JE','lol']},
+ {n:'36',lat:'nuvran ve-a=mi.',syl:['NUV','ran','/','ve','A','mi']},
+ {n:'37',lat:'jel id-eshe=mi.',syl:['jel','/','i','DE','she','mi']},
+ {n:'38',lat:'ne.',gap:true,syl:['ne','|']},
+ {n:'39',lat:'hōl-t-eshe=zu vu?',syl:['ho:l','TE','she','zu','/','vu']},
+ {n:'40',lat:'hōl-t-eshe=zu. enmai ve-a=mi.',syl:['ho:l','TE','she','zu','/','EN','mai','/','ve','A','mi']},
+ {n:'41',lat:'kad ret ver-a=ka.',syl:['kad','/','ret','/','ve','RA','ka']},
+];
+
+/* ---------- RENDER ---------- */
+const playerEl=document.getElementById('player');
+LINES.forEach((L,idx)=>{
+  if(L.cat){const h=document.createElement('div');h.className='pl-cat';h.textContent=L.cat;playerEl.appendChild(h);return;}
+  const d=document.createElement('div');d.className='pl frame';
+  const sylHtml=L.syl.map(s=>{
+    if(s==='/')return '<span style="color:var(--ink-dd)"> · </span>';
+    if(s==='|')return '<span style="color:var(--red)"> | </span>';
+    const stressed=s===s.toUpperCase()&&/[A-Z]/.test(s);
+    const long=s.includes(':');
+    let out=s.replace(':','');
+    if(long)out='<i>'+out+'</i>';
+    if(stressed)out='<b>'+out+'</b>';
+    return out;
+  }).join('<span style="color:var(--ink-dd)">-</span>');
+  d.innerHTML=`<span class="br tl"></span><span class="br br2"></span>
+    <div class="n">${L.n}</div>
+    <div class="mid"><div class="lat">${L.gap?'<span class="gapc">ne.</span>':L.lat}</div><div class="syl">${sylHtml}</div></div>
+    <div class="btns"><button class="pbtn rb">▶ RHYTHM</button><button class="pbtn vb">▶ VOICE</button></div>`;
+  d.querySelector('.rb').onclick=e=>playRhythm(L,e.target);
+  d.querySelector('.vb').onclick=e=>playVoice(L,e.target);
+  playerEl.appendChild(d);
+});
+
+/* ---------- RHYTHM PLAYER (WebAudio) ---------- */
+let AC=null;
+function ctx(){if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();return AC;}
+function beep(t,dur,freq,gain){
+  const ac=ctx();const o=ac.createOscillator();const g=ac.createGain();
+  o.type='triangle';o.frequency.value=freq;
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.linearRampToValueAtTime(gain,t+0.012);
+  g.gain.setValueAtTime(gain,t+dur-0.03);
+  g.gain.linearRampToValueAtTime(0.0001,t+dur);
+  o.connect(g).connect(ac.destination);
+  o.start(t);o.stop(t+dur+0.02);
+}
+let playingBtn=null;
+function playRhythm(L,btn){
+  const ac=ctx();if(ac.state==='suspended')ac.resume();
+  if(playingBtn){playingBtn.classList.remove('playing');}
+  playingBtn=btn;btn.classList.add('playing');
+  let t=ac.currentTime+0.06;
+  L.syl.forEach(s=>{
+    if(s==='/'){t+=0.10;return;}
+    if(s==='|'){t+=0.55;beep(t,0.10,150,0.05);t+=0.30;return;} /* the gap: long rest then one low blip */
+    const stressed=s===s.toUpperCase()&&/[A-Z]/.test(s);
+    const long=s.includes(':');
+    const dur=(stressed?0.20:0.12)+(long?0.14:0);
+    const freq=stressed?430:300;
+    beep(t,dur,freq,stressed?0.16:0.10);
+    t+=dur+0.055;
+  });
+  setTimeout(()=>{btn.classList.remove('playing');if(playingBtn===btn)playingBtn=null;},(t-ac.currentTime)*1000+80);
+}
+
+/* ---------- ROUGH VOICE (speechSynthesis, best-effort) ---------- */
+const V_MAP=[[/ho:l/g,'hohl'],[/o:rn/g,'ohrn'],[/a:n/g,'ahn'],[/ma:n/g,'mahn'],[/o:/g,'oh'],[/u:/g,'oo'],[/a:/g,'ah'],[/e:/g,'ay'],[/i:/g,'ee'],
+ [/ksath/g,'ksahth'],[/sh/g,'sh'],[/ch/g,'ch'],[/j/g,'j'],
+ [/a/g,'ah'],[/e/g,'eh'],[/i/g,'ee'],[/o/g,'oh'],[/u/g,'oo']];
+function respellSyl(s){
+  let x=s.toLowerCase().replace(':','\u0000'); /* placeholder so vowel map can see it */
+  x=s.toLowerCase();
+  let long=x.includes(':');x=x.replace(':','');
+  /* vowels first pass with length */
+  let out=x.replace(/a/g,'ah').replace(/e(?!h)/g,'eh').replace(/i/g,'ee').replace(/o(?!h)/g,'oh').replace(/u/g,'oo');
+  if(long)out=out.replace(/(ah|eh|ee|oh|oo)/,'$1$1'.slice(0,4)); /* crude hold */
+  return out;
+}
+function playVoice(L,btn){
+  if(!('speechSynthesis'in window)){btn.textContent='NO VOICE';return;}
+  const words=[];let cur=[];
+  L.syl.forEach(s=>{
+    if(s==='/'){if(cur.length)words.push(cur.join('-'));cur=[];return;}
+    if(s==='|'){if(cur.length)words.push(cur.join('-'));cur=[];words.push('...');return;}
+    cur.push(respellSyl(s));
+  });
+  if(cur.length)words.push(cur.join('-'));
+  const u=new SpeechSynthesisUtterance(words.join(', '));
+  u.rate=0.78;u.pitch=0.9;
+  speechSynthesis.cancel();speechSynthesis.speak(u);
+  btn.classList.add('playing');u.onend=()=>btn.classList.remove('playing');
+}
+
+/* nav active */
+const links=[...document.querySelectorAll('.nav a')];
+const secs=links.map(l=>document.querySelector(l.getAttribute('href')));
+addEventListener('scroll',()=>{let i=secs.length-1;for(let k=0;k<secs.length;k++){if(secs[k]&&secs[k].getBoundingClientRect().top>90){i=k-1;break;}}if(i<0)i=0;links.forEach((l,k)=>l.classList.toggle('on',k===i));},{passive:true});
+</script>
+</body>
+</html>

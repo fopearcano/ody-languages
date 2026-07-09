@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SŪCHEL // The Crossing-Speech — Language Codex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08070a;--bg2:#0c0a0e;--panel:#0e0b10;
+  --red:#e8362a;--red-d:#a3211a;--red-dd:#5e120e;--red-glow:rgba(232,54,42,.55);
+  --amber:#f2b01f;--amber-d:#b07e10;--gold:#f5d76e;
+  --blue:#3f7ddd;--blue-l:#6fa8ff;--violet:#8b7dd8;--green:#7ec885;--teal:#4fc2a8;
+  --ink:#d8d2c8;--ink-d:#8c8a82;--ink-dd:#5a5852;
+  --line:rgba(232,54,42,.22);--line-amber:rgba(242,176,31,.20);--line-blue:rgba(63,125,221,.28);
+  --grid:rgba(232,54,42,.045);
+}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Chakra Petch','Eurostile','Bahnschrift','Segoe UI',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden;letter-spacing:.01em}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse 120% 100% at 50% 0%,#000 30%,transparent 90%)}
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.18) 3px,rgba(0,0,0,0) 4px);mix-blend-mode:multiply;opacity:.5}
+.mono{font-family:'Share Tech Mono',monospace}.jp{font-family:'Zen Kaku Gothic New',sans-serif}
+.frame{position:relative}
+.frame>.br{position:absolute;width:14px;height:14px;border:1px solid var(--red);pointer-events:none;z-index:3}
+.br.tl{top:-1px;left:-1px;border-right:0;border-bottom:0}.br.tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.br.bl{bottom:-1px;left:-1px;border-right:0;border-top:0}.br.br2{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:18px;height:30px;padding:0 16px;background:linear-gradient(180deg,rgba(8,7,10,.96),rgba(8,7,10,.82));border-bottom:1px solid var(--line);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-d);text-transform:uppercase;backdrop-filter:blur(6px)}
+.topbar .dot{width:7px;height:7px;background:var(--red);box-shadow:0 0 8px var(--red-glow);animation:blink 2.4s steps(1) infinite}
+@keyframes blink{0%,70%{opacity:1}71%,100%{opacity:.25}}
+.topbar .sep{color:var(--red-dd)}.topbar .right{margin-left:auto;display:flex;gap:18px;align-items:center}.topbar .clk{color:var(--amber)}
+@media(max-width:680px){.topbar .hideS{display:none}}
+.nav{position:fixed;top:30px;left:0;right:0;z-index:999;display:flex;align-items:center;gap:2px;padding:0 14px;height:38px;background:rgba(10,8,12,.9);border-bottom:1px solid var(--line);backdrop-filter:blur(6px);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav .brand{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:14px;letter-spacing:.22em;color:var(--red);text-shadow:0 0 12px var(--red-glow);margin-right:18px;white-space:nowrap}
+.nav a{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:.13em;color:var(--ink-d);text-decoration:none;text-transform:uppercase;padding:5px 13px;white-space:nowrap;border:1px solid transparent;transition:all .18s}
+.nav a:hover{color:var(--amber);border-color:var(--line-amber)}
+.nav a.on{color:var(--red);border-color:var(--line);background:rgba(232,54,42,.06)}
+.nav .navtag{margin-left:auto;color:var(--ink-dd);font-family:'Share Tech Mono';font-size:9px;letter-spacing:.2em;white-space:nowrap}
+@media(max-width:1120px){.nav .navtag{display:none}}
+
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 20px}
+section{padding:66px 0;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.26em;color:var(--red);text-transform:uppercase;flex-wrap:wrap}
+.eyebrow::before{content:'';width:26px;height:1px;background:var(--red);box-shadow:0 0 6px var(--red-glow)}
+.eyebrow .idx{color:var(--amber)}.eyebrow .jp{color:var(--ink-dd);letter-spacing:.1em}
+h2{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:clamp(24px,4vw,38px);letter-spacing:.01em;line-height:1.1;color:#f0ebe2}
+h3{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:17px;letter-spacing:.03em;color:#ece7de}
+.lead{max-width:860px;color:var(--ink);font-size:15.5px;margin-top:14px}
+.muted{color:var(--ink-d)}.amber{color:var(--amber)}.redt{color:var(--red)}.bluet{color:var(--blue-l)}.greent{color:var(--green)}.violett{color:var(--violet)}.tealt{color:var(--teal)}.goldt{color:var(--gold)}
+.su{font-style:italic;color:var(--gold)}
+.ipa{font-family:'Share Tech Mono',monospace;color:var(--teal);font-size:.92em}
+.pf{font-family:'Share Tech Mono',monospace;color:var(--violet);font-size:.92em}
+
+.hero{min-height:86vh;padding:120px 0 50px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.hero-bloom{position:absolute;top:12%;right:3%;width:min(580px,62vw);height:min(440px,48vw);background:radial-gradient(ellipse at center,rgba(245,215,110,.10),rgba(232,54,42,.06) 45%,transparent 70%);filter:blur(22px);pointer-events:none;z-index:0}
+.hero-inner{position:relative;z-index:2}
+.hero h1{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.02em;line-height:1.0;font-size:clamp(36px,8vw,98px);color:#f4efe6}
+.hero h1 .stroke{color:transparent;-webkit-text-stroke:1.4px var(--red);text-shadow:0 0 26px var(--red-glow);display:block}
+.hero h1 .fill{color:var(--red);text-shadow:0 0 30px var(--red-glow);display:block}
+.hero .sub{font-family:'Share Tech Mono',monospace;font-size:clamp(11px,1.6vw,14px);letter-spacing:.24em;color:var(--amber);margin-top:24px;text-transform:uppercase;max-width:840px}
+.hero .desc{max-width:740px;margin-top:20px;color:var(--ink);font-size:15.5px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.hchip{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--ink-d);text-transform:uppercase;padding:6px 11px;border:1px solid var(--line);background:rgba(232,54,42,.03)}
+.hchip b{color:var(--amber);font-weight:400}
+
+/* tables */
+table{border-collapse:collapse;width:100%;margin-top:18px}
+th{font-family:'Share Tech Mono';font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);background:rgba(232,54,42,.04)}
+td{padding:9px 12px;border-bottom:1px dashed var(--line);font-size:13.5px;color:var(--ink);vertical-align:top}
+tr:hover td{background:rgba(232,54,42,.03)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line)}
+
+/* cards */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
+@media(max-width:880px){.grid2,.grid3{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);padding:20px;background:linear-gradient(180deg,rgba(14,11,16,.7),rgba(10,8,12,.5));position:relative}
+.card .cn{font-family:'Share Tech Mono';font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:9px}
+.card h3{margin-bottom:8px}
+.card p{font-size:13.5px;color:var(--ink-d)}
+.card .ex{margin-top:12px;padding:11px 13px;background:rgba(8,7,10,.6);border:1px solid var(--line);border-left:2px solid var(--gold);font-size:13px}
+.card .ex .su{display:block;font-size:15px;margin-bottom:3px}
+.card .ex .gl{font-family:'Share Tech Mono';font-size:10.5px;color:var(--ink-d);display:block}
+.card .ex .tr{color:var(--ink);display:block;margin-top:4px;font-size:12.5px}
+
+/* the showpiece */
+.showpiece{border:1px solid var(--red);margin-top:28px;background:linear-gradient(180deg,rgba(232,54,42,.06),rgba(8,7,10,.6))}
+.sp-head{padding:18px 22px 12px;border-bottom:1px solid var(--line)}
+.sp-head .sk{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--red)}
+.sp-head h3{font-size:20px;margin-top:6px}
+.sp-row{display:grid;grid-template-columns:190px 1fr;border-bottom:1px solid var(--line)}
+.sp-row:last-child{border-bottom:0}
+.sp-who{padding:16px;border-right:1px solid var(--line);font-family:'Share Tech Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.sp-who .w1{display:block;font-family:'Chakra Petch';font-weight:600;font-size:14px;letter-spacing:.02em;text-transform:none;margin-bottom:3px}
+.sp-body{padding:16px 18px}
+.sp-body .su{font-size:19px;display:block}
+.sp-body .gl{font-family:'Share Tech Mono';font-size:11px;color:var(--ink-d);display:block;margin-top:5px}
+.sp-body .tr{display:block;margin-top:7px;font-size:13.5px;color:var(--ink)}
+.sp-row.abs .sp-who{color:var(--blue-l)}.sp-row.abs .su{color:var(--blue-l)}
+.sp-row.mad .sp-who{color:var(--amber)}.sp-row.mad .su{color:var(--amber)}
+.sp-row.tru .sp-who{color:var(--red)}.sp-row.tru .su{color:var(--red)}
+@media(max-width:680px){.sp-row{grid-template-columns:1fr}.sp-who{border-right:0;border-bottom:1px dashed var(--line)}}
+
+/* interlinear */
+.text-block{border:1px solid var(--line);margin-top:22px;background:linear-gradient(180deg,rgba(14,11,16,.7),rgba(10,8,12,.5))}
+.tb-head{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+.tb-head .tk{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.tb-head .tj{font-family:'Zen Kaku Gothic New';font-size:11px;color:var(--ink-dd)}
+.tb-body{padding:18px 20px}
+.il{margin-bottom:16px}
+.il:last-child{margin-bottom:0}
+.il .l1{font-size:18px;color:var(--gold);font-style:italic}
+.il .l1 .gap{color:var(--red);font-style:normal;font-weight:600;text-shadow:0 0 10px var(--red-glow)}
+.il .l2{font-family:'Share Tech Mono';font-size:11px;color:var(--teal);margin-top:3px}
+.il .l3{font-size:13.5px;color:var(--ink);margin-top:5px}
+.tb-note{padding:12px 20px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--ink-d)}
+.tb-note b{color:var(--amber);font-weight:400}
+
+/* lexicon */
+.lex-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:20px}
+.lex-search{flex:1;min-width:200px;position:relative}
+.lex-search input{width:100%;background:rgba(8,7,10,.8);border:1px solid var(--line);color:var(--ink);font-family:'Share Tech Mono';font-size:12px;padding:9px 12px 9px 30px;outline:none}
+.lex-search input:focus{border-color:var(--red)}
+.lex-search::before{content:'⌕';position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--red);font-size:15px}
+.lex-count{font-family:'Share Tech Mono';font-size:10px;color:var(--ink-dd);text-transform:uppercase;letter-spacing:.1em}
+.chip{font-family:'Share Tech Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-d);background:rgba(232,54,42,.03);border:1px solid var(--line);padding:6px 11px;cursor:pointer;transition:all .16s}
+.chip:hover{color:var(--amber)}
+.chip.active{color:#fff;background:var(--red-dd);border-color:var(--red)}
+#lexTable td:first-child{color:var(--gold);font-style:italic;font-size:14.5px;white-space:nowrap}
+#lexTable td:nth-child(2){white-space:nowrap}
+mark{background:rgba(242,176,31,.3);color:#fff}
+
+footer{padding:44px 0 70px;text-align:center;border-bottom:0}
+footer .fr{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.2em;color:var(--ink-dd);text-transform:uppercase;line-height:2}
+footer .big{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(16px,2.6vw,24px);color:var(--red-d);letter-spacing:.04em;margin:14px 0;text-shadow:0 0 20px rgba(232,54,42,.3)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="dot"></span><span>NERV//PELAGIAN ASSEMBLY</span>
+  <span class="sep hideS">/</span><span class="hideS">LANGUAGE CODEX REV 1.0</span>
+  <div class="right"><span class="hideS mono">OLD PELAGIC → SŪCHEL</span><span class="sep">/</span><span class="clk mono" id="clk">00:00:00</span><span class="jp" style="color:var(--ink-dd)">渡りの言葉</span></div>
+</div>
+
+<nav class="nav">
+  <span class="brand">SŪCHEL</span>
+  <a href="#top" class="on">OVERVIEW</a>
+  <a href="#speakers">SPEAKERS</a>
+  <a href="#phon">PHONOLOGY</a>
+  <a href="#change">SOUND CHANGE</a>
+  <a href="#grammar">GRAMMAR</a>
+  <a href="#physics">PHYSICS IN GRAMMAR</a>
+  <a href="#lexicon">LEXICON</a>
+  <a href="#texts">TEXTS</a>
+  <span class="navtag jp">言語資料体</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-bloom"></div>
+  <div class="wrap hero-inner">
+    <div class="eyebrow"><span class="idx">10</span> LANGUAGE CODEX · PETERSON METHOD <span class="jp">序章 · 言語</span></div>
+    <h1><span class="stroke">SŪCHEL</span><span class="fill">THE CROSSING-SPEECH</span></h1>
+    <div class="sub">A full language built the way languages are really built — a proto-tongue, seven sound changes, and a grammar that cannot say a crossing without conjugating the truth of it</div>
+    <p class="desc">Real languages grammaticalize what their speakers cannot afford to be vague about. A civilization that lives with five-valued logic, beacon-anchored time, and un-narratable crossings would build those into its verbs — not its dictionary. Sūchel <span class="ipa">[ˈsuː.tʃel]</span> is that language: daughter of Old Pelagic, tongue of the fleets, with four grammatical systems no human language has. Every canon name — <span class="su">Sōrn</span>, <span class="su">Idrenes</span>, <span class="su">Pelgar</span> — is derived, not decorated.</p>
+    <div class="chips">
+      <span class="hchip">PROTO-LANGUAGE <b>OLD PELAGIC</b></span>
+      <span class="hchip">SOUND CHANGES <b>7 · REGULAR</b></span>
+      <span class="hchip">VERIDICAL MOODS <b>5 · ΛL</b></span>
+      <span class="hchip">TEMPORAL ANCHORS <b>3</b></span>
+      <span class="hchip">LEXICON <b id="hc-lex">—</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- SPEAKERS -->
+<section id="speakers">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">01</span> WHO SPEAKS IT <span class="jp">話者</span></div>
+    <h2>Two tongues, one family</h2>
+    <p class="lead">Peterson's first rule: a language is its speakers. Sūchel did not fall from the sky — it eroded out of an older tongue, the way all living languages do, and the split tracks the civilization's own history across the seam.</p>
+    <div class="grid2">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">THE ANCESTOR · LITURGICAL</div>
+        <h3>Old Pelagic <span class="muted">·</span> <span class="su">Pelgar</span></h3>
+        <p>The tongue of the pre-crossing civilization — the surface era, when the deep (<span class="pf">*pelag-</span>, "the open deep") was still only ocean and sky. Rigid SOV, fully inflected, phonologically conservative. When the first crossings shattered the old cosmology, the <b class="bluet">Pelagian Assembly</b> froze this language as its liturgical and doctrinal register: catechism, verdicts, and law are pronounced in Old Pelagic to this day. Speaking doctrine in the old tongue is a claim: <em>the truth has not moved since before the seam.</em></p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">THE DAUGHTER · FLEET VERNACULAR</div>
+        <h3>Sūchel <span class="muted">·</span> <span class="pf">*suw-kel</span> "crossing-speech"</h3>
+        <p>Two dozen generations of fleet life eroded Old Pelagic into Sūchel — the working language of divers, crossers, and beacon-keepers. Same bones, worn smooth by seven regular sound changes; but where the Assembly's tongue stayed still, Sūchel <b class="redt">grew new grammar</b> for the new world: truth-moods for the five values, time-anchors for the three clocks, depth-words for the tower, and a particle for the gap no verb can enter. The pilot argot ("running under," "dark time") is its slang register, calqued below.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PHONOLOGY -->
+<section id="phon">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">02</span> PHONOLOGY <span class="jp">音韻</span></div>
+    <h2>The sound of the fleets</h2>
+    <p class="lead">Aesthetic target: oceanic and worn — long vowels like held breath, soft affricates from old hard stops, clusters sanded down by ship-life. Romanization is one-symbol-one-sound; <span class="amber">ū ō ē ā ī</span> mark length; <span class="amber">ch j sh</span> are <span class="ipa">/tʃ dʒ ʃ/</span>.</p>
+    <div class="grid2">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">CONSONANTS · 15</div>
+        <div class="tbl-wrap" style="border:0"><table>
+          <tr><th></th><th>Labial</th><th>Alveolar</th><th>Post-alv.</th><th>Velar</th></tr>
+          <tr><td class="muted">Stop</td><td>p b</td><td>t d</td><td></td><td>k g</td></tr>
+          <tr><td class="muted">Affricate</td><td></td><td></td><td>ch <span class="ipa">/tʃ/</span> · j <span class="ipa">/dʒ/</span></td><td></td></tr>
+          <tr><td class="muted">Fricative</td><td>v</td><td>s z</td><td>sh <span class="ipa">/ʃ/</span></td><td></td></tr>
+          <tr><td class="muted">Nasal</td><td>m</td><td>n</td><td></td><td></td></tr>
+          <tr><td class="muted">Liquid / glide</td><td></td><td>r l</td><td></td><td>(h — Old Pelagic only)</td></tr>
+        </table></div>
+        <p style="margin-top:10px">Old Pelagic additionally had <span class="pf">*w</span> and <span class="pf">*h</span>; both died in Sūchel (SC-3, SC-4), leaving long vowels as their tombstones.</p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">VOWELS · 5 + LENGTH · STRESS</div>
+        <div class="tbl-wrap" style="border:0"><table>
+          <tr><th></th><th>Front</th><th>Central</th><th>Back</th></tr>
+          <tr><td class="muted">High</td><td>i · ī</td><td></td><td>u · ū</td></tr>
+          <tr><td class="muted">Mid</td><td>e · ē</td><td></td><td>o · ō</td></tr>
+          <tr><td class="muted">Low</td><td></td><td>a · ā</td><td></td></tr>
+        </table></div>
+        <p style="margin-top:10px"><b class="amber">Syllable:</b> (C)(r/l)V(C). No clusters of three. <b class="amber">Stress:</b> the penultimate syllable — unless a long vowel occurs elsewhere, which seizes it: <span class="su">Sūchel</span> <span class="ipa">[ˈsuː.tʃel]</span>, <span class="su">Idrenes</span> <span class="ipa">[iˈdre.nes]</span>, <span class="su">zukad</span> <span class="ipa">[ˈzu.kad]</span>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOUND CHANGES -->
+<section id="change">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">03</span> DIACHRONY <span class="jp">音変化</span></div>
+    <h2>Seven changes, every canon name derived</h2>
+    <p class="lead">Naturalism is history. Every Sūchel word descends from an Old Pelagic form by these seven ordered changes — and the scattered canon names you already had (<span class="su">Sōrn</span>, <span class="su">Idrenes</span>, <span class="su">Pelgar</span>, <span class="su">jel</span> = 𝔍) fall out as regular outcomes, exactly the way Peterson treated Herbert's scattered Chakobsa.</p>
+    <div class="tbl-wrap frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+    <table>
+      <tr><th>#</th><th>Change</th><th>Rule</th><th>Example</th></tr>
+      <tr><td>SC-1</td><td>Palatalization</td><td><span class="pf">*k, *g</span> → <span class="amber">ch, j</span> before front vowels e, i</td><td><span class="pf">*kel</span> "speech" → <span class="su">chel</span> · <span class="pf">*gel-</span> "stitch, join" → <span class="su">jel</span> "the seam 𝔍"</td></tr>
+      <tr><td>SC-2</td><td>Medial syncope</td><td>Unstressed short vowel lost between consonants</td><td><span class="pf">*ideren-es</span> → <span class="su">Idrenes</span> · <span class="pf">*pelag-ar</span> → <span class="su">Pelgar</span></td></tr>
+      <tr><td>SC-3</td><td>Glide loss</td><td><span class="pf">*w</span> → ∅ before C with <b>compensatory lengthening</b>; <span class="pf">*w</span> → v word-initially</td><td><span class="pf">*suw-kel</span> → <span class="su">Sūchel</span> · <span class="pf">*sow-orn</span> → <span class="su">Sōrn</span> · <span class="pf">*wer-</span> → <span class="su">ver</span> "truth"</td></tr>
+      <tr><td>SC-4</td><td>H-loss</td><td><span class="pf">*h</span> → ∅, lengthening a preceding vowel</td><td><span class="pf">*mahin</span> → <span class="su">mān</span> "hand, crew-hand"</td></tr>
+      <tr><td>SC-5</td><td>Monophthongization</td><td><span class="pf">*au</span> → <span class="amber">ō</span></td><td><span class="pf">*haw-ol-</span> → <span class="su">hōl</span> "to surface"</td></tr>
+      <tr><td>SC-6</td><td>Lenition</td><td>Intervocalic <span class="pf">*p</span> → <span class="amber">v</span></td><td><span class="pf">*kap-a</span> → <span class="su">kava</span> → <span class="su">kav</span> "tolerance; the limit Κ"</td></tr>
+      <tr><td>SC-7</td><td>Apocope</td><td>Final short vowel lost after a heavy syllable</td><td><span class="pf">*tem-a</span> → <span class="su">tem</span> "pattern" · <span class="pf">*kava</span> → <span class="su">kav</span></td></tr>
+    </table>
+    </div>
+    <div class="grid3">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">CANON DERIVATION 01</div>
+        <h3><span class="su">Sōrn</span> — the drive</h3>
+        <p><span class="pf">*sow-orn</span> "thread-instrument" (o-grade of root <span class="pf">*suw-/*sow-</span> "to thread through, cross" + instrumental <span class="pf">*-orn</span>) → SC-3 glide loss with lengthening → <span class="su">sōrn</span>. The engine is literally "the threader." Its zero-grade sister <span class="pf">*suw-kel</span> gives the language's own name — drive and tongue are cognates.</p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">CANON DERIVATION 02</div>
+        <h3><span class="su">Idrenes</span> — the bridge</h3>
+        <p><span class="pf">*id-</span> "open" + <span class="pf">*ren-</span> "path" + <span class="pf">*-es</span> "place of" = <span class="pf">*ideren-es</span> "place of the opened path" → SC-2 syncope → <span class="su">Idrenes</span>. So "Idrenes Bridge" is a pleonasm, like "Sahara Desert" — a translation habit of surface-siders, which fleet speakers find quietly funny.</p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">CANON DERIVATION 03</div>
+        <h3><span class="su">jel</span> — the seam 𝔍</h3>
+        <p><span class="pf">*gel-</span> "to stitch, to join" → SC-1 palatalization before front vowel → <span class="su">jel</span> <span class="ipa">/dʒel/</span> — which is why the scholars' symbol is 𝔍. Derivatives: <span class="su">jelmar</span> "seam-pearl," <span class="su">jelvos</span> "seam-scar," <span class="su">jelsīl</span> "seam-crosser." The universe's deepest object wears the humblest word: a tailor's.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GRAMMAR CORE -->
+<section id="grammar">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">04</span> CORE GRAMMAR <span class="jp">文法</span></div>
+    <h2>The bones</h2>
+    <p class="lead">Verb-final (SOV), agglutinative, postpositional — inherited straight from Old Pelagic. Nouns are simple; the verb carries the world on its back.</p>
+    <div class="grid2">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">NOUNS</div>
+        <h3>Case, number, and entangled possession</h3>
+        <p><b class="amber">Number:</b> plural <span class="su">-i</span> (<span class="su">sīl</span> "crosser" → <span class="su">sīli</span>). <b class="amber">Case clitics:</b> accusative <span class="su">-(e)n</span>, genitive <span class="su">-en</span>, dative <span class="su">-ol</span>, locative <span class="su">-eth</span>.</p>
+        <p style="margin-top:8px"><b class="redt">Entangled possession:</b> Sūchel splits possession the way the substrate splits correlation. Alienable things take genitive <span class="su">-en</span>; but kin, one's ship, and one's <em>gaps</em> take the entangled suffix <span class="su">-mai</span> — possession as shared amplitude, not ownership. You say <span class="su">kel-en</span> "my words" but <span class="su">nav-mai</span> "my-entangled ship." To use <span class="su">-en</span> of your own ship is to announce you plan to sell her.</p>
+        <div class="ex"><span class="su">enmai</span><span class="gl">1PL.ENT</span><span class="tr">"we" — crew-we, the entangled we. Distinct from <span class="su">eni</span>, the mere plural. A captain who says <em>eni</em> of her own crew is understood to be resigning.</span></div>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">VERBS</div>
+        <h3>The template</h3>
+        <p style="font-family:'Share Tech Mono';font-size:13px;color:var(--gold);margin:10px 0;padding:10px;border:1px solid var(--line);background:rgba(8,7,10,.5)">STEM – (ASPECT) – MOOD = ANCHOR</p>
+        <p><b class="amber">Aspect:</b> perfective <span class="su">-t-</span>, imperfective unmarked. <b class="amber">Mood:</b> one of the five veridical moods (next section) — <em>obligatory</em>. <b class="amber">Anchor:</b> one of the three temporal clitics — <em>obligatory on finite verbs</em>. Negation is the particle <span class="su">vo</span> before the verb. Pronouns: <span class="su">en</span> 1SG, <span class="su">ish</span> 2SG, <span class="su">an</span> 3SG (+ <span class="su">-i</span> plural, <span class="su">-mai</span> entangled).</p>
+        <div class="ex"><span class="su">an sū-t-eshe=zu</span><span class="gl">3SG cross-PFV-T•=DARK</span><span class="tr">"She crossed" — and the verb alone confesses: seam-true, in time no beacon reached.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PHYSICS IN GRAMMAR -->
+<section id="physics">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">05</span> THE FOUR SYSTEMS <span class="jp">物理の文法化</span></div>
+    <h2>Where the cosmology lives in the verb</h2>
+    <p class="lead">Quechua marks evidence; Guugu Yimithirr marks compass direction. Sūchel marks what <em>its</em> world makes unignorable: the truth-value of the limit, the anchor of time, the direction of depth, and the place where narration fails. These four systems are the language's reason to exist.</p>
+
+    <div class="grid2">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SYSTEM 01 · ΛL IN THE VERB</div>
+        <h3>The five veridical moods</h3>
+        <p>Every finite verb conjugates for the ΛL status of its proposition. There is no mood-less verb — <em>you cannot speak without taking a position on the truth.</em></p>
+        <div class="tbl-wrap" style="border:0"><table>
+          <tr><th>ΛL</th><th>Suffix</th><th>Meaning</th></tr>
+          <tr><td><b class="greent">T</b></td><td><span class="su">-a</span></td><td>classically true; settled</td></tr>
+          <tr><td><b class="bluet">T⁻</b></td><td><span class="su">-im</span></td><td>true-as-approached; provisional from below (IR)</td></tr>
+          <tr><td><b class="amber">T⁺</b></td><td><span class="su">-ur</span></td><td>held-from-above; theoretical, unaccredited (UV)</td></tr>
+          <tr><td><b class="redt">T•</b></td><td><span class="su">-eshe</span></td><td>seam-true; self-dual, both-and</td></tr>
+          <tr><td><b class="muted">F</b></td><td><span class="su">vo</span> + <span class="su">-a</span></td><td>false (negated plain)</td></tr>
+        </table></div>
+        <div class="ex"><span class="su">kad ver-a=ka</span><span class="gl">beacon speak.true-T=BEAC</span><span class="tr">"The beacon holds true" — plain T, the safest sentence in the language.</span></div>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SYSTEM 02 · THREE CLOCKS IN THE CLITIC</div>
+        <h3>The temporal anchors</h3>
+        <p>Every finite verb must declare <em>which</em> time it happened in. Using the wrong anchor is not style — it is lying, and fleet courts treat it as perjury.</p>
+        <div class="tbl-wrap" style="border:0"><table>
+          <tr><th>Clitic</th><th>From</th><th>Anchor</th></tr>
+          <tr><td><span class="su">=ka</span></td><td><span class="pf">*kad-</span> "pulse"</td><td><b class="bluet">Beacon time</b> — shared, network-verifiable</td></tr>
+          <tr><td><span class="su">=mi</span></td><td><span class="pf">*mei-</span> "self"</td><td><b class="greent">Proper time</b> — the ship's own clock</td></tr>
+          <tr><td><span class="su">=zu</span></td><td><span class="pf">*dzu-</span> "adrift"</td><td><b class="redt">Dark time</b> — beyond coverage; unanchorable</td></tr>
+        </table></div>
+        <div class="ex"><span class="su">enmai hōl-t-a=mi, vo =ka</span><span class="gl">1PL.ENT surface-PFV-T=PROP, NEG =BEAC</span><span class="tr">"We surfaced — by our clock; no beacon will vouch." A standard log formula after deep runs.</span></div>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SYSTEM 03 · THE TOWER IN MOTION</div>
+        <h3>Depth directionals</h3>
+        <p>Like Guugu Yimithirr's compass, Sūchel motion is <em>tower-absolute</em>. Verbs of movement are ungrammatical without a depth satellite: <span class="su">nuv</span> "down-tower, deeper" (<span class="pf">*nub-</span>) or <span class="su">hau</span> "surfaceward" (<span class="pf">*haw-</span>). "Go" bare is baby-talk; adults always know which way the tower lies.</p>
+        <div class="ex"><span class="su">nav nuv ran-eshe=mi</span><span class="gl">ship DOWN run-T•=PROP</span><span class="tr">"The ship runs deeper" — whence the pilot slang <b class="amber">nuvran</b>, "running under": the dive-vertigo itself, lexicalized.</span></div>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SYSTEM 04 · THE GAP IN SYNTAX</div>
+        <h3>The particle <span class="su">ne</span></h3>
+        <p>It is <em>syntactically forbidden</em> to place a verb inside the narration of a crossing. The interval held at T• never became memory; the grammar refuses to pretend otherwise. The particle <span class="su">ne</span> (<span class="pf">*nex-</span> "absence") stands where the verb cannot. In fleet orthography it has its own mark — a short vertical stroke — which your page can render as a glyph: panels of <span class="redt">ne</span>.</p>
+        <div class="ex"><span class="su">en jel-eth tel-t-eshe=ka. ne. en hōl-t-eshe=zu.</span><span class="gl">1SG seam-LOC reach-PFV-T•=BEAC. GAP. 1SG surface-PFV-T•=DARK</span><span class="tr">"I reached the seam. — . I surfaced, in dark time." The life between the two sentences has no sentence.</span></div>
+      </div>
+    </div>
+
+    <!-- SHOWPIECE -->
+    <div class="showpiece frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="sp-head">
+        <div class="sk">THE SHOWPIECE // Κ5 AS CONJUGATION</div>
+        <h3>One sentence, three moods, the whole controversy</h3>
+      </div>
+      <div class="sp-row abs">
+        <div class="sp-who"><span class="w1">The Absolute Verdict</span>Pelagian Assembly · doctrine</div>
+        <div class="sp-body">
+          <span class="su">tem kav-eth vo dur-a=ka.</span>
+          <span class="gl">pattern limit-LOC NEG endure-T=BEACON</span>
+          <span class="tr">"No pattern endures at the limit." — Plain T, beacon-anchored: settled truth in shared time. The audacity is grammatical: doctrine claims network-verifiable knowledge of the one event no beacon has ever witnessed.</span>
+        </div>
+      </div>
+      <div class="sp-row mad">
+        <div class="sp-who"><span class="w1">The Madman's Theorem</span>the mythical ship · heresy</div>
+        <div class="sp-body">
+          <span class="su">tem kav-eth dur-ur=zu.</span>
+          <span class="gl">pattern limit-LOC endure-T⁺=DARK</span>
+          <span class="tr">"A pattern endures at the limit" — T⁺, dark-anchored: held-from-above, in time no one shares. The grammar itself brands the claim unaccredited. To even <em>say</em> the theorem is to conjugate yourself a crank.</span>
+        </div>
+      </div>
+      <div class="sp-row tru">
+        <div class="sp-who"><span class="w1">The Tragic Truth</span>what actually happens · unsayable-as-fact</div>
+        <div class="sp-body">
+          <span class="su">tem kav-eth dur-eshe=zu.</span>
+          <span class="gl">pattern limit-LOC endure-T•=DARK</span>
+          <span class="tr">"A pattern endures — seam-true — in dark time." The only honest conjugation, and the trap closes: T• is self-dual, so the sentence and its negation have the same value. Spoken truth that <em>cannot be asserted over its denial</em>. The epistemic trap is not in the debate. It is in the verb.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEXICON -->
+<section id="lexicon">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">06</span> LEXICON <span class="jp">語彙</span></div>
+    <h2>The working vocabulary</h2>
+    <p class="lead">Every entry cites its Old Pelagic source and the sound changes that produced it. Search any column; filter by domain. The pilot argot is marked — those are the words your panels will breathe.</p>
+    <div class="lex-controls">
+      <div class="lex-search"><input id="lexSearch" type="text" placeholder="SEARCH SŪCHEL, GLOSS, OR PROTO" autocomplete="off"></div>
+      <span class="lex-count" id="lexCount">—</span>
+      <div id="lexChips" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+    </div>
+    <div class="tbl-wrap frame" style="margin-top:16px"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table id="lexTable">
+        <thead><tr><th>Sūchel</th><th>IPA</th><th>Gloss</th><th>Old Pelagic → derivation</th><th>Domain</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- TEXTS -->
+<section id="texts">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">07</span> TEXTS <span class="jp">例文</span></div>
+    <h2>The language breathing</h2>
+    <p class="lead">Three texts with interlinear gloss — a log entry, a catechism exchange, and a ne-liturgy. Leipzig-style glosses; the <span class="redt">gap-mark</span> appears as it would on the page.</p>
+
+    <div class="text-block frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="tb-head"><span class="tk">TEXT 01 // A PILOT'S LOG, AFTER A CROSSING</span><span class="tj">航海日誌</span></div>
+      <div class="tb-body">
+        <div class="il">
+          <div class="l1">enmai kad tel-eth sū-t-eshe=ka.</div>
+          <div class="l2">1PL.ENT beacon three-LOC cross-PFV-T•=BEAC</div>
+          <div class="l3">We crossed at the third beacon.</div>
+        </div>
+        <div class="il">
+          <div class="l1"><span class="gap">ne.</span></div>
+          <div class="l2">GAP</div>
+          <div class="l3">—</div>
+        </div>
+        <div class="il">
+          <div class="l1">enmai hōl-t-eshe=zu.</div>
+          <div class="l2">1PL.ENT surface-PFV-T•=DARK</div>
+          <div class="l3">We surfaced, in dark time.</div>
+        </div>
+      </div>
+      <div class="tb-note">Three sentences tell the whole voyage through grammar alone: the crossing is conjugated <b>seam-true</b> (the only pious mood for a crossing); the departure is <b>beacon-anchored</b> (=ka, inside coverage); the return is <b>dark</b> (=zu, beyond it). And between them stands the mark for the interval that never became memory. A censor could reconstruct the flight plan from the morphology.</div>
+    </div>
+
+    <div class="text-block frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="tb-head"><span class="tk">TEXT 02 // CATECHISM, WITH ONE HERETICAL ANSWER</span><span class="tj">問答</span></div>
+      <div class="tb-body">
+        <div class="il">
+          <div class="l1">— tem kav-eth dur-a=ka, vo?</div>
+          <div class="l2">pattern limit-LOC endure-T=BEAC, NEG</div>
+          <div class="l3">"Does a pattern endure at the limit — no?" <span class="muted">(the catechist, expecting the doctrinal denial)</span></div>
+        </div>
+        <div class="il">
+          <div class="l1">— vo dur-a=ka, somath-en ver-eth.</div>
+          <div class="l2">NEG endure-T=BEAC, assembly-GEN truth-LOC</div>
+          <div class="l3">"It does not endure — in the Assembly's truth." <span class="muted">(the correct answer)</span></div>
+        </div>
+        <div class="il">
+          <div class="l1">— dur-eshe=zu.</div>
+          <div class="l2">endure-T•=DARK</div>
+          <div class="l3">"It endures — seam-true, in the dark." <span class="muted">(the pupil who will not pass; the answer that cannot be graded, only punished)</span></div>
+        </div>
+      </div>
+      <div class="tb-note">The pupil's heresy is <b>two morphemes long</b>: -eshe for -a, =zu for =ka. Doctrine and its undoing differ by a conjugation — which is the entire Κ5 controversy, miniaturized into a classroom.</div>
+    </div>
+
+    <div class="text-block frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="tb-head"><span class="tk">TEXT 03 // NE-LITURGY, FOR THE UNRETURNED</span><span class="tj">喪の典礼</span></div>
+      <div class="tb-body">
+        <div class="il">
+          <div class="l1">sīli sū-eshe=mi.</div>
+          <div class="l2">crosser.PL cross-T•=PROP</div>
+          <div class="l3">The crossers cross, by their own clocks.</div>
+        </div>
+        <div class="il"><div class="l1"><span class="gap">ne.</span></div><div class="l2">GAP</div><div class="l3">—</div></div>
+        <div class="il">
+          <div class="l1">kad vel ver-a=ka.</div>
+          <div class="l2">beacon nothing speak.true-T=BEAC</div>
+          <div class="l3">The beacon vouches for nothing.</div>
+        </div>
+        <div class="il"><div class="l1"><span class="gap">ne.</span></div><div class="l2">GAP</div><div class="l3">—</div></div>
+        <div class="il">
+          <div class="l1">enmai ish-mai tel-im=zu.</div>
+          <div class="l2">1PL.ENT 2SG-ENT reach-T⁻=DARK</div>
+          <div class="l3">We reach toward you — approaching-true, in the dark.</div>
+        </div>
+      </div>
+      <div class="tb-note">The mourning form for those lost past coverage. Every second line is the gap-mark — grief structured as the thing it grieves. The last verb is conjugated <b>T⁻</b>: not "we will find you" (unsayable), not "you are gone" (undurable), but <em>approaching-true</em> — the mood of a limit neared from below. The entangled <b>-mai</b> on "you" declares the dead still possessed as kin. On the page, the ne-marks can be silent black panels.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">SŪCHEL // LANGUAGE CODEX · OLD PELAGIC → THE CROSSING-SPEECH</div>
+    <div class="big">YOU CANNOT SPEAK WITHOUT CONJUGATING THE TRUTH</div>
+    <div class="fr">FIVE MOODS · THREE ANCHORS · TWO DIRECTIONS · ONE GAP // REV 1.0</div>
+  </div>
+</footer>
+
+<script>
+function tick(){const d=new Date();document.getElementById('clk').textContent=[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');}
+tick();setInterval(tick,1000);
+
+/* ---------------- LEXICON DATA ---------------- */
+/* dom: core | physics | fleet | argot | grammar | number */
+const LEX=[
+ ["Sūchel","ˈsuː.tʃel","the crossing-speech; this language","*suw-kel (zero-grade *suw- 'cross' + *kel 'speech') → SC-3, SC-1","core"],
+ ["Pelgar","ˈpel.gar","Old Pelagic; the Assembly's tongue","*pelag-ar 'of the deep' → SC-2","core"],
+ ["sū","suː","to cross the seam (v., irregular)","*suw-a → SC-3, SC-7","physics"],
+ ["sūath","ˈsuː.ath","a crossing (n.)","sū + nominalizer -ath","physics"],
+ ["sīl","siːl","crosser; seam-pilot","*suw-il agent 'threader' → SC-3 (uwi → ī)","fleet"],
+ ["Sōrn","soːrn","the threading engine; the drive","*sow-orn (o-grade + instrumental *-orn) → SC-3","fleet"],
+ ["jel","dʒel","the seam 𝔍","*gel- 'stitch, join' → SC-1","physics"],
+ ["jelmar","ˈdʒel.mar","seam-pearl","jel + mar 'sea-stone, pearl' (*mar-)","physics"],
+ ["jelvos","ˈdʒel.vos","seam-scar","jel + vos 'wound' (*wos- → SC-3 w→v)","physics"],
+ ["jelsīl","ˈdʒel.siːl","seam-crosser (formal)","jel + sīl","fleet"],
+ ["Idrenes","iˈdre.nes","the opened path; the bridge","*id- 'open' + *ren- 'path' + *-es 'place' → SC-2","physics"],
+ ["idren","ˈi.dren","a bridge, an opened way (common n.)","back-formation from Idrenes","core"],
+ ["kad","kad","beacon; the pulse; (by extension) time-as-kept","*kad- 'pulse, beat'","fleet"],
+ ["kadur","ˈka.dur","beacon-cycle (unit)","kad + -ur duration suffix","fleet"],
+ ["zukad","ˈzu.kad","dark time; unanchored duration","zu 'adrift' (*dzu-) + kad","argot"],
+ ["zu","zu","adrift; (gram.) the dark-time anchor =zu","*dzu- 'drift'","grammar"],
+ ["mi","mi","self; (gram.) the proper-time anchor =mi","*mei- 'self'","grammar"],
+ ["ka","ka","(gram.) the beacon-time anchor =ka","cliticized kad","grammar"],
+ ["ne","ne","the gap-particle; the unspeakable interval","*nex- 'absence' → SC-7","grammar"],
+ ["nexath","ˈne.ksath","a gap (n.); a hole in a life","*nex- + -ath","core"],
+ ["nuv","nuv","down-tower; deeper (directional)","*nub- 'under' → final devoicing resisted; SC-6 analog","grammar"],
+ ["hau","hau","surfaceward; up-tower (directional)","*haw- 'upper air' (diphthong kept in closed monosyll.)","grammar"],
+ ["hōl","hoːl","to surface","*haw-ol- → SC-5","fleet"],
+ ["nuvran","ˈnuv.ran","running under; dive-desync vertigo","nuv + ran 'run' (*ran-) — pilot argot","argot"],
+ ["nuvi","ˈnu.vi","diver; depth-pilot","nuv + agent -i","fleet"],
+ ["nuvdol","ˈnuv.dol","depth-well","nuv + dol 'pit, well' (*dol-)","physics"],
+ ["tur","tur","the Tower; the OCT","*tur- 'to pile, stack' → SC-7","physics"],
+ ["Turmai","ˈtur.mai","the Tower (reverent: 'our-entangled Tower')","tur + entangled -mai","physics"],
+ ["kav","kav","tolerance; the curvature limit Κ","*kap-a → SC-6, SC-7","physics"],
+ ["Kaveth","ˈka.veth","at-the-Limit (the frontier, as a place)","kav + locative -eth, lexicalized","physics"],
+ ["tem","tem","pattern; woven form; (Κ5) the pattern that may cross","*tem-a 'weave' → SC-7","physics"],
+ ["temor","ˈte.mor","information reef","tem + mor 'sea-rock' (*mor-)","physics"],
+ ["mor","mor","reef; sea-rock","*mor-","core"],
+ ["mar","mar","pearl; sea-stone","*mar-","core"],
+ ["velosh","ˈve.loʃ","Formless mouth","vel 'nothing' + osh 'mouth' (*os- + SC-7 analog)","physics"],
+ ["vel","vel","nothing; no-thing","*wel- → SC-3 w→v","core"],
+ ["ver","ver","truth; to speak-true (v.)","*wer- → SC-3 w→v","core"],
+ ["vur","vur","to spin, whirl; to go mad","*wur- → SC-3 w→v","core"],
+ ["vurel","ˈvu.rel","madman; the spun-one","vur + agent -el","core"],
+ ["Vurel-lor","ˈvu.rel lor","the Madman's Theorem","vurel + lor 'rule, law' (*lor-)","physics"],
+ ["eshe-ver","ˈe.ʃe ver","the Tragic Truth (lit. 'seam-true truth')","mood suffix -eshe + ver, lexicalized","physics"],
+ ["pevlor","ˈpev.lor","the logic ΛL (lit. 'five-rule')","pev 'five' + lor","physics"],
+ ["lor","lor","rule; law","*lor-","core"],
+ ["somath","ˈso.math","assembly; gathering","*som- 'gather' + -ath","core"],
+ ["Pelgar Somath","ˈpel.gar ˈso.math","the Pelagian Assembly","Pelgar + somath","fleet"],
+ ["nav","nav","ship","*nāw- → SC-3 w→v, shortening in closed syll.","fleet"],
+ ["navmai","ˈnav.mai","one's own ship (entangled)","nav + -mai","fleet"],
+ ["mān","maːn","hand; crew-hand, crewmate","*mahin → SC-4","fleet"],
+ ["chel","tʃel","speech; tongue, language","*kel → SC-1","core"],
+ ["kel","kel","(Old Pelagic) speech — preserved in liturgy","*kel (no change: liturgical register)","core"],
+ ["ran","ran","to run","*ran-","core"],
+ ["tel","tel","to reach, arrive at; (num.) three","*tel- 'stretch to'; numeral homophone","core"],
+ ["dur","dur","to endure, survive","*dur-","core"],
+ ["dol","dol","pit; well","*dol-","core"],
+ ["osh","oʃ","mouth","*os- + palatal excrescence","core"],
+ ["vos","vos","wound","*wos- → SC-3","core"],
+ ["en","en","I (1SG)","*en-","grammar"],
+ ["ish","iʃ","you (2SG)","*is- → SC-1 analog (s→sh/_i)","grammar"],
+ ["an","an","she/he/it (3SG)","*an-","grammar"],
+ ["eni","ˈe.ni","we (plain plural)","en + -i","grammar"],
+ ["enmai","ˈen.mai","we (entangled; crew-we)","en + -mai","grammar"],
+ ["ishmai","ˈiʃ.mai","you, held-as-kin (entangled 2SG)","ish + -mai","grammar"],
+ ["-mai","mai","entangled-possession suffix","*mag-i 'bound' → SC-1 (g→j→∅/_i), vowel coalescence","grammar"],
+ ["-ath","ath","nominalizer (act or result)","*-ath","grammar"],
+ ["-eth","eth","locative case","*-eth","grammar"],
+ ["-ol","ol","dative case","*-ol","grammar"],
+ ["-en","en","genitive (alienable)","*-en","grammar"],
+ ["vo","vo","not; negation particle","*wo- → SC-3","grammar"],
+ ["ve","ve","to be (copula)","*we- → SC-3","grammar"],
+ ["sa","sa","one","*sa-","number"],
+ ["vor","vor","two","*wor- → SC-3","number"],
+ ["telnum","tel","three (see tel)","*tel-","number"],
+ ["mek","mek","four","*mek-","number"],
+ ["pev","pev","five","*pew- → SC-3 w→v","number"],
+ ["shen","ʃen","six","*sen- → s→sh/_e (SC-1 analog)","number"],
+ ["hep","hep","seven","*hep- (h kept word-initially before e in numerals: liturgical conservatism)","number"],
+ ["ok","ok","eight","*ok-","number"],
+ ["nur","nur","nine","*nur-","number"],
+ ["dak","dak","ten","*dak-","number"],
+];
+
+const tbody=document.querySelector('#lexTable tbody');
+const search=document.getElementById('lexSearch');
+const countEl=document.getElementById('lexCount');
+const chipsEl=document.getElementById('lexChips');
+document.getElementById('hc-lex').textContent=LEX.length+' entries';
+const DOMS={all:'All',core:'Core',physics:'Physics',fleet:'Fleet',argot:'Argot',grammar:'Grammar',number:'Numbers'};
+let dom='all';
+Object.entries(DOMS).forEach(([id,label])=>{
+  const b=document.createElement('button');b.className='chip'+(id==='all'?' active':'');b.textContent=label;b.dataset.id=id;
+  b.onclick=()=>{dom=id;chipsEl.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x.dataset.id===id));render();};
+  chipsEl.appendChild(b);
+});
+function hl(s,q){if(!q)return s;const i=s.toLowerCase().indexOf(q);if(i<0)return s;return s.slice(0,i)+'<mark>'+s.slice(i,i+q.length)+'</mark>'+s.slice(i+q.length);}
+function render(){
+  const q=search.value.trim().toLowerCase();
+  tbody.innerHTML='';let n=0;
+  LEX.forEach(e=>{
+    if(dom!=='all'&&e[4]!==dom)return;
+    if(q&&!(e[0]+' '+e[2]+' '+e[3]).toLowerCase().includes(q))return;
+    n++;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${hl(e[0],q)}</td><td class="ipa">${e[1]}</td><td>${hl(e[2],q)}</td><td class="muted" style="font-size:12.5px">${hl(e[3],q)}</td><td class="mono" style="font-size:10px;text-transform:uppercase;color:var(--ink-dd)">${e[4]}</td>`;
+    tbody.appendChild(tr);
+  });
+  countEl.textContent=n+' / '+LEX.length;
+}
+search.addEventListener('input',render);
+render();
+
+/* nav active on scroll */
+const links=[...document.querySelectorAll('.nav a')];
+const secs=links.map(l=>document.querySelector(l.getAttribute('href')));
+addEventListener('scroll',()=>{let i=secs.length-1;for(let k=0;k<secs.length;k++){if(secs[k]&&secs[k].getBoundingClientRect().top>90){i=k-1;break;}}if(i<0)i=0;links.forEach((l,k)=>l.classList.toggle('on',k===i));},{passive:true});
+</script>
+</body>
+</html>

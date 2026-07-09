@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAVCHER // The Fleet Script of Sūchel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08070a;--panel:#0e0b10;
+  --red:#e8362a;--red-d:#a3211a;--red-dd:#5e120e;--red-glow:rgba(232,54,42,.55);
+  --amber:#f2b01f;--gold:#f5d76e;--blue-l:#6fa8ff;--violet:#8b7dd8;--green:#7ec885;--teal:#4fc2a8;
+  --ink:#d8d2c8;--ink-d:#8c8a82;--ink-dd:#5a5852;
+  --line:rgba(232,54,42,.22);--line-amber:rgba(242,176,31,.20);--grid:rgba(232,54,42,.045);
+}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Chakra Petch','Bahnschrift','Segoe UI',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden;letter-spacing:.01em}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse 120% 100% at 50% 0%,#000 30%,transparent 90%)}
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.18) 3px,rgba(0,0,0,0) 4px);mix-blend-mode:multiply;opacity:.5}
+.mono{font-family:'Share Tech Mono',monospace}.jp{font-family:'Zen Kaku Gothic New',sans-serif}
+.frame{position:relative}
+.frame>.br{position:absolute;width:14px;height:14px;border:1px solid var(--red);pointer-events:none;z-index:3}
+.br.tl{top:-1px;left:-1px;border-right:0;border-bottom:0}.br.tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.br.bl{bottom:-1px;left:-1px;border-right:0;border-top:0}.br.br2{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:18px;height:30px;padding:0 16px;background:linear-gradient(180deg,rgba(8,7,10,.96),rgba(8,7,10,.82));border-bottom:1px solid var(--line);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-d);text-transform:uppercase;backdrop-filter:blur(6px)}
+.topbar .dot{width:7px;height:7px;background:var(--red);box-shadow:0 0 8px var(--red-glow);animation:blink 2.4s steps(1) infinite}
+@keyframes blink{0%,70%{opacity:1}71%,100%{opacity:.25}}
+.topbar .sep{color:var(--red-dd)}.topbar .right{margin-left:auto;display:flex;gap:18px;align-items:center}.topbar .clk{color:var(--amber)}
+@media(max-width:680px){.topbar .hideS{display:none}}
+.nav{position:fixed;top:30px;left:0;right:0;z-index:999;display:flex;align-items:center;gap:2px;padding:0 14px;height:38px;background:rgba(10,8,12,.9);border-bottom:1px solid var(--line);backdrop-filter:blur(6px);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav .brand{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:14px;letter-spacing:.22em;color:var(--red);text-shadow:0 0 12px var(--red-glow);margin-right:18px;white-space:nowrap}
+.nav a{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:.13em;color:var(--ink-d);text-decoration:none;text-transform:uppercase;padding:5px 13px;white-space:nowrap;border:1px solid transparent;transition:all .18s}
+.nav a:hover{color:var(--amber);border-color:var(--line-amber)}
+.nav a.on{color:var(--red);border-color:var(--line);background:rgba(232,54,42,.06)}
+.nav .navtag{margin-left:auto;color:var(--ink-dd);font-family:'Share Tech Mono';font-size:9px;letter-spacing:.2em;white-space:nowrap}
+@media(max-width:1120px){.nav .navtag{display:none}}
+
+.wrap{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:0 20px}
+section{padding:60px 0;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.26em;color:var(--red);text-transform:uppercase;flex-wrap:wrap}
+.eyebrow::before{content:'';width:26px;height:1px;background:var(--red);box-shadow:0 0 6px var(--red-glow)}
+.eyebrow .idx{color:var(--amber)}.eyebrow .jp{color:var(--ink-dd);letter-spacing:.1em}
+h2{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:clamp(22px,3.6vw,34px);letter-spacing:.01em;line-height:1.1;color:#f0ebe2}
+.lead{max-width:860px;color:var(--ink);font-size:15px;margin-top:12px}
+.muted{color:var(--ink-d)}.amber{color:var(--amber)}.redt{color:var(--red)}.goldt{color:var(--gold)}.tealt{color:var(--teal)}
+.su{font-style:italic;color:var(--gold)}
+.pf{font-family:'Share Tech Mono',monospace;color:var(--violet);font-size:.9em}
+
+.hero{min-height:66vh;padding:120px 0 44px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.hero-bloom{position:absolute;top:16%;right:5%;width:min(520px,56vw);height:min(380px,42vw);background:radial-gradient(ellipse at center,rgba(245,215,110,.09),rgba(232,54,42,.06) 45%,transparent 70%);filter:blur(22px);pointer-events:none;z-index:0}
+.hero-inner{position:relative;z-index:2}
+.hero h1{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.02em;line-height:1.0;font-size:clamp(32px,7vw,84px);color:#f4efe6}
+.hero h1 .stroke{color:transparent;-webkit-text-stroke:1.4px var(--red);text-shadow:0 0 26px var(--red-glow);display:block}
+.hero h1 .fill{color:var(--red);text-shadow:0 0 30px var(--red-glow);display:block}
+.hero .sub{font-family:'Share Tech Mono',monospace;font-size:clamp(11px,1.5vw,13.5px);letter-spacing:.22em;color:var(--amber);margin-top:22px;text-transform:uppercase;max-width:820px}
+.hero .desc{max-width:740px;margin-top:18px;color:var(--ink);font-size:15px}
+
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+@media(max-width:860px){.rules{grid-template-columns:1fr}}
+.rule{border:1px solid var(--line);padding:16px 18px;background:linear-gradient(180deg,rgba(14,11,16,.7),rgba(10,8,12,.5))}
+.rule .rk{font-family:'Share Tech Mono';font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:7px}
+.rule p{font-size:13px;color:var(--ink-d)}
+
+.gl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:20px}
+.gcard{border:1px solid var(--line);background:linear-gradient(180deg,rgba(14,11,16,.65),rgba(10,8,12,.5));padding:12px 10px;text-align:center;transition:border-color .18s}
+.gcard:hover{border-color:var(--red)}
+.gcard svg{display:block;margin:0 auto}
+.gcard .gname{font-family:'Chakra Petch';font-weight:600;font-size:16px;color:var(--gold);margin-top:8px}
+.gcard .gsub{font-family:'Share Tech Mono';font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dd);margin-top:3px}
+.gcard.op .gname{font-size:13px}
+.gcard.special{border-color:rgba(232,54,42,.45)}
+
+.fam{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin:26px 0 4px;display:flex;align-items:center;gap:10px}
+.fam::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.sample{border:1px solid var(--line);background:linear-gradient(180deg,rgba(14,11,16,.7),rgba(8,7,10,.55));margin-top:16px;padding:18px 20px}
+.sample .sk{font-family:'Share Tech Mono';font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.sample .sk .lat{color:var(--gold);font-style:italic;text-transform:none;letter-spacing:.02em;font-family:'Chakra Petch';font-size:14px}
+.sample svg{display:block;max-width:100%}
+.sample .note{font-size:12.5px;color:var(--ink-d);margin-top:10px;padding-top:9px;border-top:1px dashed var(--line)}
+.sample .note b{color:var(--amber);font-weight:400}
+.sample.big{background:linear-gradient(180deg,rgba(232,54,42,.05),rgba(8,7,10,.6));border-color:rgba(232,54,42,.4)}
+
+footer{padding:40px 0 70px;text-align:center;border-bottom:0}
+footer .fr{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.2em;color:var(--ink-dd);text-transform:uppercase;line-height:2}
+footer .big{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(16px,2.4vw,22px);color:var(--red-d);letter-spacing:.04em;margin:14px 0;text-shadow:0 0 20px rgba(232,54,42,.3)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="dot"></span><span>NERV//PELAGIAN ASSEMBLY</span>
+  <span class="sep hideS">/</span><span class="hideS">SCRIPT CODEX REV 1.0</span>
+  <div class="right"><span class="hideS mono">TIDE-SCRIPT → NAVCHER</span><span class="sep">/</span><span class="clk mono" id="clk">00:00:00</span><span class="jp" style="color:var(--ink-dd)">艦の文字</span></div>
+</div>
+
+<nav class="nav">
+  <span class="brand">NAVCHER</span>
+  <a href="#top" class="on">DESIGN</a>
+  <a href="#cons">CONSONANTS</a>
+  <a href="#vows">VOWELS</a>
+  <a href="#ops">OPERATORS</a>
+  <a href="#samples">SAMPLES</a>
+  <span class="navtag jp">渡りの文字体系</span>
+</nav>
+
+<section class="hero" id="top">
+  <div class="hero-bloom"></div>
+  <div class="wrap hero-inner">
+    <div class="eyebrow"><span class="idx">12</span> LANGUAGE CODEX · SCRIPT <span class="jp">序章 · 文字</span></div>
+    <h1><span class="stroke">NAVCHER</span><span class="fill">THE FLEET SCRIPT</span></h1>
+    <div class="sub">Ship-carve: the stencil hand of the fleets — angular, featural, and with exactly one curve in the whole system</div>
+    <p class="desc">From <span class="su">nav</span> "ship" + <span class="su">cher</span> "to carve, write" (<span class="pf">*ker-</span> → SC-1). Old Pelagic wrote the flowing <b>tide-script</b>, boustrophedon — lines alternating direction "as the tide runs." The fleets linearized it left-to-right for terminals and stencils, demoting the old vowel diacritics to small inline letters. What follows is the full working system: seventeen consonant letters, five small vowels with the held-breath bar, and the operator sigils that let a verb's mood and anchor be carved in two strokes.</p>
+    <div class="rules">
+      <div class="rule frame"><span class="br tl"></span><span class="br br2"></span><div class="rk">DESIGN RULE 01 · FEATURAL</div><p>Letterforms encode phonetics: <b class="amber">head position</b> = place (labials head-left, alveolars head-center, velars head-right); a <b class="amber">foot-stroke</b> = voicing; a <b class="amber">slash</b> = frication. Learn six letters and you can predict the rest.</p></div>
+      <div class="rule frame"><span class="br tl"></span><span class="br br2"></span><div class="rk">DESIGN RULE 02 · STENCIL-SAFE</div><p>Every stroke is straight; nothing encloses fully; the script cuts clean from a plate. <b class="redt">The only curve in the entire system is the =zu anchor</b> — the unanchored mark is the one sign that refuses to close.</p></div>
+      <div class="rule frame"><span class="br tl"></span><span class="br br2"></span><div class="rk">DESIGN RULE 03 · TWO HANDS</div><p><b class="amber">Careful hand</b> spells every suffix phonetically — liturgy, law, log-of-record. <b class="amber">Bridge hand</b> compresses mood and anchor into sigils — instrument panels, hull marks, haste. Same letters, two registers.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONSONANTS -->
+<section id="cons">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">01</span> THE CONSONANT LETTERS <span class="jp">子音字</span></div>
+    <h2>Seventeen letters, one logic</h2>
+    <p class="lead">Sixteen living consonants plus <span class="su">he</span> — the threshold letter. In Sūchel, /h/ survives only at the start of a word (<span class="su">hōl, hau</span>); everywhere else it died into vowel length (SC-4). So its letter is drawn as <span class="redt">a stem with a gap in it</span> — the letter that is mostly absence.</p>
+    <div class="fam">STOPS — closed head · voiced adds the foot</div>
+    <div class="gl-grid" id="g-stops"></div>
+    <div class="fam">AFFRICATES &amp; FRICATIVES — the slash family</div>
+    <div class="gl-grid" id="g-fric"></div>
+    <div class="fam">NASALS · LIQUIDS · THE THRESHOLD LETTER</div>
+    <div class="gl-grid" id="g-son"></div>
+  </div>
+</section>
+
+<!-- VOWELS -->
+<section id="vows">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">02</span> THE VOWELS <span class="jp">母音</span></div>
+    <h2>Small letters and the held-breath bar</h2>
+    <p class="lead">Vowels sit half-height between the consonants — the fossil of their diacritic past. Length is the <span class="amber">held-breath bar</span> drawn above: <span class="su">a</span> vs <span class="su">ā</span> is one stroke of patience.</p>
+    <div class="gl-grid" id="g-vows"></div>
+  </div>
+</section>
+
+<!-- OPERATORS -->
+<section id="ops">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">03</span> THE OPERATOR SIGILS <span class="jp">記号</span></div>
+    <h2>Grammar you can carve in two strokes</h2>
+    <p class="lead">Because every finite verb must carry mood and anchor, bridge hand compresses them into sigils. The five moods are variations on one square; <span class="redt">the seam-mood T• is the filled square</span> — the seam-mark. The three anchors: the beacon's pulse, the self's chest-stroke, and the dark's open hook — the script's single curve.</p>
+    <div class="fam">THE FIVE MOOD SIGILS</div>
+    <div class="gl-grid" id="g-moods"></div>
+    <div class="fam">THE THREE ANCHOR MARKS · THE GAP · THE QUESTION</div>
+    <div class="gl-grid" id="g-anch"></div>
+  </div>
+</section>
+
+<!-- SAMPLES -->
+<section id="samples">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">04</span> SAMPLE RENDERS <span class="jp">実例</span></div>
+    <h2>The script at work</h2>
+    <p class="lead">Words and lines from the phrasebook, machine-rendered from the glyph system — ready to trace, adapt, or letter directly.</p>
+
+    <div class="sample frame" id="s-names"><span class="br tl"></span><span class="br br2"></span>
+      <div class="sk"><span>CANON NAMES</span><span class="lat">Sūchel · Sōrn · jel · zukad</span></div>
+      <svg id="sv-names"></svg>
+      <div class="note">Note <b>the held-breath bar</b> over ū and ō, and how <span class="su">jel</span> — the seam — is three strokes and a slash: the humblest word in the cosmology is four cuts of a blade.</div>
+    </div>
+
+    <div class="sample frame" id="s-hail"><span class="br tl"></span><span class="br br2"></span>
+      <div class="sk"><span>PHRASE 01 · THE HAIL</span><span class="lat">ver ish-ol. — "Truth to you."</span></div>
+      <svg id="sv-hail"></svg>
+      <div class="note">Careful hand, fully spelled. Word-space is a full consonant-width of silence.</div>
+    </div>
+
+    <div class="sample frame" id="s-compare"><span class="br tl"></span><span class="br br2"></span>
+      <div class="sk"><span>CAREFUL HAND vs BRIDGE HAND</span><span class="lat">ver-a=ka — "It holds."</span></div>
+      <svg id="sv-compare"></svg>
+      <div class="note">Top: careful hand spells the mood and anchor phonetically (v-e-r-a-k-a). Bottom: bridge hand carves the same report as <b>stem + T-sigil + beacon-pulse</b> — three letters, two sigils. This is what an instrument panel says when all is well.</div>
+    </div>
+
+    <div class="sample big frame" id="s-line40"><span class="br tl"></span><span class="br br2"></span>
+      <div class="sk"><span>SHOWPIECE · LITANY LINE 40 · BRIDGE HAND</span><span class="lat">hōl-t-eshe=zu. enmai ve-a=mi.</span></div>
+      <svg id="sv-line40"></svg>
+      <div class="note">"Surfaced — seam-true, in the dark. We are — by our own clock." Read the sigils: <b>the filled square</b> (T•, the seam-mark) followed by <b>the open hook</b> (=zu, the script's only curve, unclosed because unanchored); then in the second clause the plain square (T) and the chest-stroke (=mi). <b>The whole Resurrection is legible in four sigils.</b></div>
+    </div>
+
+    <div class="sample frame" id="s-gap"><span class="br tl"></span><span class="br br2"></span>
+      <div class="sk"><span>THE GAP-STROKE</span><span class="lat">ne — line 38, as lettered</span></div>
+      <svg id="sv-gap"></svg>
+      <div class="note">Spoken, the word is <span class="su">ne</span>; <b>written, it is not spelled</b> — the gap-stroke stands alone, full height, wide-set: a mark that is a held silence. In panels: a black frame, or this single bar.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">NAVCHER // THE FLEET SCRIPT · TIDE-SCRIPT LINEARIZED</div>
+    <div class="big">ONE CURVE IN THE WHOLE SYSTEM — AND IT REFUSES TO CLOSE</div>
+    <div class="fr">17 CONSONANTS · 5 VOWELS · 5 MOOD SIGILS · 3 ANCHORS · 1 GAP // REV 1.0</div>
+  </div>
+</footer>
+
+<script>
+function tick(){const d=new Date();document.getElementById('clk').textContent=[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');}
+tick();setInterval(tick,1000);
+
+/* ============ GLYPH DEFINITIONS ============
+   Box: width units — consonants 100, vowels/ops 60. Height 140, baseline 120.
+   Each glyph: {w, strokes:[[x,y,...]], paths:[d], fills:[d]} */
+const G={
+ /* stops: head box (left/center/right), stem, voiced foot */
+ p:{w:100,strokes:[[70,10,70,120],[70,10,30,10,30,45,70,45]]},
+ b:{w:100,strokes:[[70,10,70,120],[70,10,30,10,30,45,70,45],[70,120,45,120]]},
+ t:{w:100,strokes:[[10,10,90,10],[50,10,50,120],[35,10,35,40,65,40,65,10]]},
+ d:{w:100,strokes:[[10,10,90,10],[50,10,50,120],[35,10,35,40,65,40,65,10],[50,120,75,120]]},
+ k:{w:100,strokes:[[30,10,30,120],[30,10,70,10,70,45,30,45]]},
+ g:{w:100,strokes:[[30,10,30,120],[30,10,70,10,70,45,30,45],[30,120,55,120]]},
+ /* affricates: T-frame + slash; j adds foot */
+ ch:{w:100,strokes:[[10,10,90,10],[50,10,50,120],[30,22,70,60]]},
+ j:{w:100,strokes:[[10,10,90,10],[50,10,50,120],[30,22,70,60],[50,120,75,120]]},
+ /* fricatives */
+ s:{w:100,strokes:[[70,10,30,45,70,80,30,115]]},
+ z:{w:100,strokes:[[30,10,70,45,30,80,70,115],[45,120,70,120]]},
+ sh:{w:100,strokes:[[20,10,80,10],[70,22,30,55,70,88,30,120]]},
+ v:{w:100,strokes:[[70,10,30,120],[30,120,55,120]]},
+ /* nasals */
+ m:{w:100,strokes:[[30,10,30,120],[70,10,70,120],[30,10,70,10]]},
+ n:{w:100,strokes:[[30,10,30,120],[30,10,70,10],[70,10,70,55]]},
+ /* liquids */
+ r:{w:100,strokes:[[30,10,30,120],[30,60,68,44]]},
+ l:{w:100,strokes:[[30,10,30,120],[30,120,78,120]]},
+ /* threshold letter */
+ h:{w:100,strokes:[[30,10,30,52],[30,74,30,120]]},
+ /* vowels (small) */
+ a:{w:60,strokes:[[10,120,30,76,50,120]]},
+ e:{w:60,strokes:[[10,96,50,96]]},
+ i:{w:60,strokes:[[30,78,30,120]]},
+ o:{w:60,strokes:[[30,76,52,98,30,120,8,98,30,76]]},
+ u:{w:60,strokes:[[10,76,30,120,50,76]]},
+ /* mood sigils */
+ mT:{w:60,strokes:[[12,80,48,80,48,118,12,118,12,80]]},
+ mTm:{w:60,strokes:[[12,80,48,80,48,118,12,118,12,80],[12,99,0,99]]},
+ mTp:{w:60,strokes:[[12,80,48,80,48,118,12,118,12,80],[48,99,60,99]]},
+ mTs:{w:60,fills:['M14,82 L46,82 L46,116 L14,116 Z']},
+ mF:{w:60,strokes:[[12,80,48,80,48,118,12,118,12,80],[12,80,48,118],[48,80,12,118]]},
+ /* anchors */
+ aka:{w:60,strokes:[[4,112,18,84,32,112,46,84]]},
+ ami:{w:60,strokes:[[46,84,14,116]]},
+ azu:{w:60,paths:['M46,84 A22,22 0 1 0 46,114']},
+ /* gap + question */
+ gap:{w:70,strokes:[[35,4,35,136]]},
+ q:{w:60,strokes:[[10,116,24,92],[32,116,46,92]]},
+};
+const LONGBAR=[8,62,52,62]; /* drawn over a vowel */
+
+function drawGlyph(svg,key,x,scale,color,longMark){
+  const g=G[key];if(!g)return x;
+  const ns='http://www.w3.org/2000/svg';
+  const grp=document.createElementNS(ns,'g');
+  grp.setAttribute('transform',`translate(${x},0) scale(${scale})`);
+  const sw=7;
+  (g.strokes||[]).forEach(pts=>{
+    const p=document.createElementNS(ns,'polyline');
+    const coords=[];for(let i=0;i<pts.length;i+=2)coords.push(pts[i]+','+pts[i+1]);
+    p.setAttribute('points',coords.join(' '));
+    p.setAttribute('fill','none');p.setAttribute('stroke',color);
+    p.setAttribute('stroke-width',sw);p.setAttribute('stroke-linecap','square');p.setAttribute('stroke-linejoin','miter');
+    grp.appendChild(p);
+  });
+  (g.paths||[]).forEach(d=>{
+    const p=document.createElementNS(ns,'path');
+    p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',color);
+    p.setAttribute('stroke-width',sw);p.setAttribute('stroke-linecap','square');
+    grp.appendChild(p);
+  });
+  (g.fills||[]).forEach(d=>{
+    const p=document.createElementNS(ns,'path');
+    p.setAttribute('d',d);p.setAttribute('fill',color);
+    grp.appendChild(p);
+  });
+  if(longMark){
+    const p=document.createElementNS(ns,'polyline');
+    p.setAttribute('points',`${LONGBAR[0]},${LONGBAR[1]} ${LONGBAR[2]},${LONGBAR[3]}`);
+    p.setAttribute('fill','none');p.setAttribute('stroke',color);p.setAttribute('stroke-width',sw);p.setAttribute('stroke-linecap','square');
+    grp.appendChild(p);
+  }
+  svg.appendChild(grp);
+  return x+g.w*scale;
+}
+/* token: "s","u:","ch","@Ts","=zu","|","?"," " */
+function renderWord(svg,tokens,x0,scale,color){
+  let x=x0;
+  tokens.forEach(t=>{
+    if(t===' '){x+=100*scale;return;}
+    if(t==='|'){x=drawGlyph(svg,'gap',x,scale,color);return;}
+    if(t==='?'){x=drawGlyph(svg,'q',x,scale,color);return;}
+    if(t[0]==='@'){x=drawGlyph(svg,{'@T':'mT','@T-':'mTm','@T+':'mTp','@Ts':'mTs','@F':'mF'}[t],x,scale,color);return;}
+    if(t[0]==='='){x=drawGlyph(svg,{'=ka':'aka','=mi':'ami','=zu':'azu'}[t],x,scale,color);return;}
+    const long=t.endsWith(':');const key=long?t.slice(0,-1):t;
+    x=drawGlyph(svg,key,x,scale,color,long);
+  });
+  return x;
+}
+
+/* ---------- GLYPH CHART CARDS ---------- */
+function card(parent,key,name,sub,special){
+  const d=document.createElement('div');d.className='gcard'+(special?' special':'')+(key.startsWith('m')||key.startsWith('a')||key==='gap'||key==='q'?' op':'');
+  const ns='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(ns,'svg');
+  const w=(G[key].w||100)*0.5+10;
+  svg.setAttribute('viewBox',`-5 0 ${(G[key].w||100)+10} 140`);
+  svg.setAttribute('width',Math.max(w,44));svg.setAttribute('height',70);
+  drawGlyph(svg,key,0,1,special?'#e8362a':'#f5d76e');
+  d.appendChild(svg);
+  d.innerHTML+=`<div class="gname">${name}</div><div class="gsub">${sub}</div>`;
+  parent.appendChild(d);
+}
+const stops=document.getElementById('g-stops');
+card(stops,'p','p','labial · head-left');card(stops,'b','b','p + voice-foot');
+card(stops,'t','t','alveolar · head-center');card(stops,'d','d','t + voice-foot');
+card(stops,'k','k','velar · head-right');card(stops,'g','g','k + voice-foot');
+const fric=document.getElementById('g-fric');
+card(fric,'ch','ch','T-frame + slash');card(fric,'j','j','ch + voice-foot');
+card(fric,'s','s','the zigzag');card(fric,'z','z','s reversed + foot');
+card(fric,'sh','sh','zigzag + top bar');card(fric,'v','v','slash + foot');
+const son=document.getElementById('g-son');
+card(son,'m','m','double stem');card(son,'n','n','half-frame');
+card(son,'r','r','stem + mid-tick');card(son,'l','l','stem + long foot');
+card(son,'h','he','the threshold letter — a stem with a gap',true);
+const vows=document.getElementById('g-vows');
+card(vows,'a','a','the wedge');card(vows,'e','e','the level');card(vows,'i','i','the tick');
+card(vows,'o','o','the diamond');card(vows,'u','u','the cup');
+(function(){/* long demo card: ā */
+  const d=document.createElement('div');d.className='gcard';
+  const ns='http://www.w3.org/2000/svg';const svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','-5 0 70 140');svg.setAttribute('width',44);svg.setAttribute('height',70);
+  drawGlyph(svg,'a',0,1,'#f5d76e',true);d.appendChild(svg);
+  d.innerHTML+='<div class="gname">ā</div><div class="gsub">+ held-breath bar</div>';
+  vows.appendChild(d);
+})();
+const moods=document.getElementById('g-moods');
+card(moods,'mT','T · -a','plain square · settled');
+card(moods,'mTm','T⁻ · -im','tick left · IR approach');
+card(moods,'mTp','T⁺ · -ur','tick right · UV approach');
+card(moods,'mTs','T• · -eshe','the seam-mark · filled',true);
+card(moods,'mF','F · vo','crossed out');
+const anch=document.getElementById('g-anch');
+card(anch,'aka','=ka','the beacon pulse');
+card(anch,'ami','=mi','the chest-stroke');
+card(anch,'azu','=zu','the open hook — the only curve',true);
+card(anch,'gap','ne','the gap-stroke',true);
+card(anch,'q','vu','the rising pair · question');
+
+/* ---------- SAMPLES ---------- */
+function sample(id,lines,scale){
+  const svg=document.getElementById(id);
+  const ns='http://www.w3.org/2000/svg';
+  let maxW=0;const lineH=150*scale+18;
+  lines.forEach((ln,i)=>{
+    const g=document.createElementNS(ns,'g');
+    g.setAttribute('transform',`translate(0,${i*lineH})`);
+    svg.appendChild(g);
+    const w=renderWord(g,ln.tokens,6,scale,ln.color||'#f5d76e');
+    if(ln.label){
+      const t=document.createElementNS(ns,'text');
+      t.setAttribute('x',w+16);t.setAttribute('y',100*scale);
+      t.setAttribute('fill','#8c8a82');t.setAttribute('font-family','Share Tech Mono, monospace');t.setAttribute('font-size',12);
+      t.textContent=ln.label;g.appendChild(t);maxW=Math.max(maxW,w+16+ln.label.length*7.5);
+    }
+    maxW=Math.max(maxW,w+10);
+  });
+  svg.setAttribute('viewBox',`0 0 ${Math.ceil(maxW)} ${Math.ceil(lines.length*lineH)}`);
+  svg.setAttribute('width','100%');
+  svg.setAttribute('style',`max-width:${Math.ceil(maxW*0.9)}px`);
+}
+sample('sv-names',[
+ {tokens:['s','u:','ch','e','l',' ',' '],label:'Sūchel'},
+ {tokens:['s','o:','r','n',' ',' '],label:'Sōrn'},
+ {tokens:['j','e','l',' ',' '],label:'jel — the seam'},
+ {tokens:['z','u','k','a','d',' ',' '],label:'zukad — dark time'},
+],0.36);
+sample('sv-hail',[
+ {tokens:['v','e','r',' ','i','sh',' ','o','l'],label:'ver ish-ol.'},
+],0.42);
+sample('sv-compare',[
+ {tokens:['v','e','r','a','k','a'],label:'careful hand — fully spelled'},
+ {tokens:['v','e','r','@T','=ka'],label:'bridge hand — sigils',color:'#6fa8ff'},
+],0.42);
+sample('sv-line40',[
+ {tokens:['h','o:','l','t','@Ts','=zu',' ',' ','e','n','m','a','i',' ','v','e','@T','=mi'],color:'#e8362a'},
+],0.46);
+sample('sv-gap',[
+ {tokens:[' ','|',' '],color:'#e8362a'},
+],0.5);
+
+/* nav active */
+const links=[...document.querySelectorAll('.nav a')];
+const secs=links.map(l=>document.querySelector(l.getAttribute('href')));
+addEventListener('scroll',()=>{let i=secs.length-1;for(let k=0;k<secs.length;k++){if(secs[k]&&secs[k].getBoundingClientRect().top>90){i=k-1;break;}}if(i<0)i=0;links.forEach((l,k)=>l.classList.toggle('on',k===i));},{passive:true});
+</script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE SISTERS // The Linguistic Map of the Crossable Universe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08070a;--panel:#0e0b10;
+  --red:#e8362a;--red-d:#a3211a;--red-dd:#5e120e;--red-glow:rgba(232,54,42,.55);
+  --amber:#f2b01f;--gold:#f5d76e;--blue-l:#6fa8ff;--violet:#8b7dd8;--green:#7ec885;--teal:#4fc2a8;
+  --ink:#d8d2c8;--ink-d:#8c8a82;--ink-dd:#5a5852;
+  --line:rgba(232,54,42,.22);--line-amber:rgba(242,176,31,.20);--grid:rgba(232,54,42,.045);
+}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Chakra Petch','Bahnschrift','Segoe UI',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden;letter-spacing:.01em}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse 120% 100% at 50% 0%,#000 30%,transparent 90%)}
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.18) 3px,rgba(0,0,0,0) 4px);mix-blend-mode:multiply;opacity:.5}
+.mono{font-family:'Share Tech Mono',monospace}.jp{font-family:'Zen Kaku Gothic New',sans-serif}
+.frame{position:relative}
+.frame>.br{position:absolute;width:14px;height:14px;border:1px solid var(--red);pointer-events:none;z-index:3}
+.br.tl{top:-1px;left:-1px;border-right:0;border-bottom:0}.br.tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.br.bl{bottom:-1px;left:-1px;border-right:0;border-top:0}.br.br2{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:18px;height:30px;padding:0 16px;background:linear-gradient(180deg,rgba(8,7,10,.96),rgba(8,7,10,.82));border-bottom:1px solid var(--line);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-d);text-transform:uppercase;backdrop-filter:blur(6px)}
+.topbar .dot{width:7px;height:7px;background:var(--red);box-shadow:0 0 8px var(--red-glow);animation:blink 2.4s steps(1) infinite}
+@keyframes blink{0%,70%{opacity:1}71%,100%{opacity:.25}}
+.topbar .sep{color:var(--red-dd)}.topbar .right{margin-left:auto;display:flex;gap:18px;align-items:center}.topbar .clk{color:var(--amber)}
+@media(max-width:680px){.topbar .hideS{display:none}}
+.nav{position:fixed;top:30px;left:0;right:0;z-index:999;display:flex;align-items:center;gap:2px;padding:0 14px;height:38px;background:rgba(10,8,12,.9);border-bottom:1px solid var(--line);backdrop-filter:blur(6px);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav .brand{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:14px;letter-spacing:.22em;color:var(--red);text-shadow:0 0 12px var(--red-glow);margin-right:18px;white-space:nowrap}
+.nav a{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:.13em;color:var(--ink-d);text-decoration:none;text-transform:uppercase;padding:5px 13px;white-space:nowrap;border:1px solid transparent;transition:all .18s}
+.nav a:hover{color:var(--amber);border-color:var(--line-amber)}
+.nav a.on{color:var(--red);border-color:var(--line);background:rgba(232,54,42,.06)}
+.nav .navtag{margin-left:auto;color:var(--ink-dd);font-family:'Share Tech Mono';font-size:9px;letter-spacing:.2em;white-space:nowrap}
+@media(max-width:1120px){.nav .navtag{display:none}}
+
+.wrap{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:0 20px}
+section{padding:60px 0;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.26em;color:var(--red);text-transform:uppercase;flex-wrap:wrap}
+.eyebrow::before{content:'';width:26px;height:1px;background:var(--red);box-shadow:0 0 6px var(--red-glow)}
+.eyebrow .idx{color:var(--amber)}.eyebrow .jp{color:var(--ink-dd);letter-spacing:.1em}
+h2{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:clamp(22px,3.6vw,34px);letter-spacing:.01em;line-height:1.1;color:#f0ebe2}
+h3{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:17px;letter-spacing:.03em;color:#ece7de}
+.lead{max-width:880px;color:var(--ink);font-size:15px;margin-top:12px}
+.muted{color:var(--ink-d)}.amber{color:var(--amber)}.redt{color:var(--red)}.greent{color:var(--green)}.goldt{color:var(--gold)}.bluet{color:var(--blue-l)}.violett{color:var(--violet)}.tealt{color:var(--teal)}
+.su{font-style:italic;color:var(--gold)}
+.ipa{font-family:'Share Tech Mono',monospace;color:var(--teal);font-size:.92em}
+.pf{font-family:'Share Tech Mono',monospace;color:var(--violet);font-size:.92em}
+
+.hero{min-height:72vh;padding:118px 0 46px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.hero-bloom{position:absolute;top:14%;right:4%;width:min(540px,58vw);height:min(400px,44vw);background:radial-gradient(ellipse at center,rgba(139,125,216,.10),rgba(232,54,42,.06) 45%,transparent 70%);filter:blur(22px);pointer-events:none;z-index:0}
+.hero-inner{position:relative;z-index:2}
+.hero h1{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.02em;line-height:1.0;font-size:clamp(32px,7vw,84px);color:#f4efe6}
+.hero h1 .stroke{color:transparent;-webkit-text-stroke:1.4px var(--red);text-shadow:0 0 26px var(--red-glow);display:block}
+.hero h1 .fill{color:var(--red);text-shadow:0 0 30px var(--red-glow);display:block}
+.hero .sub{font-family:'Share Tech Mono',monospace;font-size:clamp(11px,1.5vw,13.5px);letter-spacing:.22em;color:var(--amber);margin-top:22px;text-transform:uppercase;max-width:860px}
+.hero .desc{max-width:760px;margin-top:18px;color:var(--ink);font-size:15px}
+
+/* family tree */
+.tree{border:1px solid var(--line);background:linear-gradient(180deg,rgba(14,11,16,.6),rgba(8,7,10,.5));margin-top:26px;padding:10px;overflow-x:auto}
+.tree svg{display:block;min-width:640px;width:100%;height:auto}
+
+table{border-collapse:collapse;width:100%;margin-top:14px}
+th{font-family:'Share Tech Mono';font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);background:rgba(232,54,42,.04)}
+td{padding:8px 12px;border-bottom:1px dashed var(--line);font-size:13.5px;color:var(--ink);vertical-align:top}
+tr:hover td{background:rgba(232,54,42,.03)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line)}
+.shib td{font-size:15px}
+.shib td:first-child{color:var(--ink-d);font-size:12px;white-space:nowrap}
+.shib .lg{font-style:italic;color:var(--gold)}
+
+.sis-head{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+@media(max-width:880px){.sis-head{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);padding:18px 20px;background:linear-gradient(180deg,rgba(14,11,16,.7),rgba(10,8,12,.5));position:relative}
+.card .cn{font-family:'Share Tech Mono';font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+.card p{font-size:13.5px;color:var(--ink-d)}
+.card p b{color:var(--ink);font-weight:400}
+.cog{margin-top:14px;padding:12px 14px;background:rgba(8,7,10,.6);border:1px solid var(--line);border-left:2px solid var(--gold);font-size:13.5px}
+.cog .su{font-size:15px}
+.names td:first-child{color:var(--gold);font-style:italic;white-space:nowrap;font-size:14.5px}
+.names td:nth-child(2){white-space:nowrap}
+
+.wol{border:1px solid var(--red);margin-top:24px;background:linear-gradient(180deg,rgba(232,54,42,.05),rgba(8,7,10,.6));padding:22px}
+.wol .wk{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.wol p{font-size:14px;color:var(--ink);margin-bottom:12px;max-width:100ch}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+@media(max-width:880px){.grid3{grid-template-columns:1fr}}
+
+.flag{border:1px dashed var(--line-amber);padding:14px 16px;margin-top:16px;font-size:13px;color:var(--ink-d)}
+.flag b{color:var(--amber);font-weight:400}
+
+footer{padding:40px 0 70px;text-align:center;border-bottom:0}
+footer .fr{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.2em;color:var(--ink-dd);text-transform:uppercase;line-height:2}
+footer .big{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(16px,2.4vw,22px);color:var(--red-d);letter-spacing:.04em;margin:14px 0;text-shadow:0 0 20px rgba(232,54,42,.3)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="dot"></span><span>NERV//PELAGIAN ASSEMBLY</span>
+  <span class="sep hideS">/</span><span class="hideS">LINGUISTIC MAP REV 1.0</span>
+  <div class="right"><span class="hideS mono">ONE PROTO · FOUR MOUTHS · ONE ZERO-TONGUE</span><span class="sep">/</span><span class="clk mono" id="clk">00:00:00</span><span class="jp" style="color:var(--ink-dd)">言語の地図</span></div>
+</div>
+
+<nav class="nav">
+  <span class="brand">SISTERS</span>
+  <a href="#top" class="on">THE MAP</a>
+  <a href="#shib">SHIBBOLETH</a>
+  <a href="#rudgar">RUDGAR · MARS</a>
+  <a href="#sel">SEL · MAREN</a>
+  <a href="#beltsel">BELTSEL · BELGAR</a>
+  <a href="#wolori">THE WOLORI</a>
+  <span class="navtag jp">姉妹言語と無理数団</span>
+</nav>
+
+<!-- HERO / MAP -->
+<section class="hero" id="top">
+  <div class="hero-bloom"></div>
+  <div class="wrap hero-inner">
+    <div class="eyebrow"><span class="idx">14</span> LANGUAGE CODEX · THE FAMILY <span class="jp">序章 · 姉妹</span></div>
+    <h1><span class="stroke">THE SISTERS</span><span class="fill">OF OLD PELAGIC</span></h1>
+    <div class="sub">One proto-tongue, a conquered universe of daughters — and the order that keeps the ancestor alive by refusing to let it pray</div>
+    <p class="desc">A civilization that can almost cross its universe entirely does not speak one language. It speaks a <b>family</b>: Sūchel binds the fleets, and every settled world keeps its own sister — same bones, different wear. Three archetypes are charted here at naming depth (a sound-change table and twenty place-names each): <span class="su">Rudgar</span>, the conservative tongue of old ground on Mars; <span class="su">Sel</span>, the liquid tongue of the ocean moon Maren; <span class="su">Beltsel</span>, the eroded prestige tongue of the capital world Belgar. Beneath them all, Old Pelagic survives twice over — frozen in the Assembly's liturgy, and <em>working</em> in the hands of the Irrationals.</p>
+    <div class="tree frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg">
+        <text x="450" y="34" fill="#8b7dd8" font-family="'Chakra Petch',sans-serif" font-size="20" font-weight="700" text-anchor="middle">OLD PELAGIC · Pelgar</text>
+        <text x="450" y="52" fill="#5a5852" font-family="monospace" font-size="10" text-anchor="middle">the tongue before the seam — no moods, no anchors, no ne</text>
+        <line x1="450" y1="62" x2="450" y2="92" stroke="rgba(232,54,42,.35)" stroke-width="1"/>
+        <line x1="120" y1="92" x2="780" y2="92" stroke="rgba(232,54,42,.35)" stroke-width="1"/>
+        <line x1="120" y1="92" x2="120" y2="120" stroke="rgba(232,54,42,.35)" stroke-width="1"/>
+        <line x1="340" y1="92" x2="340" y2="120" stroke="rgba(232,54,42,.35)" stroke-width="1"/>
+        <line x1="560" y1="92" x2="560" y2="120" stroke="rgba(232,54,42,.35)" stroke-width="1"/>
+        <line x1="780" y1="92" x2="780" y2="120" stroke="rgba(232,54,42,.35)" stroke-width="1"/>
+        <text x="120" y="142" fill="#f5d76e" font-family="'Chakra Petch',sans-serif" font-size="17" font-weight="600" text-anchor="middle">Sūchel</text>
+        <text x="120" y="160" fill="#8c8a82" font-family="monospace" font-size="9.5" text-anchor="middle">the fleets · lingua franca</text>
+        <text x="120" y="174" fill="#5a5852" font-family="monospace" font-size="9" text-anchor="middle">says jel · 7 changes</text>
+        <text x="340" y="142" fill="#e8836a" font-family="'Chakra Petch',sans-serif" font-size="17" font-weight="600" text-anchor="middle">Rudgar</text>
+        <text x="340" y="160" fill="#8c8a82" font-family="monospace" font-size="9.5" text-anchor="middle">Mars · old ground</text>
+        <text x="340" y="174" fill="#5a5852" font-family="monospace" font-size="9" text-anchor="middle">says ghel · keeps *w *h</text>
+        <text x="560" y="142" fill="#6fa8ff" font-family="'Chakra Petch',sans-serif" font-size="17" font-weight="600" text-anchor="middle">Sel</text>
+        <text x="560" y="160" fill="#8c8a82" font-family="monospace" font-size="9.5" text-anchor="middle">Maren · ocean moon</text>
+        <text x="560" y="174" fill="#5a5852" font-family="monospace" font-size="9" text-anchor="middle">says zel · drowns *w</text>
+        <text x="780" y="142" fill="#7ec885" font-family="'Chakra Petch',sans-serif" font-size="17" font-weight="600" text-anchor="middle">Beltsel</text>
+        <text x="780" y="160" fill="#8c8a82" font-family="monospace" font-size="9.5" text-anchor="middle">Belgar · the capital</text>
+        <text x="780" y="174" fill="#5a5852" font-family="monospace" font-size="9" text-anchor="middle">says dzel · cannot hold its breath</text>
+        <line x1="450" y1="62" x2="450" y2="230" stroke="rgba(139,125,216,.4)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="450" y="252" fill="#8b7dd8" font-family="'Chakra Petch',sans-serif" font-size="15" font-weight="600" text-anchor="middle">Old Pelagic, surviving twice</text>
+        <text x="300" y="278" fill="#6fa8ff" font-family="monospace" font-size="10.5" text-anchor="middle">Assembly liturgy — frozen · performative</text>
+        <text x="300" y="293" fill="#5a5852" font-family="monospace" font-size="9" text-anchor="middle">"truth has not moved since before the seam"</text>
+        <text x="620" y="278" fill="#e8362a" font-family="monospace" font-size="10.5" text-anchor="middle">Lorkel — the Wolori's working register</text>
+        <text x="620" y="293" fill="#5a5852" font-family="monospace" font-size="9" text-anchor="middle">living, coining, moodless by design</text>
+        <text x="450" y="330" fill="#f2b01f" font-family="monospace" font-size="10.5" text-anchor="middle">— and above all speech: NOTATION, the zero-tongue · no moods, no anchors, no speakers —</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- SHIBBOLETH -->
+<section id="shib">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">01</span> THE PALATAL SHIBBOLETH <span class="jp">合言葉</span></div>
+    <h2>Place a stranger's homeworld in one word</h2>
+    <p class="lead">The family's great isogloss is what each tongue did to old <span class="pf">*k</span> and <span class="pf">*g</span> before front vowels. Ask a stranger to name the seam, and their mouth files their birth certificate. Fleet ears do this without thinking; your panels can do it in one balloon.</p>
+    <div class="tbl-wrap frame shib"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table>
+        <tr><th>Proto → tongue</th><th>"the seam" <span class="pf">*gel-</span></th><th>"speech" <span class="pf">*kel</span></th><th>"crossing-speech" <span class="pf">*suw-kel</span></th><th>"Truth-station" <span class="pf">*wer-stan</span></th></tr>
+        <tr><td>Old Pelagic / Lorkel</td><td class="lg">gel</td><td class="lg">kel</td><td class="lg">Suwkel</td><td class="lg">Werstan</td></tr>
+        <tr><td>Sūchel · the fleets</td><td class="lg">jel</td><td class="lg">chel</td><td class="lg">Sūchel</td><td class="lg">Verstan†</td></tr>
+        <tr><td>Rudgar · Mars</td><td class="lg">ghel</td><td class="lg">khel</td><td class="lg">Suwkhel</td><td class="lg">Werstan</td></tr>
+        <tr><td>Sel · Maren</td><td class="lg">zel</td><td class="lg">sel</td><td class="lg">Sūsel</td><td class="lg">Ērstan</td></tr>
+        <tr><td>Beltsel · Belgar</td><td class="lg">dzel</td><td class="lg">tsel</td><td class="lg">Suvtsel</td><td class="lg">Verstan</td></tr>
+      </table>
+    </div>
+    <p class="lead" style="font-size:13.5px;color:var(--ink-d)">† Three worlds keep a city named "Truth-station" from the proto era — <span class="su">Werstan</span> on Mars, <span class="su">Ērstan</span> on Maren, <span class="su">Verstan</span> on Belgar — the same name through three mouths. Pilgrims collect all three pronunciations; customs officers use them as a voice-test. And note the scholars' tell: a Wolori says <span class="su">gel</span>, the unshifted form — the order is audible in one syllable.</p>
+  </div>
+</section>
+
+<!-- RUDGAR -->
+<section id="rudgar">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">02</span> RUDGAR — THE TONGUE OF OLD GROUND <span class="jp">火星語</span></div>
+    <h2>Mars: the conservative sister</h2>
+    <div class="sis-head">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">WHO · WHERE</div>
+        <p><b>Rudgar</b> (<span class="pf">*rud-gar</span> "red ground" — the world and its tongue share a name) is spoken on Mars, the oldest continuously settled ground outside the birthworld. Its speakers stayed when everyone else left, and their language stayed with them: Rudgar is the family's <b>conservative sister</b> — it never lost <span class="pf">*w</span> or <span class="pf">*h</span>, the two sounds every other daughter killed. Martian ears are therefore the closest living ears to Old Pelagic; Assembly cantors and Wolori lectors alike are disproportionately Mars-born, because the proto-language sits easiest in a Rudgar mouth.</p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SOUND CHANGES · RUDGAR</div>
+        <div class="tbl-wrap" style="border:0"><table>
+          <tr><th>#</th><th>Rule</th><th>Example</th></tr>
+          <tr><td>R-1</td><td><span class="pf">*w, *h</span> retained everywhere</td><td><span class="pf">*wer-stan</span> → <span class="su">Werstan</span></td></tr>
+          <tr><td>R-2</td><td><span class="pf">*k, *g</span> → <span class="amber">kh, gh</span> initially &amp; between vowels</td><td><span class="pf">*kel</span> → <span class="su">khel</span> · <span class="pf">*gel</span> → <span class="su">ghel</span></td></tr>
+          <tr><td>R-3</td><td>All final short vowels lost</td><td><span class="pf">*kap-a</span> → <span class="su">khap</span></td></tr>
+          <tr><td>R-4</td><td><span class="pf">*au</span> → <span class="amber">ā</span></td><td><span class="pf">*hau-</span> → <span class="su">hā-</span> "upper"</td></tr>
+          <tr><td>R-5</td><td>Unstressed medial <span class="pf">*e, *o</span> → a (dry leveling)</td><td><span class="pf">*pelag-ar</span> → <span class="su">Pelaghar</span></td></tr>
+        </table></div>
+      </div>
+    </div>
+    <div class="cog frame"><span class="br tl"></span><span class="br br2"></span>
+      Cognate line — the fleets' <span class="su">Sōrn</span> is Mars's <span class="su">Soworn</span> (<span class="pf">*sow-orn</span>, the glide kept); the fleets' <span class="su">Sūchel</span> is <span class="su">Suwkhel</span>; the seam is <span class="su">ghel</span>. A Martian saying the drive's name preserves the very sound whose death gave Sūchel its long ō — <b class="amber">the tombstone is still alive on Mars.</b>
+    </div>
+    <div class="tbl-wrap frame names" style="margin-top:16px"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table id="t-rudgar">
+        <thead><tr><th>Place</th><th>Derivation</th><th>Gloss · what it is</th></tr></thead>
+        <tbody>
+          <tr><td>Rudgar</td><td class="pf">*rud-gar</td><td>"Red Ground" — the world itself, and by extension its tongue</td></tr>
+          <tr><td>Khades</td><td class="pf">*kad-es</td><td>"Beacon-stead" — capital; anchor-node of the planetary beacon net</td></tr>
+          <tr><td>Hekmor</td><td class="pf">*hek-mor</td><td>"High-rock" — the great shield volcano and its slope cities</td></tr>
+          <tr><td>Akdol</td><td class="pf">*ak-dol</td><td>"Ice-pit" — the polar water mines</td></tr>
+          <tr><td>Weldol</td><td class="pf">*wel-dol</td><td>"Nothing-pit" — the continental canyon; locals say it swallows echoes</td></tr>
+          <tr><td>Limbel</td><td class="pf">*lim-bel</td><td>"Gate-hearth" — the elevator-foot city, oldest offworld port</td></tr>
+          <tr><td>Turstan</td><td class="pf">*tur-stan</td><td>"Tower-station" — the tether counterweight settlement</td></tr>
+          <tr><td>Ghelren</td><td class="pf">*gel-ren</td><td>"Seam-path" — the old pilgrim road to the first crossing shrine</td></tr>
+          <tr><td>Khelsom</td><td class="pf">*kel-som</td><td>"Speech-gathering" — the university town; seat of the cantor schools</td></tr>
+          <tr><td>Rudmor</td><td class="pf">*rud-mor</td><td>"Red-rock" — the southern highlands</td></tr>
+          <tr><td>Pelaghar</td><td class="pf">*pelag-ar</td><td>"the Deephold" — fortress-archive over the old aquifer</td></tr>
+          <tr><td>Dunhā</td><td class="pf">*dun-hau</td><td>"Upper-mound" — the high observatory ring (R-4)</td></tr>
+          <tr><td>Akstan</td><td class="pf">*ak-stan</td><td>"Ice-station" — the mid-latitude glacier depot</td></tr>
+          <tr><td>Morbel</td><td class="pf">*mor-bel</td><td>"Rock-hearth" — mining town in the cratered plain</td></tr>
+          <tr><td>Khadren</td><td class="pf">*kad-ren</td><td>"Pulse-path" — the beacon highway girdling the equator</td></tr>
+          <tr><td>Galgar</td><td class="pf">*gal-gar</td><td>"Still-ground" — the dead flats; proverbial for boredom</td></tr>
+          <tr><td>Neksdol</td><td class="pf">*nex-dol</td><td>"Gap-pit" — the unexplained sink no survey closes</td></tr>
+          <tr><td>Durbel</td><td class="pf">*dur-bel</td><td>"Endure-hearth" — the oldest surviving dome, kept lit as a vow</td></tr>
+          <tr><td>Suwren</td><td class="pf">*suw-ren</td><td>"Crossing-path" — the first FTL launch field, now a memorial</td></tr>
+          <tr><td>Werstan</td><td class="pf">*wer-stan</td><td>"Truth-station" — the old tribunal; one of the three sister-cities</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SEL -->
+<section id="sel">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">03</span> SEL — THE LIQUID SISTER <span class="jp">海月語</span></div>
+    <h2>Maren: the tongue that drowned its glides</h2>
+    <div class="sis-head">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">WHO · WHERE</div>
+        <p><b>Sel</b> is spoken on <span class="su">Maren</span> (<span class="pf">*mar-en</span>, "of the pearls"), an ocean moon whose people never left the water they colonized. Where Mars preserved, Maren dissolved: every <span class="pf">*w</span> and <span class="pf">*h</span> drowned into vowel length, stops soften between vowels, and old <span class="pf">*k</span> hisses to <b>s</b> before front vowels. The result is the family's most fluid sister — long, open, tide-paced. Fleet slang calls Sel speakers "the vowel-farmers"; Sel calls Sūchel "the tongue in a hurry."</p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SOUND CHANGES · SEL</div>
+        <div class="tbl-wrap" style="border:0"><table>
+          <tr><th>#</th><th>Rule</th><th>Example</th></tr>
+          <tr><td>S-1</td><td><span class="pf">*k, *g</span> → <span class="amber">s, z</span> before front vowels</td><td><span class="pf">*kel</span> → <span class="su">sel</span> · <span class="pf">*gel</span> → <span class="su">zel</span></td></tr>
+          <tr><td>S-2</td><td><span class="pf">*w</span> → ∅ everywhere, with lengthening</td><td><span class="pf">*wer-stan</span> → <span class="su">Ērstan</span></td></tr>
+          <tr><td>S-3</td><td>Intervocalic <span class="pf">*p, *t, *k</span> → b, d, g</td><td><span class="pf">*kap-a</span> → <span class="su">kaba</span></td></tr>
+          <tr><td>S-4</td><td><span class="pf">*h</span> → ∅ with lengthening</td><td><span class="pf">*hek-mar</span> → <span class="su">Ēkmar</span></td></tr>
+          <tr><td>S-5</td><td>Final short <span class="pf">*i, *u</span> lowered → e, o; finals kept</td><td><span class="pf">*kad-u</span> → <span class="su">kado</span></td></tr>
+        </table></div>
+      </div>
+    </div>
+    <div class="cog frame"><span class="br tl"></span><span class="br br2"></span>
+      Cognate line — <span class="su">Sūsel</span> is Maren's name for the crossing-speech (<span class="pf">*suw-kel</span>: the same lengthening as Sūchel, then S-1 instead of palatalization). And <span class="pf">*sow-orn</span> comes out <span class="su">Sōrn</span> — identical to the fleet form: <b class="amber">on the drive's own name, the two tongues agree by accident of sound law</b>, which Maren folk take as a good omen for engines.
+    </div>
+    <div class="tbl-wrap frame names" style="margin-top:16px"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table id="t-sel">
+        <thead><tr><th>Place</th><th>Derivation</th><th>Gloss · what it is</th></tr></thead>
+        <tbody>
+          <tr><td>Maren</td><td class="pf">*mar-en</td><td>"Of the Pearls" — the moon itself; one world-ocean, ten thousand atolls</td></tr>
+          <tr><td>Selsom</td><td class="pf">*kel-som</td><td>"Speech-gathering" — the drowned forum, held at low tide</td></tr>
+          <tr><td>Zelmor</td><td class="pf">*gel-mor</td><td>"Seam-rock" — reef where the moon's first well kindled</td></tr>
+          <tr><td>Ābel</td><td class="pf">*hau-bel</td><td>"Upper-hearth" — the one cliff city above the spray line</td></tr>
+          <tr><td>Akmar</td><td class="pf">*ak-mar</td><td>"Ice-pearl" — the frozen shallows of the far pole</td></tr>
+          <tr><td>Pordol</td><td class="pf">*por-dol</td><td>"Harbor-deep" — the trench port where hulls are pressure-cured</td></tr>
+          <tr><td>Ērstan</td><td class="pf">*wer-stan</td><td>"Truth-station" — sister-city of Werstan and Verstan</td></tr>
+          <tr><td>Limar</td><td class="pf">*lim-mar</td><td>"Gate-pearl" — the tidal gate between the two great gyres</td></tr>
+          <tr><td>Galmar</td><td class="pf">*gal-mar</td><td>"Still-pearl" — the becalmed lagoon; honeymooners and mutineers</td></tr>
+          <tr><td>Kadun</td><td class="pf">*kad-dun</td><td>"Beacon-mound" — the lighthouse isle anchoring the moon's net</td></tr>
+          <tr><td>Nās</td><td class="pf">*nāw-es</td><td>"Ship-place" — the floating yards (S-2 swallowed nearly the whole word)</td></tr>
+          <tr><td>Pelagdol</td><td class="pf">*pelag-dol</td><td>"Deep-pit" — the abyssal research station</td></tr>
+          <tr><td>Tembel</td><td class="pf">*tem-bel</td><td>"Weave-hearth" — the net-makers' town</td></tr>
+          <tr><td>Sōmor</td><td class="pf">*sow-mor</td><td>"Crossing-rock" — the departure rock; ships bless keels against it</td></tr>
+          <tr><td>Durak</td><td class="pf">*dur-ak</td><td>"Enduring-ice" — the old shelf that never melts</td></tr>
+          <tr><td>Renmar</td><td class="pf">*ren-mar</td><td>"Path-pearl" — the strait every cargo run threads</td></tr>
+          <tr><td>Idpor</td><td class="pf">*id-por</td><td>"Open-harbor" — the free anchorage; no flag, no questions</td></tr>
+          <tr><td>Ānes</td><td class="pf">*anh-es</td><td>"Breath-place" — the surfacing grounds where divers decompress</td></tr>
+          <tr><td>Zeles</td><td class="pf">*gel-es</td><td>"Seam-place" — the pilgrimage buoy over deep water</td></tr>
+          <tr><td>Ēkmar</td><td class="pf">*hek-mar</td><td>"High-pearl" — the spire atoll, tallest point on the moon</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- BELTSEL -->
+<section id="beltsel">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">04</span> BELTSEL — THE ERODED SISTER <span class="jp">首都語</span></div>
+    <h2>Belgar: the capital that cannot hold its breath</h2>
+    <div class="sis-head">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">WHO · WHERE</div>
+        <p><b>Beltsel</b> (<span class="pf">*bel-kel</span>, "hearth-speech") is the prestige tongue of <span class="su">Belgar</span> (<span class="pf">*bel-gar</span>, "Hearth-ground"), the administrative capital world. It is the family's <b>fast sister</b> — centuries of court, commerce, and bureaucracy sanded it down: unstressed vowels deleted, clusters crushed, and every long vowel shortened. That last change is the one the other sisters mock: <b class="amber">Beltsel lost vowel length entirely — the capital cannot hold its breath.</b> Fleet pilots, whose ū and ō are the tombstones of dead sounds, find capital speech faintly sacrilegious: a tongue with no room in it for a held silence.</p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn">SOUND CHANGES · BELTSEL</div>
+        <div class="tbl-wrap" style="border:0"><table>
+          <tr><th>#</th><th>Rule</th><th>Example</th></tr>
+          <tr><td>B-1</td><td><span class="pf">*k, *g</span> → <span class="amber">ts, dz</span> before front vowels</td><td><span class="pf">*kel</span> → <span class="su">tsel</span> · <span class="pf">*gel</span> → <span class="su">dzel</span></td></tr>
+          <tr><td>B-2</td><td>Unstressed non-final short vowels lost</td><td><span class="pf">*pelag-ar</span> → <span class="su">Plagar</span></td></tr>
+          <tr><td>B-3</td><td>Three-consonant clusters simplify (middle drops)</td><td><span class="pf">*kad-stan</span> → <span class="su">Kadtan</span></td></tr>
+          <tr><td>B-4</td><td><span class="pf">*w</span> → v everywhere, no lengthening</td><td><span class="pf">*wer-stan</span> → <span class="su">Verstan</span></td></tr>
+          <tr><td>B-5</td><td><span class="pf">*h</span> → ∅, no lengthening</td><td><span class="pf">*hek-</span> → <span class="su">ek-</span></td></tr>
+          <tr><td>B-6</td><td><b class="redt">All long vowels shorten</b></td><td><span class="pf">*nāw-ren</span> → <span class="su">Navren</span></td></tr>
+        </table></div>
+      </div>
+    </div>
+    <div class="cog frame"><span class="br tl"></span><span class="br br2"></span>
+      Cognate line — the crossing-speech is <span class="su">Suvtsel</span> in a capital mouth; the seam is <span class="su">dzel</span>; the drive is <span class="su">Sovorn</span>. Say <span class="su">Sūchel</span> to a Belgar clerk and they will file it as <span class="su">Suvtsel</span> — <b class="amber">the length you hold is, to them, a spelling error.</b>
+    </div>
+    <div class="tbl-wrap frame names" style="margin-top:16px"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table id="t-beltsel">
+        <thead><tr><th>Place</th><th>Derivation</th><th>Gloss · what it is</th></tr></thead>
+        <tbody>
+          <tr><td>Belgar</td><td class="pf">*bel-gar</td><td>"Hearth-ground" — the capital world; nine rings of city around one sea</td></tr>
+          <tr><td>Plagar</td><td class="pf">*pelag-ar</td><td>"the Deep Quarter" — oldest district, sunk two syllables and ten meters</td></tr>
+          <tr><td>Dzelren</td><td class="pf">*gel-ren</td><td>"Seam-way" — the crossing terminal; a cathedral of departures</td></tr>
+          <tr><td>Tselsom</td><td class="pf">*kel-som</td><td>"Speech-gathering" — the great forum where the Assembly convenes</td></tr>
+          <tr><td>Kadtan</td><td class="pf">*kad-stan</td><td>"Beacon-stand" — the network throne; whoever holds it holds "when"</td></tr>
+          <tr><td>Verstan</td><td class="pf">*wer-stan</td><td>"Truth-station" — the high court; sister-city of Werstan and Ērstan</td></tr>
+          <tr><td>Turdol</td><td class="pf">*tur-dol</td><td>"Tower-pit" — the inverted undercity beneath the spires</td></tr>
+          <tr><td>Limgar</td><td class="pf">*lim-gar</td><td>"Gate-ground" — the port ring; every fleet's first sight of the capital</td></tr>
+          <tr><td>Navren</td><td class="pf">*nāw-ren</td><td>"Ship-road" — the orbital lanes, dense as a printed page</td></tr>
+          <tr><td>Dundol</td><td class="pf">*dun-dol</td><td>"Mound-pit" — the amphitheater bowl; riots and operas</td></tr>
+          <tr><td>Morstan</td><td class="pf">*mor-stan</td><td>"Rock-station" — the shipbreaking yards</td></tr>
+          <tr><td>Akbel</td><td class="pf">*ak-bel</td><td>"Ice-hearth" — the cold vaults; the capital's seed and gene banks</td></tr>
+          <tr><td>Somgar</td><td class="pf">*som-gar</td><td>"Gathering-ground" — parliament plain</td></tr>
+          <tr><td>Dzels</td><td class="pf">*gel-es</td><td>"Seam-shrine" — eroded to four letters; the name is the sermon</td></tr>
+          <tr><td>Porgar</td><td class="pf">*por-gar</td><td>"Harbor-ground" — the freeport where fleet law outranks capital law</td></tr>
+          <tr><td>Vosbel</td><td class="pf">*wos-bel</td><td>"Wound-hearth" — the memorial city for the unreturned</td></tr>
+          <tr><td>Ranren</td><td class="pf">*ran-ren</td><td>"Run-road" — the speed straits; venue of the Corse Furiose</td></tr>
+          <tr><td>Temtur</td><td class="pf">*tem-tur</td><td>"Weave-tower" — the archive spire; every crossing ever logged</td></tr>
+          <tr><td>Idgar</td><td class="pf">*id-gar</td><td>"Open-ground" — the first landing field, kept unbuilt by law</td></tr>
+          <tr><td>Nexbel</td><td class="pf">*nex-bel</td><td>"Gap-hearth" — the mourners' quarter, where the ne-liturgies are sung</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- WOLORI -->
+<section id="wolori">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">05</span> THE WOLORI — LANGUAGE OF THE IRRATIONALS <span class="jp">無理数団の言葉</span></div>
+    <h2>Yes: the old one — kept alive by refusing to let it pray</h2>
+    <p class="lead">The order of science that follows Logos — the <em>Ricercatori del Limite</em>, called the <b>Irrationals</b> — does speak the ancestor. But Old Pelagic survives in <em>two hands</em>, and the difference between them is the whole politics of truth in this universe.</p>
+
+    <div class="grid3">
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn" style="color:var(--blue-l)">CUSTODIAN 01 · THE ASSEMBLY</div>
+        <p><b>Liturgical Pelgar — frozen.</b> Performed, not lived; the grammatical claim that truth has not moved since before the seam. Doxa's instrument: the tongue of the consensus, whose creed is <span class="su">«tutto è connesso con tutto»</span>. It is sacred precisely because it is blind to the new world — it cannot conjugate a crossing, so in it no crossing can contradict doctrine.</p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn" style="color:var(--red)">CUSTODIAN 02 · THE WOLORI</div>
+        <p><b>Lorkel — working Old Pelagic.</b> <span class="pf">*lor-kel</span>, "ratio-speech": the Irrationals' living technical register, extended by coinage the way Neo-Latin coined <em>oxygenium</em>. Same corpus, opposite use: the Assembly embalmed the ancestor; the Wolori keep it <b>employed</b>. Both claim custody; each calls the other's use profanation. The custody battle over a dead language is one of the quietest wars in the setting.</p>
+      </div>
+      <div class="card frame"><span class="br tl"></span><span class="br br2"></span>
+        <div class="cn" style="color:var(--amber)">CUSTODIAN 00 · NOTATION</div>
+        <p><b>The zero-tongue.</b> Above Lorkel sits the order's true liturgy: mathematics itself — no moods, no anchors, <b>no native speakers</b>. The only medium in which T• can be written without being sworn. Members take notation-names — <span class="goldt">√2, π, φ, √−1, z</span> — pronounced differently on every world, written identically on all of them: the one perfect identity in a crossable universe.</p>
+      </div>
+    </div>
+
+    <div class="wol frame" style="margin-top:18px"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <div class="wk">WHY THE MOODLESS TONGUE IS THE SCIENTIFIC ONE</div>
+      <p>In Sūchel you cannot state a hypothesis. Every finite verb must swear a mood — T, T⁻, T⁺, or T• — so a conjecture is grammatical perjury and a heresy is two morphemes long. Old Pelagic predates the seam: <b>no veridical moods, no temporal anchors, no ne</b>. It is the only tongue in which a proposition can be entertained without being asserted — the hypothesis-space language, the laboratory glassware of speech.</p>
+      <p>Hence the mirrored joke at the heart of the family: <b class="bluet">the Assembly keeps Old Pelagic because it cannot describe the seam. The Wolori keep it for the same reason.</b> One custodian uses the blindness to protect doctrine from evidence; the other uses it to protect inquiry from doctrine.</p>
+      <p>And the name completes the Pythagorean echo. Their endonym is <b class="goldt">Wolori</b> — <span class="pf">*wo-lor-i</span>, "the un-ratioed" — Doxa's sneer worn as a badge, "Irrationals" being merely its translation. An order devoted to Logos, the Ratio, named for what escapes ratio: because their founding discovery — like √2 in a Pythagorean hand, like the verdict no beacon can vouch for — is that <b>the truth is incommensurable with the consensus grammar.</b> Bone's uniform bears «√2» for exactly this reason: the first number that broke the faith of the people who found it.</p>
+      <p style="margin-bottom:0">One more shibboleth for the page: a Wolori lector says <span class="su">gel</span>, <span class="su">kel</span>, <span class="su">Suwkel</span> — the unshifted proto-forms. In a bar on any world, the order is audible in a single syllable, the way a Latin-dropping scholar is audible in ours.</p>
+    </div>
+
+    <h3 style="margin-top:26px">Neo-Pelagic — the Wolori's technical coinages</h3>
+    <p class="lead" style="font-size:14px">Lorkel grows by compounding proto-roots with no sound changes applied — the ancestor's morphology, employed for post-seam physics. Eight standard terms:</p>
+    <div class="tbl-wrap frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table id="t-lorkel">
+        <tr><th>Lorkel</th><th>Formation</th><th>Meaning</th><th>Sūchel reflex, for comparison</th></tr>
+        <tr><td class="su">gel</td><td class="pf">*gel-</td><td>the seam 𝔍 (unshifted)</td><td><span class="su">jel</span></td></tr>
+        <tr><td class="su">kaplor</td><td class="pf">*kap-lor</td><td>"the holding-rule" — the curvature limit Κ as law</td><td><span class="su">kav</span></td></tr>
+        <tr><td class="su">pewlor</td><td class="pf">*pew-lor</td><td>"five-rule" — the logic ΛL</td><td><span class="su">pevlor</span> (its regular reflex)</td></tr>
+        <tr><td class="su">gelwer</td><td class="pf">*gel-wer</td><td>"seam-truth" — the value T•</td><td><span class="su">eshe-ver</span></td></tr>
+        <tr><td class="su">turom</td><td class="pf">*tur-om</td><td>"all-tower" — the OCT entire</td><td><span class="su">Turmai</span> (the fleets add kinship)</td></tr>
+        <tr><td class="su">nexlor</td><td class="pf">*nex-lor</td><td>"gap-law" — the principle that the crossing interval admits no predicate</td><td><span class="su">ne</span> (the fleets keep only the particle)</td></tr>
+        <tr><td class="su">suwath</td><td class="pf">*suw-ath</td><td>"a crossing" — the event, stated flat, unmooded</td><td><span class="su">sūath</span></td></tr>
+        <tr><td class="su">wolor</td><td class="pf">*wo-lor</td><td>"the un-ratioed" — an incommensurable; a truth outside the five moods</td><td><span class="muted">no reflex — the fleets never needed the noun</span></td></tr>
+      </table>
+    </div>
+
+    <div class="flag"><b>Open proposal (not yet canon):</b> the Wolori motherhouse on old ground — Mars, at <span class="su">Pelaghar</span>, "the Deephold." It would make Rudgar their cradle vernacular, which fits the phonology beautifully: the conservative sister that kept <span class="pf">*w</span> and <span class="pf">*h</span> is the closest living tongue to the ancestor, so Mars-born lectors read Old Pelagic with the least accent. Confirm or relocate as the story needs.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">THE SISTERS // ONE PROTO · FOUR MOUTHS · TWO CUSTODIANS · ONE ZERO-TONGUE</div>
+    <div class="big">THE ORDER IS AUDIBLE IN A SINGLE SYLLABLE</div>
+    <div class="fr">RUDGAR · SEL · BELTSEL — AND LORKEL, THE ANCESTOR AT WORK // REV 1.0</div>
+  </div>
+</footer>
+
+<script>
+function tick(){const d=new Date();document.getElementById('clk').textContent=[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');}
+tick();setInterval(tick,1000);
+const links=[...document.querySelectorAll('.nav a')];
+const secs=links.map(l=>document.querySelector(l.getAttribute('href')));
+addEventListener('scroll',()=>{let i=secs.length-1;for(let k=0;k<secs.length;k++){if(secs[k]&&secs[k].getBoundingClientRect().top>90){i=k-1;break;}}if(i<0)i=0;links.forEach((l,k)=>l.classList.toggle('on',k===i));},{passive:true});
+</script>
+</body>
+</html>

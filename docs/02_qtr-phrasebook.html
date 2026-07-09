@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHRASEBOOK // Sūchel for the Page — Hails, Curses, Prayers, Litanies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08070a;--panel:#0e0b10;
+  --red:#e8362a;--red-d:#a3211a;--red-dd:#5e120e;--red-glow:rgba(232,54,42,.55);
+  --amber:#f2b01f;--gold:#f5d76e;--blue-l:#6fa8ff;--violet:#8b7dd8;--green:#7ec885;--teal:#4fc2a8;
+  --ink:#d8d2c8;--ink-d:#8c8a82;--ink-dd:#5a5852;
+  --line:rgba(232,54,42,.22);--line-amber:rgba(242,176,31,.20);--grid:rgba(232,54,42,.045);
+}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Chakra Petch','Bahnschrift','Segoe UI',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden;letter-spacing:.01em}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse 120% 100% at 50% 0%,#000 30%,transparent 90%)}
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.18) 3px,rgba(0,0,0,0) 4px);mix-blend-mode:multiply;opacity:.5}
+.mono{font-family:'Share Tech Mono',monospace}.jp{font-family:'Zen Kaku Gothic New',sans-serif}
+.frame{position:relative}
+.frame>.br{position:absolute;width:14px;height:14px;border:1px solid var(--red);pointer-events:none;z-index:3}
+.br.tl{top:-1px;left:-1px;border-right:0;border-bottom:0}.br.tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.br.bl{bottom:-1px;left:-1px;border-right:0;border-top:0}.br.br2{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:18px;height:30px;padding:0 16px;background:linear-gradient(180deg,rgba(8,7,10,.96),rgba(8,7,10,.82));border-bottom:1px solid var(--line);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-d);text-transform:uppercase;backdrop-filter:blur(6px)}
+.topbar .dot{width:7px;height:7px;background:var(--red);box-shadow:0 0 8px var(--red-glow);animation:blink 2.4s steps(1) infinite}
+@keyframes blink{0%,70%{opacity:1}71%,100%{opacity:.25}}
+.topbar .sep{color:var(--red-dd)}.topbar .right{margin-left:auto;display:flex;gap:18px;align-items:center}.topbar .clk{color:var(--amber)}
+@media(max-width:680px){.topbar .hideS{display:none}}
+.nav{position:fixed;top:30px;left:0;right:0;z-index:999;display:flex;align-items:center;gap:2px;padding:0 14px;height:38px;background:rgba(10,8,12,.9);border-bottom:1px solid var(--line);backdrop-filter:blur(6px);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav .brand{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:14px;letter-spacing:.22em;color:var(--red);text-shadow:0 0 12px var(--red-glow);margin-right:18px;white-space:nowrap}
+.nav a{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:.13em;color:var(--ink-d);text-decoration:none;text-transform:uppercase;padding:5px 13px;white-space:nowrap;border:1px solid transparent;transition:all .18s}
+.nav a:hover{color:var(--amber);border-color:var(--line-amber)}
+.nav a.on{color:var(--red);border-color:var(--line);background:rgba(232,54,42,.06)}
+.nav .navtag{margin-left:auto;color:var(--ink-dd);font-family:'Share Tech Mono';font-size:9px;letter-spacing:.2em;white-space:nowrap}
+@media(max-width:1120px){.nav .navtag{display:none}}
+
+.wrap{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:0 20px}
+section{padding:60px 0;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.26em;color:var(--red);text-transform:uppercase;flex-wrap:wrap}
+.eyebrow::before{content:'';width:26px;height:1px;background:var(--red);box-shadow:0 0 6px var(--red-glow)}
+.eyebrow .idx{color:var(--amber)}.eyebrow .jp{color:var(--ink-dd);letter-spacing:.1em}
+h2{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:clamp(22px,3.6vw,34px);letter-spacing:.01em;line-height:1.1;color:#f0ebe2}
+.lead{max-width:860px;color:var(--ink);font-size:15px;margin-top:12px}
+.muted{color:var(--ink-d)}.amber{color:var(--amber)}.redt{color:var(--red)}.bluet{color:var(--blue-l)}.greent{color:var(--green)}.goldt{color:var(--gold)}
+.su{font-style:italic;color:var(--gold)}
+.ipa{font-family:'Share Tech Mono',monospace;color:var(--teal);font-size:.9em}
+.pf{font-family:'Share Tech Mono',monospace;color:var(--violet);font-size:.9em}
+
+.hero{min-height:70vh;padding:120px 0 46px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.hero-bloom{position:absolute;top:14%;right:4%;width:min(540px,58vw);height:min(400px,44vw);background:radial-gradient(ellipse at center,rgba(245,215,110,.10),rgba(232,54,42,.06) 45%,transparent 70%);filter:blur(22px);pointer-events:none;z-index:0}
+.hero-inner{position:relative;z-index:2}
+.hero h1{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.02em;line-height:1.0;font-size:clamp(32px,7vw,86px);color:#f4efe6}
+.hero h1 .stroke{color:transparent;-webkit-text-stroke:1.4px var(--red);text-shadow:0 0 26px var(--red-glow);display:block}
+.hero h1 .fill{color:var(--red);text-shadow:0 0 30px var(--red-glow);display:block}
+.hero .sub{font-family:'Share Tech Mono',monospace;font-size:clamp(11px,1.5vw,13.5px);letter-spacing:.22em;color:var(--amber);margin-top:22px;text-transform:uppercase;max-width:820px}
+.hero .desc{max-width:740px;margin-top:18px;color:var(--ink);font-size:15px}
+
+/* grammar notes strip */
+.gnotes{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:26px}
+@media(max-width:900px){.gnotes{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.gnotes{grid-template-columns:1fr}}
+.gn{border:1px solid var(--line);padding:14px 16px;background:linear-gradient(180deg,rgba(14,11,16,.7),rgba(10,8,12,.5))}
+.gn .gk{font-family:'Share Tech Mono';font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.gn p{font-size:12.5px;color:var(--ink-d)}
+.gn .su{font-size:14px}
+
+/* phrase entries */
+.ph{border:1px solid var(--line);background:linear-gradient(180deg,rgba(14,11,16,.65),rgba(10,8,12,.5));margin-top:14px;display:grid;grid-template-columns:56px 1fr;position:relative}
+.ph .num{border-right:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono';font-size:11px;color:var(--ink-dd);background:rgba(232,54,42,.03)}
+.ph .body{padding:15px 18px}
+.ph .line{font-size:21px;color:var(--gold);font-style:italic;line-height:1.3}
+.ph .line .gap{color:var(--red);font-style:normal;font-weight:600;text-shadow:0 0 10px var(--red-glow)}
+.ph .ipa-l{font-family:'Share Tech Mono';font-size:11px;color:var(--teal);margin-top:4px}
+.ph .gl{font-family:'Share Tech Mono';font-size:10.5px;color:var(--ink-d);margin-top:6px}
+.ph .tr{font-size:14px;color:#ece7de;margin-top:7px}
+.ph .use{font-size:12.5px;color:var(--ink-d);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.ph .use b{color:var(--amber);font-weight:400}
+.ph.call .num{color:var(--blue-l)}
+.ph.resp .num{color:var(--green)}
+.ph.star{border-color:rgba(232,54,42,.5)}
+.ph.star .num{color:var(--red)}
+
+/* category head */
+.cat-note{font-size:13px;color:var(--ink-d);max-width:78ch;margin-top:6px}
+
+/* appendix table */
+table{border-collapse:collapse;width:100%;margin-top:16px}
+th{font-family:'Share Tech Mono';font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);background:rgba(232,54,42,.04)}
+td{padding:8px 12px;border-bottom:1px dashed var(--line);font-size:13px;color:var(--ink);vertical-align:top}
+td:first-child{color:var(--gold);font-style:italic;white-space:nowrap}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line)}
+
+/* lettering notes */
+.letter{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px}
+@media(max-width:820px){.letter{grid-template-columns:1fr}}
+.ln{border:1px solid var(--line);padding:16px 18px;background:linear-gradient(180deg,rgba(14,11,16,.7),rgba(10,8,12,.5))}
+.ln .lk{font-family:'Share Tech Mono';font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.ln p{font-size:13px;color:var(--ink-d)}
+
+footer{padding:40px 0 70px;text-align:center;border-bottom:0}
+footer .fr{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.2em;color:var(--ink-dd);text-transform:uppercase;line-height:2}
+footer .big{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:clamp(16px,2.4vw,22px);color:var(--red-d);letter-spacing:.04em;margin:14px 0;text-shadow:0 0 20px rgba(232,54,42,.3)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="dot"></span><span>NERV//PELAGIAN ASSEMBLY</span>
+  <span class="sep hideS">/</span><span class="hideS">PHRASEBOOK REV 1.0</span>
+  <div class="right"><span class="hideS mono">41 LINES · READY TO LETTER</span><span class="sep">/</span><span class="clk mono" id="clk">00:00:00</span><span class="jp" style="color:var(--ink-dd)">常用句集</span></div>
+</div>
+
+<nav class="nav">
+  <span class="brand">PHRASES</span>
+  <a href="#top" class="on">NOTES</a>
+  <a href="#hails">HAILS</a>
+  <a href="#commands">BRIDGE</a>
+  <a href="#curses">CURSES</a>
+  <a href="#prayers">PRAYERS</a>
+  <a href="#litany">DRIVE-LITANY</a>
+  <a href="#appendix">NEW WORDS</a>
+  <span class="navtag jp">渡りの言葉・句集</span>
+</nav>
+
+<!-- HERO + GRAMMAR NOTES -->
+<section class="hero" id="top">
+  <div class="hero-bloom"></div>
+  <div class="wrap hero-inner">
+    <div class="eyebrow"><span class="idx">11</span> LANGUAGE CODEX · PHRASEBOOK <span class="jp">序章 · 句集</span></div>
+    <h1><span class="stroke">SŪCHEL</span><span class="fill">FOR THE PAGE</span></h1>
+    <div class="sub">Forty-one lines ready to letter — every one composed from the grammar, not around it</div>
+    <p class="desc">Hails, bridge chatter, curses, prayers, and the full drive-litany. Each entry gives the line, pronunciation, morpheme gloss, translation, and a usage note for the panel. Three small grammar pieces surface here that the main codex left implicit — and one of them is a theorem: <span class="amber">commands carry no mood and no anchor</span>, because an order asserts nothing, so it escapes the duty to conjugate the truth. In Sūchel, the imperative is the only way to speak without taking a position.</p>
+    <div class="gnotes">
+      <div class="gn frame"><span class="br tl"></span><span class="br br2"></span><div class="gk">IMPERATIVE</div><p>Bare stem + <span class="su">-u</span>. No mood, no anchor — non-assertive. Prohibitive: <span class="su">vo</span> + stem-<span class="su">u</span>. <span class="su">jed-u!</span> "go!" · <span class="su">vo jed-u!</span> "don't go!"</p></div>
+      <div class="gn frame"><span class="br tl"></span><span class="br br2"></span><div class="gk">VOCATIVE</div><p>Particle <span class="su">ō</span> before the noun: <span class="su">ō mān!</span> "hey, crewmate!" With entangled kin, the suffix does the warmth: <span class="su">ō Sōrnmai</span> "O my drive."</p></div>
+      <div class="gn frame"><span class="br tl"></span><span class="br br2"></span><div class="gk">QUESTIONS</div><p>Final particle <span class="su">vu</span> (from <span class="pf">*wu</span>, SC-3). Polar only; answers are <span class="su">ver</span> "true" or <span class="su">vo</span> "not." <span class="su">…ver-a=ka vu?</span> "is it so?"</p></div>
+      <div class="gn frame"><span class="br tl"></span><span class="br br2"></span><div class="gk">ACCUSATIVE FORMS</div><p>Object clitic <span class="su">-(e)n</span>: <span class="su">en</span> "I" → <span class="su">enen</span> "me"; <span class="su">ish</span> "you" → <span class="su">ishen</span>. Denominal verbs are licit fleet-talk: <span class="su">osh</span> "mouth" → <span class="su">oshu!</span> "swallow (it)!"</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- A. HAILS -->
+<section id="hails">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">A</span> HAILS &amp; PARTINGS <span class="jp">挨拶</span></div>
+    <h2>Meeting and leaving</h2>
+    <p class="cat-note">Fleet greeting logic: you greet with <em>truth</em>, and you never say "goodbye" — you say <em>surface again</em>. Partings differ by whether the other is staying inside beacon coverage or leaving it.</p>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">01</div><div class="body">
+      <div class="line">ver ish-ol.</div>
+      <div class="ipa-l">[ver iˈʃol]</div>
+      <div class="gl">truth 2SG-DAT</div>
+      <div class="tr">"Truth to you." — Hello.</div>
+      <div class="use"><b>Use:</b> the standard hail, any register. Neutral, safe, universal.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">02</div><div class="body">
+      <div class="line">ver ishmai-ol.</div>
+      <div class="ipa-l">[ver iʃˈmai.ol]</div>
+      <div class="gl">truth 2SG.ENT-DAT</div>
+      <div class="tr">"Truth to you, kin." — the warm reply.</div>
+      <div class="use"><b>Use:</b> answering 01 with the entangled form upgrades the greeting to intimacy. Answering a stranger this way is forward; answering crew any other way is cold.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">03</div><div class="body">
+      <div class="line">ō mān!</div>
+      <div class="ipa-l">[oː maːn]</div>
+      <div class="gl">VOC crew.hand</div>
+      <div class="tr">"Hey, mate!"</div>
+      <div class="use"><b>Use:</b> attention-getter across a deck or a bar. Friendly-rough.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">04</div><div class="body">
+      <div class="line">kad ishen tan-u.</div>
+      <div class="ipa-l">[kad ˈi.ʃen ˈta.nu]</div>
+      <div class="gl">beacon 2SG.ACC hold-IMP</div>
+      <div class="tr">"Beacon keep you."</div>
+      <div class="use"><b>Use:</b> parting, when the other stays <b>inside coverage</b>. The default farewell of settled folk.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">05</div><div class="body">
+      <div class="line">zukad-eth, lesh ishen tan-u.</div>
+      <div class="ipa-l">[ˈzu.ka.deth · leʃ ˈi.ʃen ˈta.nu]</div>
+      <div class="gl">dark.time-LOC alignment 2SG.ACC hold-IMP</div>
+      <div class="tr">"In the dark, may fair phase keep you."</div>
+      <div class="use"><b>Use:</b> parting for someone leaving coverage. Where no beacon can vouch, only <span class="su">lesh</span> — alignment, luck — remains to invoke. Solemn.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">06</div><div class="body">
+      <div class="line">hōl-u ret.</div>
+      <div class="ipa-l">[ˈhoː.lu ret]</div>
+      <div class="gl">surface-IMP again</div>
+      <div class="tr">"Surface again." — the divers' goodbye.</div>
+      <div class="use"><b>Use:</b> between divers, always. Saying "goodbye" (any parting of 04/05 type) to a diver about to dive is a faux pas verging on omen; you tell them to come back up.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">07</div><div class="body">
+      <div class="line">en jed-a=mi.</div>
+      <div class="ipa-l">[en dʒeˈda.mi]</div>
+      <div class="gl">1SG go-T=PROP</div>
+      <div class="tr">"I'm off — by my own clock."</div>
+      <div class="use"><b>Use:</b> casual leave-taking. The =mi anchor is the shrug: my time, my business.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">08</div><div class="body">
+      <div class="line">men-u, mān.</div>
+      <div class="ipa-l">[ˈme.nu maːn]</div>
+      <div class="gl">wait-IMP crew.hand</div>
+      <div class="tr">"Hold on, mate."</div>
+      <div class="use"><b>Use:</b> stopping someone mid-turn; softening bad news to come.</div>
+    </div></div>
+  </div>
+</section>
+
+<!-- B. BRIDGE -->
+<section id="commands">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">B</span> BRIDGE CHATTER <span class="jp">艦橋</span></div>
+    <h2>Commands and responses</h2>
+    <p class="cat-note">Orders are bare and anchor-less (they assert nothing). Reports are conjugated — a report without mood and anchor is not a report, it is noise. Call lines marked <span class="bluet">◆</span>, responses <span class="greent">◆</span>.</p>
+
+    <div class="ph call frame"><span class="br tl"></span><span class="br br2"></span><div class="num">09</div><div class="body">
+      <div class="line">nuv jed-u!</div>
+      <div class="ipa-l">[nuv ˈdʒe.du]</div>
+      <div class="gl">DOWN go-IMP</div>
+      <div class="tr">"Take her down!"</div>
+      <div class="use"><b>Use:</b> the dive order. Remember motion verbs demand a depth word — the command is two syllables of pure tower-grammar.</div>
+    </div></div>
+
+    <div class="ph call frame"><span class="br tl"></span><span class="br br2"></span><div class="num">10</div><div class="body">
+      <div class="line">hau jed-u!</div>
+      <div class="ipa-l">[hau ˈdʒe.du]</div>
+      <div class="gl">UP go-IMP</div>
+      <div class="tr">"Bring her up!"</div>
+      <div class="use"><b>Use:</b> the surfacing order; also shouted as an abort.</div>
+    </div></div>
+
+    <div class="ph call frame"><span class="br tl"></span><span class="br br2"></span><div class="num">11</div><div class="body">
+      <div class="line">jel id-u.</div>
+      <div class="ipa-l">[dʒel ˈi.du]</div>
+      <div class="gl">seam open-IMP</div>
+      <div class="tr">"Open the seam."</div>
+      <div class="use"><b>Use:</b> the crossing order. By fleet custom it is spoken quietly, never shouted — you do not shout at the seam.</div>
+    </div></div>
+
+    <div class="ph call frame"><span class="br tl"></span><span class="br br2"></span><div class="num">12</div><div class="body">
+      <div class="line">Sōrnmai, tan-u.</div>
+      <div class="ipa-l">[ˈsoːrn.mai ˈta.nu]</div>
+      <div class="gl">drive.ENT hold-IMP</div>
+      <div class="tr">"Hold, my Sōrn."</div>
+      <div class="use"><b>Use:</b> murmured to the engine under strain. The entangled -mai on one's own drive is universal among pilots; the drive is kin, not property.</div>
+    </div></div>
+
+    <div class="ph call frame"><span class="br tl"></span><span class="br br2"></span><div class="num">13</div><div class="body">
+      <div class="line">kad ver-a=ka vu?</div>
+      <div class="ipa-l">[kad veˈra.ka vu]</div>
+      <div class="gl">beacon speak.true-T=BEAC Q</div>
+      <div class="tr">"Does the beacon hold?" — Are we in coverage?</div>
+      <div class="use"><b>Use:</b> the standard nav query after any maneuver.</div>
+    </div></div>
+
+    <div class="ph resp frame"><span class="br tl"></span><span class="br br2"></span><div class="num">14</div><div class="body">
+      <div class="line">ver-a=ka.</div>
+      <div class="ipa-l">[veˈra.ka]</div>
+      <div class="gl">true-T=BEAC</div>
+      <div class="tr">"It holds." — Lock confirmed.</div>
+      <div class="use"><b>Use:</b> the good answer. Two words that mean <em>we exist in shared time</em>.</div>
+    </div></div>
+
+    <div class="ph resp frame"><span class="br tl"></span><span class="br br2"></span><div class="num">15</div><div class="body">
+      <div class="line">vo ver-a=ka. zukad.</div>
+      <div class="ipa-l">[vo veˈra.ka · ˈzu.kad]</div>
+      <div class="gl">NEG true-T=BEAC · dark.time</div>
+      <div class="tr">"No lock. We're dark."</div>
+      <div class="use"><b>Use:</b> the bad answer. The single word <span class="su">zukad</span> as a sentence is fleet shorthand for <em>we are beyond all vouching</em>.</div>
+    </div></div>
+
+    <div class="ph call frame"><span class="br tl"></span><span class="br br2"></span><div class="num">16</div><div class="body">
+      <div class="line">tem tan-u, eni om.</div>
+      <div class="ipa-l">[tem ˈta.nu · ˈe.ni om]</div>
+      <div class="gl">pattern hold-IMP · 1PL all</div>
+      <div class="tr">"Hold the pattern, all hands."</div>
+      <div class="use"><b>Use:</b> pre-crossing order. <span class="su">tem</span> here is both the ship's formation and, ominously, the Κ5 word for what may or may not survive.</div>
+    </div></div>
+  </div>
+</section>
+
+<!-- C. CURSES -->
+<section id="curses">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">C</span> CURSES &amp; OATHS <span class="jp">呪詛</span></div>
+    <h2>Swearing like a crosser</h2>
+    <p class="cat-note">Fleet profanity is cosmological: you curse by the hazards. Mild oaths invoke scars; strong ones invoke the mouths. The oath-formula swears on one's own clock — gravest precisely because no beacon can back it.</p>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">17</div><div class="body">
+      <div class="line">jelvos!</div>
+      <div class="ipa-l">[ˈdʒel.vos]</div>
+      <div class="gl">seam.scar</div>
+      <div class="tr">"Scar!" — Damn it.</div>
+      <div class="use"><b>Use:</b> the everyday expletive — for things gone <em>subtly</em> wrong (instruments lying, readings off). A scar is where the vacuum lies to you.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">18</div><div class="body">
+      <div class="line">velosh ishen oshu!</div>
+      <div class="ipa-l">[ˈve.loʃ ˈi.ʃen ˈo.ʃu]</div>
+      <div class="gl">Formless.mouth 2SG.ACC swallow-IMP</div>
+      <div class="tr">"May a Formless mouth swallow you!"</div>
+      <div class="use"><b>Use:</b> the strong curse — fight-starting in any port bar. Invoking the mouths at someone is wishing them the one fate with no verdict.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">19</div><div class="body">
+      <div class="line">vo-tem!</div>
+      <div class="ipa-l">[ˈvo.tem]</div>
+      <div class="gl">NEG-pattern</div>
+      <div class="tr">"Shapeless!" — you incoherent waste.</div>
+      <div class="use"><b>Use:</b> insult for incompetence. To have no <span class="su">tem</span> is to be the thing that couldn't even survive a crossing <em>in principle</em>.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">20</div><div class="body">
+      <div class="line">kru jel-eth!</div>
+      <div class="ipa-l">[kru ˈdʒe.leth]</div>
+      <div class="gl">blood seam-LOC</div>
+      <div class="tr">"Blood at the seam!"</div>
+      <div class="use"><b>Use:</b> oath of dismay/horror — invokes failed condensation, the smeared crossing. Said when witnessing disaster.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">21</div><div class="body">
+      <div class="line">an vo hōl-u!</div>
+      <div class="ipa-l">[an vo ˈhoː.lu]</div>
+      <div class="gl">3SG NEG surface-IMP</div>
+      <div class="tr">"May he never surface!"</div>
+      <div class="use"><b>Use:</b> the vicious curse for an enemy diver — the exact inversion of farewell 06. Unforgivable between crew.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">22</div><div class="body">
+      <div class="line">gal ishen tan-u!</div>
+      <div class="ipa-l">[gal ˈi.ʃen ˈta.nu]</div>
+      <div class="gl">the.still 2SG.ACC hold-IMP</div>
+      <div class="tr">"May the Still hold you!"</div>
+      <div class="use"><b>Use:</b> pilot's curse — <span class="su">gal</span> is the becalmed vacuum, the Dead-Sea. Wishing someone held motionless in structureless calm: a sailor's hell.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">23</div><div class="body">
+      <div class="line">vurel-en chel!</div>
+      <div class="ipa-l">[ˈvu.re.len tʃel]</div>
+      <div class="gl">madman-GEN speech</div>
+      <div class="tr">"Madman's talk!"</div>
+      <div class="use"><b>Use:</b> dismissal of nonsense — with built-in dramatic irony, since the Madman's Theorem is the one thing that could break the trap. Every use is a tiny act of the consensus.</div>
+    </div></div>
+
+    <div class="ph star frame"><span class="br tl"></span><span class="br br2"></span><div class="num">24</div><div class="body">
+      <div class="line">en ver-a=mi: …</div>
+      <div class="ipa-l">[en veˈra.mi]</div>
+      <div class="gl">1SG speak.true-T=PROP</div>
+      <div class="tr">"I swear by my own clock: …"</div>
+      <div class="use"><b>Use:</b> the oath-formula. Swearing on <b>=mi</b> instead of =ka means: <em>this holds even where no beacon vouches for me</em> — the gravest oath precisely because it renounces all external backing. Breaking a =mi oath makes one <span class="su">vo-tem</span>.</div>
+    </div></div>
+  </div>
+</section>
+
+<!-- D. PRAYERS -->
+<section id="prayers">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">D</span> PRAYERS &amp; BLESSINGS <span class="jp">祈り</span></div>
+    <h2>What they say to the Tower</h2>
+    <p class="cat-note">Two registers: Assembly liturgy (addressed to the beacon and the Tower, conjugated in confident T=ka) and crossers' folk-piety (addressed to the seam and the lost, living in T• and =zu). The grammar is the theology.</p>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">25</div><div class="body">
+      <div class="line">Turmai, enen tan-u.</div>
+      <div class="ipa-l">[ˈtur.mai ˈe.nen ˈta.nu]</div>
+      <div class="gl">Tower.ENT 1SG.ACC hold-IMP</div>
+      <div class="tr">"O our Tower, hold me."</div>
+      <div class="use"><b>Use:</b> the universal short prayer — the entangled -mai claims kinship with the whole hierarchy. Said at need, by everyone, believers or not.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">26</div><div class="body">
+      <div class="line">kad om-ol ver-u.</div>
+      <div class="ipa-l">[kad ˈo.mol ˈve.ru]</div>
+      <div class="gl">beacon all-DAT speak.true-IMP</div>
+      <div class="tr">"Beacon, speak true for all."</div>
+      <div class="use"><b>Use:</b> Assembly versicle, opening services. The congregation is praying for <em>shared time itself</em>.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">27</div><div class="body">
+      <div class="line">jel lesh-eth id-u.</div>
+      <div class="ipa-l">[dʒel ˈle.ʃeth ˈi.du]</div>
+      <div class="gl">seam alignment-LOC open-IMP</div>
+      <div class="tr">"Seam, open in fair phase."</div>
+      <div class="use"><b>Use:</b> the pre-crossing prayer — whispered by crew as the drive spins up. Companion to order 11.</div>
+    </div></div>
+
+    <div class="ph star frame"><span class="br tl"></span><span class="br br2"></span><div class="num">28</div><div class="body">
+      <div class="line">enmai nexath-mai tan-a=mi.</div>
+      <div class="ipa-l">[ˈen.mai ˈne.ksath.mai taˈna.mi]</div>
+      <div class="gl">1PL.ENT gap-ENT hold-T=PROP</div>
+      <div class="tr">"We keep our gaps."</div>
+      <div class="use"><b>Use:</b> the crossers' creed. Note the grammar's confession: gaps take <b>entangled possession</b> — the holes in a life are kin, not property. Said at reunions, over drink, before dives.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">29</div><div class="body">
+      <div class="line">an zu jed-t-a=mi.</div>
+      <div class="ipa-l">[an zu dʒedˈta.mi]</div>
+      <div class="gl">3SG adrift go-PFV-T=PROP</div>
+      <div class="tr">"She has gone adrift." — She is dead.</div>
+      <div class="use"><b>Use:</b> the death formula. Plain T — a fact — but anchored =mi: <em>only her own clock knows when</em>. The fleet does not say "died"; it says the anchor was lost.</div>
+    </div></div>
+
+    <div class="ph star frame"><span class="br tl"></span><span class="br br2"></span><div class="num">30</div><div class="body">
+      <div class="line">hōl-eshe=zu, maiel.</div>
+      <div class="ipa-l">[hoːˈle.ʃe.zu ˈmai.el]</div>
+      <div class="gl">surface-T•=DARK kinsman</div>
+      <div class="tr">"Surface — seam-true — in the dark, kinsman."</div>
+      <div class="use"><b>Use:</b> said over the unreturned. The funeral verb is conjugated <b>T•</b>: their surfacing can be neither asserted nor denied, so the mourning mood is the self-dual one. The most theologically loaded two words in the language.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">31</div><div class="body">
+      <div class="line">ver enmai-eth ve-a=ka.</div>
+      <div class="ipa-l">[ver enˈmai.eth veˈa.ka]</div>
+      <div class="gl">truth 1PL.ENT-LOC be-T=BEAC</div>
+      <div class="tr">"Truth is among us."</div>
+      <div class="use"><b>Use:</b> Assembly congregational response — the confident register: plain T, beacon-anchored, truth located <em>inside coverage</em>.</div>
+    </div></div>
+
+    <div class="ph frame"><span class="br tl"></span><span class="br br2"></span><div class="num">32</div><div class="body">
+      <div class="line">eshe-ver men-a=zu.</div>
+      <div class="ipa-l">[ˈe.ʃe.ver meˈna.zu]</div>
+      <div class="gl">seam.true-truth wait-T=DARK</div>
+      <div class="tr">"The Tragic Truth waits in the dark."</div>
+      <div class="use"><b>Use:</b> heretical folk-prayer — whispered by crossers' widows, never in Assembly hearing. A T-mood assertion <em>about</em> the T• truth, anchored where no one can check.</div>
+    </div></div>
+  </div>
+</section>
+
+<!-- E. DRIVE-LITANY -->
+<section id="litany">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">E</span> THE DRIVE-LITANY <span class="jp">機関の典礼</span></div>
+    <h2>Call and response, engine-room, before and through a crossing</h2>
+    <p class="cat-note">The full sequence as spoken — engineer calls <span class="bluet">◆</span>, crew responds <span class="greent">◆</span>. It runs the crossing's own ΛL arc: orders (anchor-less) → reports (=mi) → the seam (T•) → the one word inside → existence reasserted on proper time → the beacon reacquired. Letter it across a page-turn and the grammar does your pacing.</p>
+
+    <div class="ph call frame"><span class="br tl"></span><span class="br br2"></span><div class="num">33</div><div class="body">
+      <div class="line">Sōrnmai, ān tan-u.</div>
+      <div class="ipa-l">[ˈsoːrn.mai aːn ˈta.nu]</div>
+      <div class="gl">drive.ENT breath hold-IMP</div>
+      <div class="tr">"My Sōrn, hold breath."</div>
+      <div class="use"><b>Use:</b> litany opening — the engineer addresses the drive as kin and stills it.</div>
+    </div></div>
+
+    <div class="ph resp frame"><span class="br tl"></span><span class="br br2"></span><div class="num">34</div><div class="body">
+      <div class="line">ān tan-a=mi.</div>
+      <div class="ipa-l">[aːn taˈna.mi]</div>
+      <div class="gl">breath hold-T=PROP</div>
+      <div class="tr">"Breath held — by our clock."</div>
+      <div class="use"><b>Use:</b> crew response. Reports take =mi from here on: the ship is about to leave every other clock behind.</div>
+    </div></div>
+
+    <div class="ph call frame"><span class="br tl"></span><span class="br br2"></span><div class="num">35</div><div class="body">
+      <div class="line">nuv, nuv, jel-ol.</div>
+      <div class="ipa-l">[nuv nuv ˈdʒe.lol]</div>
+      <div class="gl">DOWN DOWN seam-DAT</div>
+      <div class="tr">"Down, down, to the seam."</div>
+      <div class="use"><b>Use:</b> the descent chant — pure directionals, no verb at all. Repeatable panel-over-panel as the dive deepens.</div>
+    </div></div>
+
+    <div class="ph resp frame"><span class="br tl"></span><span class="br br2"></span><div class="num">36</div><div class="body">
+      <div class="line">nuvran ve-a=mi.</div>
+      <div class="ipa-l">[ˈnuv.ran veˈa.mi]</div>
+      <div class="gl">running.under be-T=PROP</div>
+      <div class="tr">"We are running under."</div>
+      <div class="use"><b>Use:</b> the vertigo confirmed — the crew names the desync as it takes them.</div>
+    </div></div>
+
+    <div class="ph call frame"><span class="br tl"></span><span class="br br2"></span><div class="num">37</div><div class="body">
+      <div class="line">jel id-eshe=mi.</div>
+      <div class="ipa-l">[dʒel iˈde.ʃe.mi]</div>
+      <div class="gl">seam open-T•=PROP</div>
+      <div class="tr">"The seam opens — seam-true."</div>
+      <div class="use"><b>Use:</b> phase-lock called. First T• of the litany: from here, assertion and denial weigh the same.</div>
+    </div></div>
+
+    <div class="ph star frame"><span class="br tl"></span><span class="br br2"></span><div class="num">38</div><div class="body">
+      <div class="line"><span class="gap">ne.</span></div>
+      <div class="ipa-l">[ne]</div>
+      <div class="gl">GAP</div>
+      <div class="tr">— (the interval that has no sentence)</div>
+      <div class="use"><b>Use:</b> spoken aloud by all hands at the crossing — the only word said <em>inside</em>, and it is the word that is not a word: the crew pronounces the gap so the gap will have been theirs. <b>Letter as its own black panel.</b></div>
+    </div></div>
+
+    <div class="ph call frame"><span class="br tl"></span><span class="br br2"></span><div class="num">39</div><div class="body">
+      <div class="line">hōl-t-eshe=zu vu?</div>
+      <div class="ipa-l">[hoːlˈte.ʃe.zu vu]</div>
+      <div class="gl">surface-PFV-T•=DARK Q</div>
+      <div class="tr">"Surfaced — seam-true, in the dark — yes?"</div>
+      <div class="use"><b>Use:</b> the far-side call. Even the question of arrival must be asked in T•, in dark time.</div>
+    </div></div>
+
+    <div class="ph resp star frame"><span class="br tl"></span><span class="br br2"></span><div class="num">40</div><div class="body">
+      <div class="line">hōl-t-eshe=zu. enmai ve-a=mi.</div>
+      <div class="ipa-l">[hoːlˈte.ʃe.zu · ˈen.mai veˈa.mi]</div>
+      <div class="gl">surface-PFV-T•=DARK · 1PL.ENT be-T=PROP</div>
+      <div class="tr">"Surfaced. We are — by our own clock."</div>
+      <div class="use"><b>Use:</b> the Resurrection response. The crossing stays T•; but existence itself is reasserted in plain T — anchored only to proper time, until the network is found again. <em>We are, even if no one can vouch when.</em></div>
+    </div></div>
+
+    <div class="ph resp frame"><span class="br tl"></span><span class="br br2"></span><div class="num">41</div><div class="body">
+      <div class="line">kad ret ver-a=ka.</div>
+      <div class="ipa-l">[kad ret veˈra.ka]</div>
+      <div class="gl">beacon again true-T=BEAC</div>
+      <div class="tr">"The beacon holds again."</div>
+      <div class="use"><b>Use:</b> reacquisition — the litany's release of tension. The first =ka since line 33: the ship has rejoined shared time. Letter it small, after silence.</div>
+    </div></div>
+
+    <div class="letter">
+      <div class="ln frame"><span class="br tl"></span><span class="br br2"></span><div class="lk">LETTERING · THE GAP</div><p>Give <span class="su">ne</span> (38) a full black panel or a thin vertical stroke-glyph between panels. Never letter dialogue inside a crossing — the grammar forbids it, so the page should too. The reader learns the rule by feeling it.</p></div>
+      <div class="ln frame"><span class="br tl"></span><span class="br br2"></span><div class="lk">LETTERING · MOODS AS COLOR</div><p>A workable convention: <b class="greent">T</b> plain white lettering · <b style="color:var(--blue-l)">T⁻</b> cool tint · <b class="amber">T⁺</b> warm tint · <b class="redt">T•</b> red or double-stroked balloons. Readers will track the theology by color before they ever parse a gloss.</p></div>
+      <div class="ln frame"><span class="br tl"></span><span class="br br2"></span><div class="lk">LETTERING · ANCHORS AS TAILS</div><p>=ka lines get normal balloon tails; =mi lines a tail to the speaker's <em>chest</em> (their own clock); =zu lines <b>no tail at all</b> — words unanchored, floating in the panel.</p></div>
+      <div class="ln frame"><span class="br tl"></span><span class="br br2"></span><div class="lk">REGISTER CHEAT-SHEET</div><p>Assembly speaks in T=ka (confidence). Pilots live in =mi (self-reliance). Grief and heresy live in T• and =zu. If a character's arc bends, bend their morphology one clitic at a time.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- APPENDIX -->
+<section id="appendix">
+  <div class="wrap">
+    <div class="eyebrow"><span class="idx">F</span> APPENDIX <span class="jp">新語</span></div>
+    <h2>New vocabulary coined for this phrasebook</h2>
+    <p class="lead">Fourteen additions, each with a proper Old Pelagic source and regular derivation — merge these into the master lexicon.</p>
+    <div class="tbl-wrap frame"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br br2"></span>
+      <table>
+        <tr><th>Sūchel</th><th>Gloss</th><th>Derivation</th></tr>
+        <tr><td>jed</td><td>to go, move (always with directional)</td><td><span class="pf">*ged-</span> → SC-1 (g→j /_e)</td></tr>
+        <tr><td>tan</td><td>to hold, keep</td><td><span class="pf">*tan-</span></td></tr>
+        <tr><td>id (v.)</td><td>to open</td><td><span class="pf">*id-</span> (the Idrenes root, as verb)</td></tr>
+        <tr><td>men</td><td>to wait, remain</td><td><span class="pf">*men-</span></td></tr>
+        <tr><td>ret</td><td>again</td><td><span class="pf">*ret-</span></td></tr>
+        <tr><td>ān</td><td>breath</td><td><span class="pf">*anh-</span> → SC-4 (h-loss, lengthening)</td></tr>
+        <tr><td>kru</td><td>blood</td><td><span class="pf">*kru-</span></td></tr>
+        <tr><td>gal</td><td>the Still; becalmed vacuum (Dead-Sea)</td><td><span class="pf">*gal-</span> (no front vowel: g survives)</td></tr>
+        <tr><td>lesh</td><td>alignment; fair phase; luck</td><td><span class="pf">*les-</span> → s→sh /_front (SC-1 analog)</td></tr>
+        <tr><td>maiel</td><td>kinsman; bound-one</td><td>-mai "entangled" + agent -el</td></tr>
+        <tr><td>om</td><td>all, every</td><td><span class="pf">*om-</span></td></tr>
+        <tr><td>vu</td><td>question particle (final)</td><td><span class="pf">*wu</span> → SC-3 (w→v)</td></tr>
+        <tr><td>-u</td><td>imperative (non-assertive: no mood, no anchor)</td><td><span class="pf">*-u</span> hortative</td></tr>
+        <tr><td>ō</td><td>vocative particle</td><td><span class="pf">*ō</span> interjection</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">SŪCHEL PHRASEBOOK // 41 LINES · HAILS · BRIDGE · CURSES · PRAYERS · LITANY</div>
+    <div class="big">YOU DO NOT SHOUT AT THE SEAM</div>
+    <div class="fr">READY TO LETTER — GLOSSED, DERIVED, CONSISTENT // REV 1.0</div>
+  </div>
+</footer>
+
+<script>
+function tick(){const d=new Date();document.getElementById('clk').textContent=[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');}
+tick();setInterval(tick,1000);
+const links=[...document.querySelectorAll('.nav a')];
+const secs=links.map(l=>document.querySelector(l.getAttribute('href')));
+addEventListener('scroll',()=>{let i=secs.length-1;for(let k=0;k<secs.length;k++){if(secs[k]&&secs[k].getBoundingClientRect().top>90){i=k-1;break;}}if(i<0)i=0;links.forEach((l,k)=>l.classList.toggle('on',k===i));},{passive:true});
+</script>
+</body>
+</html>
