@@ -52,6 +52,13 @@ suite (~840 tests).
   from the script codex (one curve in the whole system, and it refuses to
   close), rendered to SVG in both careful hand and bridge hand.
   Samples in `examples/navcher/`.
+* **The interactive codex** (`odylang.webgen`) — `odylang web -o codex.html`
+  builds the whole system into ONE self-contained web page (no server, no
+  dependencies, no network): the shibboleth explorer with live derivation
+  traces, searchable lexicons, the 41 lines with playable rhythm and
+  Navcher lettering in both hands, the texts, the sisters, and a
+  ship-carve-your-own writer. A prebuilt copy ships as
+  `examples/odylang-web.html` — just open it in a browser.
 * **Core** — `phonology` (segments, seam-aware syllabification, IPA),
   `word` (the four-rule stress algorithm: *the mood carries the beat*),
   `soundchange` (the ordered rewrite engine with full derivation traces),

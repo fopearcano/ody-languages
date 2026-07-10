@@ -190,6 +190,13 @@ def cmd_chart(args):
     _emit(render_glyph_chart(), args.out)
 
 
+def cmd_web(args):
+    from .webgen import write
+    out = args.out or "odylang-web.html"
+    write(out)
+    print(f"wrote {out} — open it in a browser (fully self-contained)")
+
+
 def _emit(svg, out):
     if out:
         with open(out, "w", encoding="utf-8") as fh:
@@ -248,6 +255,10 @@ def main(argv=None):
     p = sub.add_parser("chart", help="the full Navcher glyph chart (SVG)")
     p.add_argument("-o", "--out")
     p.set_defaults(fn=cmd_chart)
+
+    p = sub.add_parser("web", help="build the interactive web codex (one HTML file)")
+    p.add_argument("-o", "--out", help="output path (default odylang-web.html)")
+    p.set_defaults(fn=cmd_web)
 
     args = ap.parse_args(argv)
     args.fn(args)
