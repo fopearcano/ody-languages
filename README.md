@@ -115,6 +115,8 @@ suite (~840 tests).
 The implementation lives on the `claude/peterson-language-system-q2z1l9`
 branch — check it out first if you cloned `main`.
 
+**Full setup guide (all entry points, LibreChat, troubleshooting): [`SETUP.md`](SETUP.md).**
+
 No dependencies (Python ≥ 3.9), so no install is required: from the repo
 root, `python3 -m odylang.cli phrase 40` just works.  For the `odylang`
 command, install with `python3 -m pip install -e .` (macOS/zsh usually has
