@@ -1,0 +1,222 @@
+openapi: "3.1.0"
+info:
+  title: "Suchel Translator & Voice"
+  version: "1.2.0"
+  description: "English <-> Suchel (the Crossing-Speech of the crossable universe) translation, plus stdlib formant speech synthesis. Every Suchel string is built through the grammar of the codices; no root is ever invented, and unknown words are reported honestly."
+  license:
+    name: "See project README"
+servers:
+- url: "http://localhost:8787"
+  description: "local odylang server (run: odylang serve)"
+paths:
+  "/health":
+    get:
+      operationId: "healthCheck"
+      summary: "Liveness probe."
+      description: "Returns service name and odylang version."
+      responses:
+        "200":
+          description: "Service is up."
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Health"
+  "/voice_spec":
+    get:
+      operationId: "voiceSpec"
+      summary: "The voice description."
+      description: "The complete, JSON-serializable specification a browser synthesizer reproduces: sample rate, base F0, vowel formants, timing constants and every consonant recipe."
+      responses:
+        "200":
+          description: "The voice spec."
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/VoiceSpec"
+  "/translate":
+    post:
+      operationId: "translateText"
+      summary: "Translate between English and Suchel."
+      description: "Translate a line in either direction. Returns the target text, its IPA, an interlinear gloss, the Navcher tokens and rhythm array, a per-word alignment, notes, and a confidence (1.0 = an attested idiom, 0.9 = composed, lower = unknown words present)."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/TranslateRequest"
+      responses:
+        "200":
+          description: "The translation."
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Translation"
+        "400":
+          description: "Bad request."
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/tts":
+    post:
+      operationId: "synthesizeSpeech"
+      summary: "Speak a line of Suchel."
+      description: "Synthesize speech. English input is translated to Suchel first, then voiced. By default returns audio/wav bytes with the chosen Suchel and IPA in the X-Suchel and X-IPA response headers (non-ASCII percent-encoded). Pass ?format=base64 to receive JSON with a base64 WAV instead, convenient for a browser or a chat client."
+      parameters:
+      - name: "format"
+        in: "query"
+        required: false
+        description: "Set to 'base64' for a JSON response carrying the WAV as base64 plus the Suchel and IPA."
+        schema:
+          type: "string"
+          enum:
+          - "base64"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/TtsRequest"
+      responses:
+        "200":
+          description: "The synthesized audio."
+          content:
+            audio/wav:
+              schema:
+                type: "string"
+                format: "binary"
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TtsBase64Response"
+        "400":
+          description: "Bad request."
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+components:
+  schemas:
+    Direction:
+      type: "string"
+      enum:
+      - "auto"
+      - "en2su"
+      - "su2en"
+      default: "auto"
+      description: "en2su = English to Suchel, su2en = Suchel to English, auto = detect from the input."
+    TranslateRequest:
+      type: "object"
+      required:
+      - "text"
+      properties:
+        text:
+          type: "string"
+          description: "The line to translate."
+          example: "the beacon holds"
+        direction:
+          "$ref": "#/components/schemas/Direction"
+    TtsRequest:
+      type: "object"
+      required:
+      - "text"
+      properties:
+        text:
+          type: "string"
+          description: "The line to speak. English is translated to Suchel before synthesis."
+          example: "the beacon holds"
+        direction:
+          "$ref": "#/components/schemas/Direction"
+    TWord:
+      type: "object"
+      description: "One word-level alignment."
+      properties:
+        english:
+          type: "string"
+        suchel:
+          type: "string"
+        gloss:
+          type: "string"
+        ipa:
+          type: "string"
+        known:
+          type: "boolean"
+        domain:
+          type: "string"
+    Translation:
+      type: "object"
+      description: "A full translation result, either direction."
+      properties:
+        source:
+          type: "string"
+          description: "The input text."
+        direction:
+          type: "string"
+          enum:
+          - "en2su"
+          - "su2en"
+          description: "The direction actually used."
+        text:
+          type: "string"
+          description: "The translated line."
+        ipa:
+          type: "string"
+          description: "IPA of the Suchel side."
+        gloss:
+          type: "string"
+          description: "Interlinear gloss."
+        tokens:
+          type: "array"
+          items:
+            type: "string"
+          description: "Careful-hand Navcher tokens, Suchel side."
+        syl:
+          type: "array"
+          items:
+            type: "string"
+          description: "Rhythm array, Suchel side (empty for su2en)."
+        words:
+          type: "array"
+          items:
+            "$ref": "#/components/schemas/TWord"
+        notes:
+          type: "array"
+          items:
+            type: "string"
+        confidence:
+          type: "number"
+          description: "1.0 attested, 0.9 composed, lower = unknown words."
+          example: 0.9
+    TtsBase64Response:
+      type: "object"
+      properties:
+        wav_base64:
+          type: "string"
+          description: "Base64-encoded WAV bytes."
+        suchel:
+          type: "string"
+          description: "The Suchel that was voiced."
+        ipa:
+          type: "string"
+          description: "IPA of the voiced Suchel."
+        content_type:
+          type: "string"
+          example: "audio/wav"
+    Health:
+      type: "object"
+      properties:
+        ok:
+          type: "boolean"
+        service:
+          type: "string"
+          example: "odylang-translator"
+        version:
+          type: "string"
+    VoiceSpec:
+      type: "object"
+      description: "The formant-voice specification (open shape; see odylang.tts.voice_spec)."
+      additionalProperties: true
+    Error:
+      type: "object"
+      properties:
+        error:
+          type: "string"

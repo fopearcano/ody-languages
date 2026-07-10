@@ -241,6 +241,38 @@ def cmd_web(args):
     print(f"wrote {out} — open it in a browser (fully self-contained)")
 
 
+def cmd_translate(args):
+    import dataclasses
+    import json
+    from .translate import translate
+    tr = translate(args.text, args.to)
+    if args.json:
+        print(json.dumps(dataclasses.asdict(tr), ensure_ascii=False, indent=2))
+        return
+    print(tr.text)
+    print(f"  IPA    {tr.ipa}")
+    print(f"  GLOSS  {tr.gloss}")
+    print(f"  conf   {tr.confidence:.2f}  ({tr.direction})")
+    for n in tr.notes:
+        print(f"  note   {n}")
+
+
+def cmd_say(args):
+    from . import tts
+    from .server import speech_target
+    suchel, ipa, synth_input, _tr = speech_target(args.text, args.direction)
+    out = args.out or "suchel.wav"
+    tts.write_wav(synth_input, out)
+    print(f"wrote {out}")
+    print(f"  Suchel {suchel}")
+    print(f"  IPA    {ipa}")
+
+
+def cmd_serve(args):
+    from .server import serve
+    serve(host=args.host, port=args.port)
+
+
 def _emit(svg, out):
     if out:
         with open(out, "w", encoding="utf-8") as fh:
@@ -328,6 +360,27 @@ def main(argv=None):
     p = sub.add_parser("web", help="build the interactive web codex (one HTML file)")
     p.add_argument("-o", "--out", help="output path (default odylang-web.html)")
     p.set_defaults(fn=cmd_web)
+
+    p = sub.add_parser("translate", help="English <-> Sūchel translation")
+    p.add_argument("text", help="the line to translate")
+    p.add_argument("--to", choices=("en2su", "su2en", "auto"), default="auto",
+                   help="direction (default: auto-detect)")
+    p.add_argument("--json", action="store_true",
+                   help="print the full Translation as JSON (asdict)")
+    p.set_defaults(fn=cmd_translate)
+
+    p = sub.add_parser("say", help="speak a line (English is translated "
+                                   "to Sūchel first), writing a WAV")
+    p.add_argument("text", help="the line to speak")
+    p.add_argument("-o", "--out", help="output WAV path (default suchel.wav)")
+    p.add_argument("--direction", choices=("en2su", "su2en", "auto"),
+                   default="auto", help="translation direction (default: auto)")
+    p.set_defaults(fn=cmd_say)
+
+    p = sub.add_parser("serve", help="run the LibreChat-ready HTTP service")
+    p.add_argument("--host", default="127.0.0.1")
+    p.add_argument("--port", type=int, default=8787)
+    p.set_defaults(fn=cmd_serve)
 
     args = ap.parse_args(argv)
     args.fn(args)

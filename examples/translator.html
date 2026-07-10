@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SŪCHEL TRANSLATOR — talk to the crossing-speech</title>
+<style>
+*{box-sizing:border-box;margin:0}
+:root{
+  --bg:#08070a; --panel:#0e0b10; --panel2:#131017; --bubble:#12141b;
+  --ink:#d8d2c8; --dim:#8c8a82; --faint:#565360;
+  --gold:#f5d76e; --red:#e8362a; --blue:#6fa8ff; --green:#7ec885;
+  --line:rgba(232,54,42,.22); --goldline:rgba(245,215,110,.25);
+  --mono:ui-monospace,'Cascadia Mono','JetBrains Mono',Menlo,Consolas,'Liberation Mono',monospace;
+}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:14px;
+  line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.mono{font-family:var(--mono)}
+.wrap{max-width:860px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;
+  padding:0 16px}
+.head{padding:26px 0 14px;border-bottom:1px solid var(--line)}
+.brand{color:var(--gold);font-size:22px;letter-spacing:.28em;font-weight:700}
+.brand .tr{color:var(--red);letter-spacing:.24em}
+.tag{color:var(--dim);font-size:12.5px;max-width:66ch;margin:10px 0 16px;line-height:1.65}
+.tag b{color:var(--ink);font-weight:400}
+.ctl{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--goldline);flex-wrap:wrap}
+.seg button{all:unset;cursor:pointer;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;padding:6px 11px;color:var(--dim);border-right:1px solid var(--goldline)}
+.seg button:last-child{border-right:none}
+.seg button:hover{color:var(--ink)}
+.seg button:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+.seg button.on{color:var(--bg);background:var(--gold)}
+#hand button.on{background:var(--blue);color:var(--bg)}
+.chat{flex:1;display:flex;flex-direction:column;gap:16px;padding:22px 0}
+.msg{max-width:100%;display:flex;flex-direction:column;gap:4px}
+.msg.you{align-items:flex-end}
+.bub{max-width:88%;padding:9px 14px;border:1px solid var(--line);border-radius:3px;
+  overflow-wrap:break-word;word-break:break-word}
+.msg.you .bub{background:var(--bubble);border-color:var(--goldline);color:var(--ink)}
+.msg.you .who{color:var(--faint)}
+.who{font-size:9px;letter-spacing:.22em;color:var(--red)}
+.card{max-width:96%;background:var(--panel);border:1px solid var(--line);
+  padding:14px 16px;display:flex;flex-direction:column;gap:10px;position:relative}
+.card::before{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;
+  border-top:2px solid var(--gold);border-left:2px solid var(--gold)}
+.su{color:var(--gold);font-size:22px;letter-spacing:.01em;line-height:1.3}
+.card.su2en .para{color:var(--ink);font-size:16px}
+.ipa{color:var(--dim);font-size:12px}
+.eng{color:var(--blue);font-size:12px}
+.gloss{display:flex;flex-wrap:wrap;gap:10px;overflow-x:auto;padding-bottom:2px}
+.gunit{display:flex;flex-direction:column;gap:1px;border-left:1px solid var(--line);
+  padding-left:7px;min-width:0}
+.gunit .g-su{color:var(--gold);font-size:13px;white-space:nowrap}
+.gunit.unk .g-su{color:var(--red)}
+.gunit .g-gl{color:var(--dim);font-size:10px;white-space:nowrap;letter-spacing:.04em}
+.navc{overflow-x:auto;padding:6px 0;max-width:100%}
+.navc svg{max-width:100%;height:auto}
+.audio{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ab{all:unset;cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  padding:4px 11px;border:1px solid var(--red);color:var(--red)}
+.ab:hover{background:var(--red);color:var(--bg)}
+.ab:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+.ab[disabled]{opacity:.35;cursor:default;border-color:var(--faint);color:var(--faint)}
+.ab.blue{border-color:var(--blue);color:var(--blue)} .ab.blue:hover{background:var(--blue);color:var(--bg)}
+.ab.gold{border-color:var(--goldline);color:var(--gold)} .ab.gold:hover{background:var(--gold);color:var(--bg)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:11px}
+.chip{font-size:9px;letter-spacing:.16em;padding:2px 9px;border:1px solid}
+.chip.attested{color:var(--bg);background:var(--gold);border-color:var(--gold)}
+.chip.composed{color:var(--blue);border-color:var(--blue)}
+.chip.wbw{color:var(--dim);border-color:var(--goldline)}
+.chip.scaffold{color:var(--red);border-color:var(--red)}
+.note{color:var(--faint);font-size:11px;line-height:1.55}
+.note code{color:var(--green)}
+.rhythm{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center}
+.beat{font-size:10px;padding:1px 7px;border:1px solid var(--goldline);color:var(--dim)}
+.beat.hi{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.beat.gap{color:var(--red);border-color:var(--red);min-width:20px;text-align:center}
+.beat.sp{border:none;padding:0 1px;color:var(--faint)}
+.starters{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 12px}
+.starters .s{all:unset;cursor:pointer;font-size:10px;letter-spacing:.06em;color:var(--dim);
+  border:1px solid var(--goldline);padding:4px 10px}
+.starters .s:hover{color:var(--bg);background:var(--gold)}
+.starters .s:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+.dock{display:flex;gap:10px;position:sticky;bottom:0;background:var(--bg);
+  padding:12px 0 10px;border-top:1px solid var(--line)}
+.dock input{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--goldline);
+  color:var(--ink);font-family:var(--mono);font-size:15px;padding:11px 14px}
+.dock input:focus-visible{outline:1px solid var(--gold);outline-offset:1px}
+.dock button{all:unset;cursor:pointer;font-family:var(--mono);font-size:12px;
+  letter-spacing:.16em;padding:0 20px;color:var(--bg);background:var(--gold)}
+.dock button:hover{background:#ffe58a}
+.dock button:focus-visible{outline:1px solid var(--red);outline-offset:2px}
+.foot{color:var(--faint);font-size:10px;letter-spacing:.06em;padding:6px 0 20px;
+  border-top:1px solid var(--line);margin-top:4px}
+.foot .mono{color:var(--green)}
+.toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);background:var(--panel2);
+  border:1px solid var(--goldline);color:var(--ink);font-size:11px;padding:7px 14px;z-index:50}
+@media (max-width:560px){
+  .brand{font-size:18px}
+  .su{font-size:19px}
+  .bub,.card{max-width:100%}
+}
+@media (prefers-reduced-motion:no-preference){
+  .seg button,.ab,.starters .s,.dock button{transition:color .14s,background .14s,border-color .14s}
+  .msg{animation:rise .18s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="head">
+    <div class="brand">SŪCHEL <span class="tr">TRANSLATOR</span></div>
+    <p class="tag">A translator you <b>talk to</b>. Type English or Sūchel and the
+      agent answers. The grammar is real — SOV, and the verb carries both its
+      <b>veridical mood</b> and its <b>temporal anchor</b>. Every Sūchel line can be
+      heard: the audio is synthesized from the phoneme model, not recorded.</p>
+    <div class="ctl">
+      <div class="seg" id="dir" role="group" aria-label="translation direction">
+        <button data-d="auto" class="on">AUTO</button>
+        <button data-d="en2su">EN &rarr; SŪ</button>
+        <button data-d="su2en">SŪ &rarr; EN</button>
+      </div>
+      <div class="seg" id="hand" role="group" aria-label="Navcher hand">
+        <button data-h="carve" class="on">SHIP-CARVE</button>
+        <button data-h="trace">LIGHT-TRACE</button>
+        <button data-h="current">CURRENT HAND</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="chat" id="chat" aria-live="polite" aria-label="conversation"></main>
+
+  <div class="starters" id="starters"></div>
+
+  <form class="dock" id="dock" autocomplete="off">
+    <input id="in" type="text" placeholder="say something to the translator…"
+      aria-label="your message" spellcheck="false">
+    <button type="submit" id="send">SEND</button>
+  </form>
+  <footer class="foot">offline · self-contained · lettered in Navcher · voiced from
+    <span class="mono">voice_spec()</span> — one proto, two fleets, four mouths</footer>
+</div>
+
+<script>window.ODYT = {"VOICE": {"sampleRate": 22050, "f0": 120.0, "jitter": 0.02, "seed": 44257, "headroom": 0.89, "formants": {"a": [800.0, 1200.0, 2500.0], "e": [500.0, 1900.0, 2550.0], "i": [300.0, 2300.0, 3000.0], "o": [500.0, 900.0, 2400.0], "u": [320.0, 800.0, 2400.0]}, "formantBandwidths": [90.0, 110.0, 170.0], "formantAmps": [1.0, 0.6, 0.32], "declination": 0.18, "timing": {"vowelMs": 150.0, "longFactor": 1.7, "stressDurFactor": 1.5, "stressF0Factor": 1.4, "wordGapMs": 55.0, "pauseMs": 320.0}, "consonants": {"p": {"sym": "p", "manner": "stop", "voiced": false, "place": "labial", "burst_hz": 800.0, "closure_ms": 50.0, "burst_ms": 12.0, "noise_lo": 0.0, "noise_hi": 0.0, "dur_ms": 0.0, "formants": [], "velar_pinch": false}, "b": {"sym": "b", "manner": "stop", "voiced": true, "place": "labial", "burst_hz": 800.0, "closure_ms": 50.0, "burst_ms": 12.0, "noise_lo": 0.0, "noise_hi": 0.0, "dur_ms": 0.0, "formants": [], "velar_pinch": false}, "t": {"sym": "t", "manner": "stop", "voiced": false, "place": "alveolar", "burst_hz": 1800.0, "closure_ms": 50.0, "burst_ms": 12.0, "noise_lo": 0.0, "noise_hi": 0.0, "dur_ms": 0.0, "formants": [], "velar_pinch": false}, "d": {"sym": "d", "manner": "stop", "voiced": true, "place": "alveolar", "burst_hz": 1800.0, "closure_ms": 50.0, "burst_ms": 12.0, "noise_lo": 0.0, "noise_hi": 0.0, "dur_ms": 0.0, "formants": [], "velar_pinch": false}, "k": {"sym": "k", "manner": "stop", "voiced": false, "place": "velar", "burst_hz": 1500.0, "closure_ms": 50.0, "burst_ms": 14.0, "noise_lo": 0.0, "noise_hi": 0.0, "dur_ms": 0.0, "formants": [], "velar_pinch": true}, "g": {"sym": "g", "manner": "stop", "voiced": true, "place": "velar", "burst_hz": 1500.0, "closure_ms": 50.0, "burst_ms": 14.0, "noise_lo": 0.0, "noise_hi": 0.0, "dur_ms": 0.0, "formants": [], "velar_pinch": true}, "ch": {"sym": "ch", "manner": "affricate", "voiced": false, "place": "postalveolar", "burst_hz": 0.0, "closure_ms": 45.0, "burst_ms": 0.0, "noise_lo": 2000.0, "noise_hi": 4000.0, "dur_ms": 70.0, "formants": [], "velar_pinch": false}, "j": {"sym": "j", "manner": "affricate", "voiced": true, "place": "postalveolar", "burst_hz": 0.0, "closure_ms": 45.0, "burst_ms": 0.0, "noise_lo": 2000.0, "noise_hi": 4000.0, "dur_ms": 70.0, "formants": [], "velar_pinch": false}, "s": {"sym": "s", "manner": "fricative", "voiced": false, "place": "alveolar", "burst_hz": 0.0, "closure_ms": 0.0, "burst_ms": 0.0, "noise_lo": 4000.0, "noise_hi": 8000.0, "dur_ms": 130.0, "formants": [], "velar_pinch": false}, "sh": {"sym": "sh", "manner": "fricative", "voiced": false, "place": "postalveolar", "burst_hz": 0.0, "closure_ms": 0.0, "burst_ms": 0.0, "noise_lo": 2000.0, "noise_hi": 4000.0, "dur_ms": 130.0, "formants": [], "velar_pinch": false}, "z": {"sym": "z", "manner": "fricative", "voiced": true, "place": "alveolar", "burst_hz": 0.0, "closure_ms": 0.0, "burst_ms": 0.0, "noise_lo": 4000.0, "noise_hi": 8000.0, "dur_ms": 110.0, "formants": [], "velar_pinch": false}, "v": {"sym": "v", "manner": "fricative", "voiced": true, "place": "labiodental", "burst_hz": 0.0, "closure_ms": 0.0, "burst_ms": 0.0, "noise_lo": 500.0, "noise_hi": 1500.0, "dur_ms": 100.0, "formants": [], "velar_pinch": false}, "m": {"sym": "m", "manner": "nasal", "voiced": true, "place": "labial", "burst_hz": 0.0, "closure_ms": 0.0, "burst_ms": 0.0, "noise_lo": 0.0, "noise_hi": 0.0, "dur_ms": 75.0, "formants": [250.0, 1000.0, 2200.0], "velar_pinch": false}, "n": {"sym": "n", "manner": "nasal", "voiced": true, "place": "alveolar", "burst_hz": 0.0, "closure_ms": 0.0, "burst_ms": 0.0, "noise_lo": 0.0, "noise_hi": 0.0, "dur_ms": 75.0, "formants": [250.0, 1400.0, 2500.0], "velar_pinch": false}, "r": {"sym": "r", "manner": "tap", "voiced": true, "place": "alveolar", "burst_hz": 0.0, "closure_ms": 0.0, "burst_ms": 0.0, "noise_lo": 0.0, "noise_hi": 0.0, "dur_ms": 32.0, "formants": [500.0, 1300.0, 2500.0], "velar_pinch": false}, "l": {"sym": "l", "manner": "liquid", "voiced": true, "place": "alveolar", "burst_hz": 0.0, "closure_ms": 0.0, "burst_ms": 0.0, "noise_lo": 0.0, "noise_hi": 0.0, "dur_ms": 70.0, "formants": [360.0, 1300.0, 2600.0], "velar_pinch": false}, "h": {"sym": "h", "manner": "aspirate", "voiced": false, "place": "glottal", "burst_hz": 0.0, "closure_ms": 0.0, "burst_ms": 0.0, "noise_lo": 500.0, "noise_hi": 3000.0, "dur_ms": 55.0, "formants": [], "velar_pinch": false}}}, "IDIOMS": [{"en": "Truth to you.", "key": "truth to you", "aliases": ["hello", "hi", "hey there", "greetings", "truth to you"], "use": "Hello.", "su": "ver ish-ol.", "ipa": "ver iˈʃol", "gloss": "truth 2SG-DAT", "tokens": ["v", "e", "r", " ", "i", "sh", " ", "o", "l"], "syl": ["ver", "/", "i", "SHOL"], "conf": 1.0, "notes": ["attested phrasebook line 1"], "src": "attested", "line": 1, "section": "A"}, {"en": "Truth to you, kin.", "key": "truth to you kin", "aliases": ["hello kin", "well met"], "use": "the warm reply.", "su": "ver ishmai-ol.", "ipa": "ver iʃˈmai.ol", "gloss": "truth 2SG.ENT-DAT", "tokens": ["v", "e", "r", " ", "i", "sh", "m", "a", "i", " ", "o", "l"], "syl": ["ver", "/", "ish", "MAI", "ol"], "conf": 1.0, "notes": ["attested phrasebook line 2"], "src": "attested", "line": 2, "section": "A"}, {"en": "Hey, mate!", "key": "hey mate", "aliases": ["hey mate", "hey"], "use": "", "su": "ō mān!", "ipa": "oː maːn", "gloss": "VOC crew.hand", "tokens": ["o:", " ", "m", "a:", "n"], "syl": ["O:", "/", "MA:N"], "conf": 1.0, "notes": ["attested phrasebook line 3"], "src": "attested", "line": 3, "section": "A"}, {"en": "Beacon keep you.", "key": "beacon keep you", "aliases": ["stay safe", "safe travels", "keep well"], "use": "", "su": "kad ishen tan-u.", "ipa": "kad ˈi.ʃen ˈta.nu", "gloss": "beacon 2SG.ACC hold-IMP", "tokens": ["k", "a", "d", " ", "i", "sh", "e", "n", " ", "t", "a", "n", "u"], "syl": ["kad", "/", "I", "shen", "/", "TA", "nu"], "conf": 1.0, "notes": ["attested phrasebook line 4"], "src": "attested", "line": 4, "section": "A"}, {"en": "In the dark, may fair phase keep you.", "key": "in the dark may fair phase keep you", "aliases": [], "use": "", "su": "zukad-eth, lesh ishen tan-u.", "ipa": "ˈzu.ka.deth · leʃ ˈi.ʃen ˈta.nu", "gloss": "dark.time-LOC alignment 2SG.ACC hold-IMP", "tokens": ["z", "u", "k", "a", "d", " ", "e", "t", "h", " ", "l", "e", "sh", " ", "i", "sh", "e", "n", " ", "t", "a", "n", "u"], "syl": ["ZU", "ka", "deth", "/", "lesh", "/", "I", "shen", "/", "TA", "nu"], "conf": 1.0, "notes": ["attested phrasebook line 5"], "src": "attested", "line": 5, "section": "A"}, {"en": "Surface again.", "key": "surface again", "aliases": ["goodbye", "bye", "farewell", "see you", "see you again"], "use": "the divers' goodbye.", "su": "hōl-u ret.", "ipa": "ˈhoː.lu ret", "gloss": "surface-IMP again", "tokens": ["h", "o:", "l", "u", " ", "r", "e", "t"], "syl": ["HO:", "lu", "/", "ret"], "conf": 1.0, "notes": ["attested phrasebook line 6"], "src": "attested", "line": 6, "section": "A"}, {"en": "I'm off", "key": "i m off", "aliases": [], "use": "by my own clock.", "su": "en jed-a=mi.", "ipa": "en dʒeˈda.mi", "gloss": "1SG go-T=PROP", "tokens": ["e", "n", " ", "j", "e", "d", "a", "m", "i"], "syl": ["en", "/", "je", "DA", "mi"], "conf": 1.0, "notes": ["attested phrasebook line 7"], "src": "attested", "line": 7, "section": "A"}, {"en": "Hold on, mate.", "key": "hold on mate", "aliases": ["hold on", "wait a moment", "one moment"], "use": "", "su": "men-u, mān.", "ipa": "ˈme.nu maːn", "gloss": "wait-IMP crew.hand", "tokens": ["m", "e", "n", "u", " ", "m", "a:", "n"], "syl": ["ME", "nu", "/", "MA:N"], "conf": 1.0, "notes": ["attested phrasebook line 8"], "src": "attested", "line": 8, "section": "A"}, {"en": "Take her down!", "key": "take her down", "aliases": ["dive", "take us down"], "use": "", "su": "nuv jed-u!", "ipa": "nuv ˈdʒe.du", "gloss": "DOWN go-IMP", "tokens": ["n", "u", "v", " ", "j", "e", "d", "u"], "syl": ["nuv", "/", "JE", "du"], "conf": 1.0, "notes": ["attested phrasebook line 9"], "src": "attested", "line": 9, "section": "B"}, {"en": "Bring her up!", "key": "bring her up", "aliases": ["surface us", "bring us up"], "use": "", "su": "hau jed-u!", "ipa": "hau ˈdʒe.du", "gloss": "UP go-IMP", "tokens": ["h", "a", "u", " ", "j", "e", "d", "u"], "syl": ["HAU", "/", "JE", "du"], "conf": 1.0, "notes": ["attested phrasebook line 10"], "src": "attested", "line": 10, "section": "B"}, {"en": "Open the seam.", "key": "open the seam", "aliases": ["open it"], "use": "", "su": "jel id-u.", "ipa": "dʒel ˈi.du", "gloss": "seam open-IMP", "tokens": ["j", "e", "l", " ", "i", "d", "u"], "syl": ["jel", "/", "I", "du"], "conf": 1.0, "notes": ["attested phrasebook line 11"], "src": "attested", "line": 11, "section": "B"}, {"en": "Hold, my Sōrn.", "key": "hold my s rn", "aliases": [], "use": "", "su": "Sōrnmai, tan-u.", "ipa": "ˈsoːrn.mai ˈta.nu", "gloss": "drive.ENT hold-IMP", "tokens": ["s", "o:", "r", "n", "m", "a", "i", " ", "t", "a", "n", "u"], "syl": ["SO:RN", "mai", "/", "TA", "nu"], "conf": 1.0, "notes": ["attested phrasebook line 12"], "src": "attested", "line": 12, "section": "B"}, {"en": "Does the beacon hold?", "key": "does the beacon hold", "aliases": ["status", "do you copy", "are we in range", "beacon check"], "use": "Are we in coverage?", "su": "kad ver-a=ka vu?", "ipa": "kad veˈra.ka vu", "gloss": "beacon speak.true-T=BEAC Q", "tokens": ["k", "a", "d", " ", "v", "e", "r", "a", "k", "a", " ", "v", "u"], "syl": ["kad", "/", "ve", "RA", "ka", "/", "vu"], "conf": 1.0, "notes": ["attested phrasebook line 13"], "src": "attested", "line": 13, "section": "B"}, {"en": "It holds.", "key": "it holds", "aliases": ["yes", "affirmative", "confirmed", "lock confirmed"], "use": "Lock confirmed.", "su": "ver-a=ka.", "ipa": "veˈra.ka", "gloss": "true-T=BEAC", "tokens": ["v", "e", "r", "a", "k", "a"], "syl": ["ve", "RA", "ka"], "conf": 1.0, "notes": ["attested phrasebook line 14"], "src": "attested", "line": 14, "section": "B"}, {"en": "No lock. We're dark.", "key": "no lock we re dark", "aliases": ["no", "negative", "we are dark"], "use": "", "su": "vo ver-a=ka. zukad.", "ipa": "vo veˈra.ka · ˈzu.kad", "gloss": "NEG true-T=BEAC · dark.time", "tokens": ["v", "o", " ", "v", "e", "r", "a", "k", "a", " ", "z", "u", "k", "a", "d"], "syl": ["vo", "/", "ve", "RA", "ka", "/", "ZU", "kad"], "conf": 1.0, "notes": ["attested phrasebook line 15"], "src": "attested", "line": 15, "section": "B"}, {"en": "Hold the pattern, all hands.", "key": "hold the pattern all hands", "aliases": ["all hands", "hold position"], "use": "", "su": "tem tan-u, eni om.", "ipa": "tem ˈta.nu · ˈe.ni om", "gloss": "pattern hold-IMP · 1PL all", "tokens": ["t", "e", "m", " ", "t", "a", "n", "u", " ", "e", "n", "i", " ", "o", "m"], "syl": ["tem", "/", "TA", "nu", "/", "E", "ni", "/", "om"], "conf": 1.0, "notes": ["attested phrasebook line 16"], "src": "attested", "line": 16, "section": "B"}, {"en": "Scar!", "key": "scar", "aliases": [], "use": "Damn it.", "su": "jelvos!", "ipa": "ˈdʒel.vos", "gloss": "seam.scar", "tokens": ["j", "e", "l", "v", "o", "s"], "syl": ["JEL", "vos"], "conf": 1.0, "notes": ["attested phrasebook line 17"], "src": "attested", "line": 17, "section": "C"}, {"en": "May a Formless mouth swallow you!", "key": "may a formless mouth swallow you", "aliases": [], "use": "", "su": "velosh ishen oshu!", "ipa": "ˈve.loʃ ˈi.ʃen ˈo.ʃu", "gloss": "Formless.mouth 2SG.ACC swallow-IMP", "tokens": ["v", "e", "l", "o", "sh", " ", "i", "sh", "e", "n", " ", "o", "sh", "u"], "syl": ["VE", "losh", "/", "I", "shen", "/", "O", "shu"], "conf": 1.0, "notes": ["attested phrasebook line 18"], "src": "attested", "line": 18, "section": "C"}, {"en": "Shapeless!", "key": "shapeless", "aliases": [], "use": "you incoherent waste.", "su": "vo-tem!", "ipa": "ˈvo.tem", "gloss": "NEG-pattern", "tokens": ["v", "o", "t", "e", "m"], "syl": ["VO", "tem"], "conf": 1.0, "notes": ["attested phrasebook line 19"], "src": "attested", "line": 19, "section": "C"}, {"en": "Blood at the seam!", "key": "blood at the seam", "aliases": [], "use": "", "su": "kru jel-eth!", "ipa": "kru ˈdʒe.leth", "gloss": "blood seam-LOC", "tokens": ["k", "r", "u", " ", "j", "e", "l", " ", "e", "t", "h"], "syl": ["kru", "/", "JE", "leth"], "conf": 1.0, "notes": ["attested phrasebook line 20"], "src": "attested", "line": 20, "section": "C"}, {"en": "May he never surface!", "key": "may he never surface", "aliases": [], "use": "", "su": "an vo hōl-u!", "ipa": "an vo ˈhoː.lu", "gloss": "3SG NEG surface-IMP", "tokens": ["a", "n", " ", "v", "o", " ", "h", "o:", "l", "u"], "syl": ["an", "/", "vo", "/", "HO:", "lu"], "conf": 1.0, "notes": ["attested phrasebook line 21"], "src": "attested", "line": 21, "section": "C"}, {"en": "May the Still hold you!", "key": "may the still hold you", "aliases": ["rest now"], "use": "", "su": "gal ishen tan-u!", "ipa": "gal ˈi.ʃen ˈta.nu", "gloss": "the.still 2SG.ACC hold-IMP", "tokens": ["g", "a", "l", " ", "i", "sh", "e", "n", " ", "t", "a", "n", "u"], "syl": ["gal", "/", "I", "shen", "/", "TA", "nu"], "conf": 1.0, "notes": ["attested phrasebook line 22"], "src": "attested", "line": 22, "section": "C"}, {"en": "Madman's talk!", "key": "madman s talk", "aliases": [], "use": "", "su": "vurel-en chel!", "ipa": "ˈvu.re.len tʃel", "gloss": "madman-GEN speech", "tokens": ["v", "u", "r", "e", "l", " ", "e", "n", " ", "ch", "e", "l"], "syl": ["VU", "re", "len", "/", "chel"], "conf": 1.0, "notes": ["attested phrasebook line 23"], "src": "attested", "line": 23, "section": "C"}, {"en": "I swear by my own clock: …", "key": "i swear by my own clock", "aliases": [], "use": "", "su": "en ver-a=mi: …", "ipa": "en veˈra.mi", "gloss": "1SG speak.true-T=PROP", "tokens": ["e", "n", " ", "v", "e", "r", "a", "m", "i"], "syl": ["en", "/", "ve", "RA", "mi"], "conf": 1.0, "notes": ["attested phrasebook line 24"], "src": "attested", "line": 24, "section": "C"}, {"en": "O our Tower, hold me.", "key": "o our tower hold me", "aliases": [], "use": "", "su": "Turmai, enen tan-u.", "ipa": "ˈtur.mai ˈe.nen ˈta.nu", "gloss": "Tower.ENT 1SG.ACC hold-IMP", "tokens": ["t", "u", "r", "m", "a", "i", " ", "e", "n", "e", "n", " ", "t", "a", "n", "u"], "syl": ["TUR", "mai", "/", "E", "nen", "/", "TA", "nu"], "conf": 1.0, "notes": ["attested phrasebook line 25"], "src": "attested", "line": 25, "section": "D"}, {"en": "Beacon, speak true for all.", "key": "beacon speak true for all", "aliases": [], "use": "", "su": "kad om-ol ver-u.", "ipa": "kad ˈo.mol ˈve.ru", "gloss": "beacon all-DAT speak.true-IMP", "tokens": ["k", "a", "d", " ", "o", "m", " ", "o", "l", " ", "v", "e", "r", "u"], "syl": ["kad", "/", "O", "mol", "/", "VE", "ru"], "conf": 1.0, "notes": ["attested phrasebook line 26"], "src": "attested", "line": 26, "section": "D"}, {"en": "Seam, open in fair phase.", "key": "seam open in fair phase", "aliases": [], "use": "", "su": "jel lesh-eth id-u.", "ipa": "dʒel ˈle.ʃeth ˈi.du", "gloss": "seam alignment-LOC open-IMP", "tokens": ["j", "e", "l", " ", "l", "e", "sh", " ", "e", "t", "h", " ", "i", "d", "u"], "syl": ["jel", "/", "LE", "sheth", "/", "I", "du"], "conf": 1.0, "notes": ["attested phrasebook line 27"], "src": "attested", "line": 27, "section": "D"}, {"en": "We keep our gaps.", "key": "we keep our gaps", "aliases": [], "use": "", "su": "enmai nexath-mai tan-a=mi.", "ipa": "ˈen.mai ˈne.ksath.mai taˈna.mi", "gloss": "1PL.ENT gap-ENT hold-T=PROP", "tokens": ["e", "n", "m", "a", "i", " ", "n", "e", "k", "s", "a", "t", "h", "m", "a", "i", " ", "t", "a", "n", "a", "m", "i"], "syl": ["EN", "mai", "/", "NE", "ksath", "mai", "/", "ta", "NA", "mi"], "conf": 1.0, "notes": ["attested phrasebook line 28"], "src": "attested", "line": 28, "section": "D"}, {"en": "She has gone adrift.", "key": "she has gone adrift", "aliases": [], "use": "She is dead.", "su": "an zu jed-t-a=mi.", "ipa": "an zu dʒedˈta.mi", "gloss": "3SG adrift go-PFV-T=PROP", "tokens": ["a", "n", " ", "z", "u", " ", "j", "e", "d", "t", "a", "m", "i"], "syl": ["an", "/", "zu", "/", "jed", "TA", "mi"], "conf": 1.0, "notes": ["attested phrasebook line 29"], "src": "attested", "line": 29, "section": "D"}, {"en": "Surface", "key": "surface", "aliases": [], "use": "seam-true — in the dark, kinsman.", "su": "hōl-eshe=zu, maiel.", "ipa": "hoːˈle.ʃe.zu ˈmai.el", "gloss": "surface-T•=DARK kinsman", "tokens": ["h", "o:", "l", "e", "sh", "e", "z", "u", " ", "m", "a", "i", "e", "l"], "syl": ["ho:", "LE", "she", "zu", "/", "MAI", "el"], "conf": 1.0, "notes": ["attested phrasebook line 30"], "src": "attested", "line": 30, "section": "D"}, {"en": "Truth is among us.", "key": "truth is among us", "aliases": [], "use": "", "su": "ver enmai-eth ve-a=ka.", "ipa": "ver enˈmai.eth veˈa.ka", "gloss": "truth 1PL.ENT-LOC be-T=BEAC", "tokens": ["v", "e", "r", " ", "e", "n", "m", "a", "i", " ", "e", "t", "h", " ", "v", "e", "a", "k", "a"], "syl": ["ver", "/", "en", "MAI", "eth", "/", "ve", "A", "ka"], "conf": 1.0, "notes": ["attested phrasebook line 31"], "src": "attested", "line": 31, "section": "D"}, {"en": "The Tragic Truth waits in the dark.", "key": "the tragic truth waits in the dark", "aliases": [], "use": "", "su": "eshe-ver men-a=zu.", "ipa": "ˈe.ʃe.ver meˈna.zu", "gloss": "seam.true-truth wait-T=DARK", "tokens": ["e", "sh", "e", "v", "e", "r", " ", "m", "e", "n", "a", "z", "u"], "syl": ["E", "she", "ver", "/", "me", "NA", "zu"], "conf": 1.0, "notes": ["attested phrasebook line 32"], "src": "attested", "line": 32, "section": "D"}, {"en": "My Sōrn, hold breath.", "key": "my s rn hold breath", "aliases": [], "use": "", "su": "Sōrnmai, ān tan-u.", "ipa": "ˈsoːrn.mai aːn ˈta.nu", "gloss": "drive.ENT breath hold-IMP", "tokens": ["s", "o:", "r", "n", "m", "a", "i", " ", "a:", "n", " ", "t", "a", "n", "u"], "syl": ["SO:RN", "mai", "/", "A:N", "/", "TA", "nu"], "conf": 1.0, "notes": ["attested phrasebook line 33"], "src": "attested", "line": 33, "section": "E"}, {"en": "Breath held", "key": "breath held", "aliases": [], "use": "by our clock.", "su": "ān tan-a=mi.", "ipa": "aːn taˈna.mi", "gloss": "breath hold-T=PROP", "tokens": ["a:", "n", " ", "t", "a", "n", "a", "m", "i"], "syl": ["A:N", "/", "ta", "NA", "mi"], "conf": 1.0, "notes": ["attested phrasebook line 34"], "src": "attested", "line": 34, "section": "E"}, {"en": "Down, down, to the seam.", "key": "down down to the seam", "aliases": [], "use": "", "su": "nuv, nuv, jel-ol.", "ipa": "nuv nuv ˈdʒe.lol", "gloss": "DOWN DOWN seam-DAT", "tokens": ["n", "u", "v", " ", "n", "u", "v", " ", "j", "e", "l", " ", "o", "l"], "syl": ["nuv", "/", "nuv", "/", "JE", "lol"], "conf": 1.0, "notes": ["attested phrasebook line 35"], "src": "attested", "line": 35, "section": "E"}, {"en": "We are running under.", "key": "we are running under", "aliases": [], "use": "", "su": "nuvran ve-a=mi.", "ipa": "ˈnuv.ran veˈa.mi", "gloss": "running.under be-T=PROP", "tokens": ["n", "u", "v", "r", "a", "n", " ", "v", "e", "a", "m", "i"], "syl": ["NUV", "ran", "/", "ve", "A", "mi"], "conf": 1.0, "notes": ["attested phrasebook line 36"], "src": "attested", "line": 36, "section": "E"}, {"en": "The seam opens", "key": "the seam opens", "aliases": [], "use": "seam-true.", "su": "jel id-eshe=mi.", "ipa": "dʒel iˈde.ʃe.mi", "gloss": "seam open-T•=PROP", "tokens": ["j", "e", "l", " ", "i", "d", "e", "sh", "e", "m", "i"], "syl": ["jel", "/", "i", "DE", "she", "mi"], "conf": 1.0, "notes": ["attested phrasebook line 37"], "src": "attested", "line": 37, "section": "E"}, {"en": "(the silent interval)", "key": "line38", "aliases": [], "use": "(the interval that has no sentence)", "su": "ne.", "ipa": "ne", "gloss": "GAP", "tokens": ["|"], "syl": ["ne", "|"], "conf": 1.0, "notes": ["attested phrasebook line 38"], "src": "attested", "line": 38, "section": "E"}, {"en": "Surfaced", "key": "surfaced", "aliases": [], "use": "seam-true, in the dark — yes?", "su": "hōl-t-eshe=zu vu?", "ipa": "hoːlˈte.ʃe.zu vu", "gloss": "surface-PFV-T•=DARK Q", "tokens": ["h", "o:", "l", "t", "e", "sh", "e", "z", "u", " ", "v", "u"], "syl": ["ho:l", "TE", "she", "zu", "/", "vu"], "conf": 1.0, "notes": ["attested phrasebook line 39"], "src": "attested", "line": 39, "section": "E"}, {"en": "Surfaced. We are", "key": "surfaced we are", "aliases": [], "use": "by our own clock.", "su": "hōl-t-eshe=zu. enmai ve-a=mi.", "ipa": "hoːlˈte.ʃe.zu · ˈen.mai veˈa.mi", "gloss": "surface-PFV-T•=DARK · 1PL.ENT be-T=PROP", "tokens": ["h", "o:", "l", "t", "e", "sh", "e", "z", "u", " ", "e", "n", "m", "a", "i", " ", "v", "e", "a", "m", "i"], "syl": ["ho:l", "TE", "she", "zu", "/", "EN", "mai", "/", "ve", "A", "mi"], "conf": 1.0, "notes": ["attested phrasebook line 40"], "src": "attested", "line": 40, "section": "E"}, {"en": "The beacon holds again.", "key": "the beacon holds again", "aliases": ["we are back in range"], "use": "", "su": "kad ret ver-a=ka.", "ipa": "kad ret veˈra.ka", "gloss": "beacon again true-T=BEAC", "tokens": ["k", "a", "d", " ", "r", "e", "t", " ", "v", "e", "r", "a", "k", "a"], "syl": ["kad", "/", "ret", "/", "ve", "RA", "ka"], "conf": 1.0, "notes": ["attested phrasebook line 41"], "src": "attested", "line": 41, "section": "E"}, {"en": "good morning", "key": "good morning", "aliases": [], "su": "bon.", "ipa": "bon", "gloss": "good", "tokens": ["b", "o", "n"], "syl": ["bon"], "conf": 0.45, "notes": ["no Sūchel word for 'morning'", "some words were left untranslated; confidence lowered"], "src": "word-by-word"}, {"en": "thank you", "key": "thank you", "aliases": [], "su": "ish.", "ipa": "iʃ", "gloss": "2SG", "tokens": ["i", "sh"], "syl": ["ish"], "conf": 0.45, "notes": ["no Sūchel word for 'thank'", "some words were left untranslated; confidence lowered"], "src": "word-by-word"}, {"en": "thanks", "key": "thanks", "aliases": [], "su": "[thanks?]", "ipa": "", "gloss": "[thanks?]", "tokens": [], "syl": [], "conf": 0.1, "notes": ["no lexical match: could not compose a Sūchel clause"], "src": "scaffold"}, {"en": "help", "key": "help", "aliases": [], "su": "[help?]", "ipa": "", "gloss": "[help?]", "tokens": [], "syl": [], "conf": 0.1, "notes": ["no lexical match: could not compose a Sūchel clause"], "src": "scaffold"}, {"en": "who are you", "key": "who are you", "aliases": [], "su": "ish.", "ipa": "iʃ", "gloss": "2SG", "tokens": ["i", "sh"], "syl": ["ish"], "conf": 0.45, "notes": ["no Sūchel word for 'who'", "some words were left untranslated; confidence lowered"], "src": "word-by-word"}, {"en": "where are we", "key": "where are we", "aliases": [], "su": "eni.", "ipa": "ˈe.ni", "gloss": "1PL", "tokens": ["e", "n", "i"], "syl": ["E", "ni"], "conf": 0.45, "notes": ["no Sūchel word for 'where'", "some words were left untranslated; confidence lowered"], "src": "word-by-word"}, {"en": "what is this", "key": "what is this", "aliases": [], "su": "[what?] [this?]", "ipa": "", "gloss": "[what?] [this?]", "tokens": [], "syl": [], "conf": 0.1, "notes": ["no lexical match: could not compose a Sūchel clause"], "src": "scaffold"}, {"en": "are you there", "key": "are you there", "aliases": [], "su": "ish.", "ipa": "iʃ", "gloss": "2SG", "tokens": ["i", "sh"], "syl": ["ish"], "conf": 0.45, "notes": ["no Sūchel word for 'there'", "some words were left untranslated; confidence lowered"], "src": "word-by-word"}, {"en": "do you hear me", "key": "do you hear me", "aliases": [], "su": "ish enen klut-a=ka vu?", "ipa": "iʃ ˈe.nen kluˈta.ka vu", "gloss": "2SG 1SG.ACC hear-T=BEAC Q", "tokens": ["i", "sh", " ", "e", "n", "e", "n", " ", "k", "l", "u", "t", "a", "k", "a", " ", "v", "u"], "syl": ["ish", "/", "E", "nen", "/", "klu", "TA", "ka", "/", "vu"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "I go down", "key": "i go down", "aliases": [], "su": "en nuv jed-a=mi.", "ipa": "en nuv dʒeˈda.mi", "gloss": "1SG DOWN go-T=PROP", "tokens": ["e", "n", " ", "n", "u", "v", " ", "j", "e", "d", "a", "m", "i"], "syl": ["en", "/", "nuv", "/", "je", "DA", "mi"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "I go up", "key": "i go up", "aliases": [], "su": "en hau jed-a=mi.", "ipa": "en hau dʒeˈda.mi", "gloss": "1SG UP go-T=PROP", "tokens": ["e", "n", " ", "h", "a", "u", " ", "j", "e", "d", "a", "m", "i"], "syl": ["en", "/", "HAU", "/", "je", "DA", "mi"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "she holds", "key": "she holds", "aliases": [], "su": "an tan-a=ka.", "ipa": "an taˈna.ka", "gloss": "3SG hold-T=BEAC", "tokens": ["a", "n", " ", "t", "a", "n", "a", "k", "a"], "syl": ["an", "/", "ta", "NA", "ka"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "we surface", "key": "we surface", "aliases": [], "su": "eni hōl-a=mi.", "ipa": "ˈe.ni hoːˈla.mi", "gloss": "1PL surface-T=PROP", "tokens": ["e", "n", "i", " ", "h", "o:", "l", "a", "m", "i"], "syl": ["E", "ni", "/", "ho:", "LA", "mi"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "I see you", "key": "i see you", "aliases": [], "su": "en ishen vid-a=mi.", "ipa": "en ˈi.ʃen viˈda.mi", "gloss": "1SG 2SG.ACC see-T=PROP", "tokens": ["e", "n", " ", "i", "sh", "e", "n", " ", "v", "i", "d", "a", "m", "i"], "syl": ["en", "/", "I", "shen", "/", "vi", "DA", "mi"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "you see me", "key": "you see me", "aliases": [], "su": "ish enen vid-a=ka.", "ipa": "iʃ ˈe.nen viˈda.ka", "gloss": "2SG 1SG.ACC see-T=BEAC", "tokens": ["i", "sh", " ", "e", "n", "e", "n", " ", "v", "i", "d", "a", "k", "a"], "syl": ["ish", "/", "E", "nen", "/", "vi", "DA", "ka"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "hold the line", "key": "hold the line", "aliases": [], "su": "sheg tan-u.", "ipa": "ʃeg ˈta.nu", "gloss": "rope hold-IMP", "tokens": ["sh", "e", "g", " ", "t", "a", "n", "u"], "syl": ["sheg", "/", "TA", "nu"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "we crossed", "key": "we crossed", "aliases": [], "su": "eni sū-t-eshe=mi.", "ipa": "ˈe.ni suːˈte.ʃe.mi", "gloss": "1PL cross-PFV-T•=PROP", "tokens": ["e", "n", "i", " ", "s", "u:", "t", "e", "sh", "e", "m", "i"], "syl": ["E", "ni", "/", "su:", "TE", "she", "mi"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "I cross the seam", "key": "i cross the seam", "aliases": [], "su": "en jelen sū-eshe=mi.", "ipa": "en ˈdʒe.len suːˈe.ʃe.mi", "gloss": "1SG seam.ACC cross-T•=PROP", "tokens": ["e", "n", " ", "j", "e", "l", "e", "n", " ", "s", "u:", "e", "sh", "e", "m", "i"], "syl": ["en", "/", "JE", "len", "/", "su:", "E", "she", "mi"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "they run down", "key": "they run down", "aliases": [], "su": "ani nuv ran-a=ka.", "ipa": "ˈa.ni nuv raˈna.ka", "gloss": "3PL DOWN run-T=BEAC", "tokens": ["a", "n", "i", " ", "n", "u", "v", " ", "r", "a", "n", "a", "k", "a"], "syl": ["A", "ni", "/", "nuv", "/", "ra", "NA", "ka"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "I want water", "key": "i want water", "aliases": [], "su": "en vaten vil-a=mi.", "ipa": "en ˈva.ten viˈla.mi", "gloss": "1SG water.ACC want-T=PROP", "tokens": ["e", "n", " ", "v", "a", "t", "e", "n", " ", "v", "i", "l", "a", "m", "i"], "syl": ["en", "/", "VA", "ten", "/", "vi", "LA", "mi"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "we found the gap", "key": "we found the gap", "aliases": [], "su": "eni nexathen venda-t-a=mi.", "ipa": "ˈe.ni ˈne.ksa.then ven.daˈta.mi", "gloss": "1PL gap.ACC find-PFV-T=PROP", "tokens": ["e", "n", "i", " ", "n", "e", "k", "s", "a", "t", "h", "e", "n", " ", "v", "e", "n", "d", "a", "t", "a", "m", "i"], "syl": ["E", "ni", "/", "NE", "ksa", "then", "/", "ven", "da", "TA", "mi"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "the beacon holds", "key": "the beacon holds", "aliases": [], "su": "kad tan-a=ka.", "ipa": "kad taˈna.ka", "gloss": "beacon hold-T=BEAC", "tokens": ["k", "a", "d", " ", "t", "a", "n", "a", "k", "a"], "syl": ["kad", "/", "ta", "NA", "ka"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "I am off", "key": "i am off", "aliases": [], "su": "en.", "ipa": "en", "gloss": "1SG", "tokens": ["e", "n"], "syl": ["en"], "conf": 0.45, "notes": ["no Sūchel word for 'off'", "some words were left untranslated; confidence lowered"], "src": "word-by-word"}, {"en": "do not surface", "key": "do not surface", "aliases": [], "su": "vo hōl-u.", "ipa": "vo ˈhoː.lu", "gloss": "NEG surface-IMP", "tokens": ["v", "o", " ", "h", "o:", "l", "u"], "syl": ["vo", "/", "HO:", "lu"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "I hold the seam", "key": "i hold the seam", "aliases": [], "su": "en jelen tan-a=mi.", "ipa": "en ˈdʒe.len taˈna.mi", "gloss": "1SG seam.ACC hold-T=PROP", "tokens": ["e", "n", " ", "j", "e", "l", "e", "n", " ", "t", "a", "n", "a", "m", "i"], "syl": ["en", "/", "JE", "len", "/", "ta", "NA", "mi"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "we speak true", "key": "we speak true", "aliases": [], "su": "eni ver-a=mi.", "ipa": "ˈe.ni veˈra.mi", "gloss": "1PL speak-T=PROP", "tokens": ["e", "n", "i", " ", "v", "e", "r", "a", "m", "i"], "syl": ["E", "ni", "/", "ve", "RA", "mi"], "conf": 0.6, "notes": ["no Sūchel word for 'true'", "some words were left untranslated; confidence lowered"], "src": "word-by-word"}, {"en": "come to me", "key": "come to me", "aliases": [], "su": "enen ben-u.", "ipa": "ˈe.nen ˈbe.nu", "gloss": "1SG.ACC come-IMP", "tokens": ["e", "n", "e", "n", " ", "b", "e", "n", "u"], "syl": ["E", "nen", "/", "BE", "nu"], "conf": 0.9, "notes": [], "src": "composed"}, {"en": "I hear you", "key": "i hear you", "aliases": [], "su": "en ishen klut-a=mi.", "ipa": "en ˈi.ʃen kluˈta.mi", "gloss": "1SG 2SG.ACC hear-T=PROP", "tokens": ["e", "n", " ", "i", "sh", "e", "n", " ", "k", "l", "u", "t", "a", "m", "i"], "syl": ["en", "/", "I", "shen", "/", "klu", "TA", "mi"], "conf": 0.9, "notes": [], "src": "composed"}], "LEX": {"Sūchel": {"ipa": "ˈsuː.tʃel", "gloss": "crossing-speech", "domain": "core"}, "Pelgar": {"ipa": "ˈpel.gar", "gloss": "Old Pelagic", "domain": "core"}, "sū": {"ipa": "suː", "gloss": "cross the seam", "domain": "physics"}, "sūath": {"ipa": "ˈsuː.ath", "gloss": "crossing", "domain": "physics"}, "sīl": {"ipa": "siːl", "gloss": "crosser", "domain": "fleet"}, "Sōrn": {"ipa": "soːrn", "gloss": "threading engine", "domain": "fleet"}, "jel": {"ipa": "dʒel", "gloss": "seam 𝔍", "domain": "physics"}, "jelmar": {"ipa": "ˈdʒel.mar", "gloss": "seam-pearl", "domain": "physics"}, "jelvos": {"ipa": "ˈdʒel.vos", "gloss": "seam-scar", "domain": "physics"}, "jelsīl": {"ipa": "ˈdʒel.siːl", "gloss": "seam-crosser", "domain": "fleet"}, "Idrenes": {"ipa": "iˈdre.nes", "gloss": "opened path", "domain": "physics"}, "idren": {"ipa": "ˈi.dren", "gloss": "bridge", "domain": "core"}, "kad": {"ipa": "kad", "gloss": "beacon", "domain": "fleet"}, "kadur": {"ipa": "ˈka.dur", "gloss": "beacon-cycle", "domain": "fleet"}, "zukad": {"ipa": "ˈzu.kad", "gloss": "dark time", "domain": "argot"}, "zu": {"ipa": "zu", "gloss": "adrift", "domain": "grammar"}, "mi": {"ipa": "mi", "gloss": "self", "domain": "grammar"}, "ka": {"ipa": "ka", "gloss": "beacon-time anchor =ka", "domain": "grammar"}, "ne": {"ipa": "ne", "gloss": "gap-particle", "domain": "grammar"}, "nexath": {"ipa": "ˈne.ksath", "gloss": "gap", "domain": "core"}, "nuv": {"ipa": "nuv", "gloss": "down-tower", "domain": "grammar"}, "hau": {"ipa": "hau", "gloss": "surfaceward", "domain": "grammar"}, "hōl": {"ipa": "hoːl", "gloss": "surface", "domain": "fleet"}, "nuvran": {"ipa": "ˈnuv.ran", "gloss": "running under", "domain": "argot"}, "nuvi": {"ipa": "ˈnu.vi", "gloss": "diver", "domain": "fleet"}, "nuvdol": {"ipa": "ˈnuv.dol", "gloss": "depth-well", "domain": "physics"}, "tur": {"ipa": "tur", "gloss": "Tower", "domain": "physics"}, "Turmai": {"ipa": "ˈtur.mai", "gloss": "Tower", "domain": "physics"}, "kav": {"ipa": "kav", "gloss": "tolerance", "domain": "physics"}, "Kaveth": {"ipa": "ˈka.veth", "gloss": "at-the-Limit", "domain": "physics"}, "tem": {"ipa": "tem", "gloss": "pattern", "domain": "physics"}, "temor": {"ipa": "ˈte.mor", "gloss": "information reef", "domain": "physics"}, "mor": {"ipa": "mor", "gloss": "reef", "domain": "core"}, "mar": {"ipa": "mar", "gloss": "pearl", "domain": "core"}, "velosh": {"ipa": "ˈve.loʃ", "gloss": "Formless mouth", "domain": "physics"}, "vel": {"ipa": "vel", "gloss": "nothing", "domain": "core"}, "ver": {"ipa": "ver", "gloss": "truth", "domain": "core"}, "vur": {"ipa": "vur", "gloss": "spin", "domain": "core"}, "vurel": {"ipa": "ˈvu.rel", "gloss": "madman", "domain": "core"}, "Vurel-lor": {"ipa": "ˈvu.rel lor", "gloss": "Madman's Theorem", "domain": "physics"}, "eshe-ver": {"ipa": "ˈe.ʃe ver", "gloss": "Tragic Truth", "domain": "physics"}, "pevlor": {"ipa": "ˈpev.lor", "gloss": "logic ΛL", "domain": "physics"}, "lor": {"ipa": "lor", "gloss": "rule", "domain": "core"}, "somath": {"ipa": "ˈso.math", "gloss": "assembly", "domain": "core"}, "Pelgar Somath": {"ipa": "ˈpel.gar ˈso.math", "gloss": "Pelagian Assembly", "domain": "fleet"}, "nav": {"ipa": "nav", "gloss": "ship", "domain": "fleet"}, "navmai": {"ipa": "ˈnav.mai", "gloss": "one's own ship", "domain": "fleet"}, "mān": {"ipa": "maːn", "gloss": "hand", "domain": "fleet"}, "chel": {"ipa": "tʃel", "gloss": "speech", "domain": "core"}, "kel": {"ipa": "kel", "gloss": "speech — preserved in liturgy", "domain": "core"}, "ran": {"ipa": "ran", "gloss": "run", "domain": "core"}, "tel": {"ipa": "tel", "gloss": "reach", "domain": "core"}, "dur": {"ipa": "dur", "gloss": "endure", "domain": "core"}, "dol": {"ipa": "dol", "gloss": "pit", "domain": "core"}, "osh": {"ipa": "oʃ", "gloss": "mouth", "domain": "core"}, "vos": {"ipa": "vos", "gloss": "wound", "domain": "core"}, "en": {"ipa": "en", "gloss": "I", "domain": "grammar"}, "ish": {"ipa": "iʃ", "gloss": "you", "domain": "grammar"}, "an": {"ipa": "an", "gloss": "she/he/it", "domain": "grammar"}, "eni": {"ipa": "ˈe.ni", "gloss": "we", "domain": "grammar"}, "enmai": {"ipa": "ˈen.mai", "gloss": "we", "domain": "grammar"}, "ishmai": {"ipa": "ˈiʃ.mai", "gloss": "you", "domain": "grammar"}, "-mai": {"ipa": "mai", "gloss": "entangled-possession suffix", "domain": "grammar"}, "-ath": {"ipa": "ath", "gloss": "nominalizer", "domain": "grammar"}, "-eth": {"ipa": "eth", "gloss": "locative case", "domain": "grammar"}, "-ol": {"ipa": "ol", "gloss": "dative case", "domain": "grammar"}, "-en": {"ipa": "en", "gloss": "genitive", "domain": "grammar"}, "vo": {"ipa": "vo", "gloss": "not", "domain": "grammar"}, "ve": {"ipa": "ve", "gloss": "be", "domain": "grammar"}, "sa": {"ipa": "sa", "gloss": "one", "domain": "number"}, "vor": {"ipa": "vor", "gloss": "two", "domain": "number"}, "telnum": {"ipa": "tel", "gloss": "three", "domain": "number"}, "mek": {"ipa": "mek", "gloss": "four", "domain": "number"}, "pev": {"ipa": "pev", "gloss": "five", "domain": "number"}, "shen": {"ipa": "ʃen", "gloss": "six", "domain": "number"}, "hep": {"ipa": "hep", "gloss": "seven", "domain": "number"}, "ok": {"ipa": "ok", "gloss": "eight", "domain": "number"}, "nur": {"ipa": "nur", "gloss": "nine", "domain": "number"}, "dak": {"ipa": "dak", "gloss": "ten", "domain": "number"}, "jed": {"ipa": "", "gloss": "go", "domain": "core"}, "tan": {"ipa": "", "gloss": "hold", "domain": "core"}, "id": {"ipa": "", "gloss": "open", "domain": "core"}, "men": {"ipa": "", "gloss": "wait", "domain": "core"}, "ret": {"ipa": "", "gloss": "again", "domain": "core"}, "ān": {"ipa": "aːn", "gloss": "breath", "domain": "core"}, "kru": {"ipa": "", "gloss": "blood", "domain": "core"}, "gal": {"ipa": "", "gloss": "Still", "domain": "core"}, "lesh": {"ipa": "", "gloss": "alignment", "domain": "core"}, "maiel": {"ipa": "ˈmai.el", "gloss": "kinsman", "domain": "core"}, "om": {"ipa": "", "gloss": "all", "domain": "core"}, "vu": {"ipa": "", "gloss": "question particle", "domain": "grammar"}, "-u": {"ipa": "u", "gloss": "imperative", "domain": "grammar"}, "ō": {"ipa": "oː", "gloss": "vocative particle", "domain": "grammar"}, "-a": {"ipa": "a", "gloss": "mood T: classically true", "domain": "grammar"}, "-im": {"ipa": "im", "gloss": "mood T⁻: true-as-approached", "domain": "grammar"}, "-ur": {"ipa": "ur", "gloss": "mood T⁺: held-from-above", "domain": "grammar"}, "-eshe": {"ipa": "ˈe.ʃe", "gloss": "mood T•: seam-true", "domain": "grammar"}, "-t-": {"ipa": "t", "gloss": "perfective aspect", "domain": "grammar"}, "-i": {"ipa": "i", "gloss": "plural", "domain": "grammar"}, "-el": {"ipa": "el", "gloss": "agent suffix", "domain": "grammar"}, "-ur(dur)": {"ipa": "ur", "gloss": "duration suffix", "domain": "grammar"}, "am": {"ipa": "am", "gloss": "mother", "domain": "kin"}, "at": {"ipa": "at", "gloss": "father", "domain": "kin"}, "bem": {"ipa": "bem", "gloss": "child", "domain": "kin"}, "shir": {"ipa": "ʃir", "gloss": "sibling", "domain": "kin"}, "dam": {"ipa": "dam", "gloss": "friend", "domain": "kin"}, "gur": {"ipa": "gur", "gloss": "stranger", "domain": "kin"}, "mār": {"ipa": "maːr", "gloss": "captain", "domain": "kin"}, "velan": {"ipa": "ˈve.lan", "gloss": "widow", "domain": "kin"}, "nom": {"ipa": "nom", "gloss": "name", "domain": "kin"}, "bal": {"ipa": "bal", "gloss": "elder", "domain": "kin"}, "chep": {"ipa": "tʃep", "gloss": "head", "domain": "body"}, "luk": {"ipa": "luk", "gloss": "eye", "domain": "body"}, "tol": {"ipa": "tol", "gloss": "ear", "domain": "body"}, "ned": {"ipa": "ned", "gloss": "heart", "domain": "body"}, "bon": {"ipa": "bon", "gloss": "bone", "domain": "body"}, "der": {"ipa": "der", "gloss": "skin", "domain": "body"}, "pod": {"ipa": "pod", "gloss": "foot", "domain": "body"}, "jish": {"ipa": "dʒiʃ", "gloss": "voice", "domain": "body"}, "mus": {"ipa": "mus", "gloss": "flesh", "domain": "body"}, "vat": {"ipa": "vat", "gloss": "water", "domain": "world"}, "sal": {"ipa": "sal", "gloss": "salt", "domain": "world"}, "tir": {"ipa": "tir", "gloss": "earth", "domain": "world"}, "pir": {"ipa": "pir", "gloss": "fire", "domain": "world"}, "luz": {"ipa": "luz", "gloss": "light", "domain": "world"}, "zem": {"ipa": "zem", "gloss": "shadow", "domain": "world"}, "ven": {"ipa": "ven", "gloss": "wind", "domain": "world"}, "rōd": {"ipa": "roːd", "gloss": "storm", "domain": "world"}, "sniv": {"ipa": "sniv", "gloss": "rain", "domain": "world"}, "chir": {"ipa": "tʃir", "gloss": "cold", "domain": "world"}, "tev": {"ipa": "tev", "gloss": "warm", "domain": "world"}, "mōr": {"ipa": "moːr", "gloss": "wave", "domain": "sea"}, "tid": {"ipa": "tid", "gloss": "tide", "domain": "sea"}, "grun": {"ipa": "grun", "gloss": "seafloor", "domain": "sea"}, "skum": {"ipa": "skum", "gloss": "foam", "domain": "sea"}, "mig": {"ipa": "mig", "gloss": "fish", "domain": "sea"}, "velk": {"ipa": "velk", "gloss": "kelp", "domain": "sea"}, "salm": {"ipa": "salm", "gloss": "current", "domain": "sea"}, "ster": {"ipa": "ster", "gloss": "star", "domain": "sky"}, "lun": {"ipa": "lun", "gloss": "moon", "domain": "sky"}, "sol": {"ipa": "sol", "gloss": "sun", "domain": "sky"}, "heban": {"ipa": "ˈhe.ban", "gloss": "sky", "domain": "sky"}, "nubes": {"ipa": "ˈnu.bes", "gloss": "cloud", "domain": "sky"}, "dag": {"ipa": "dag", "gloss": "day", "domain": "time"}, "zun": {"ipa": "zun", "gloss": "night", "domain": "time"}, "jer": {"ipa": "dʒer", "gloss": "year", "domain": "time"}, "nun": {"ipa": "nun", "gloss": "now", "domain": "time"}, "ant": {"ipa": "ant", "gloss": "before", "domain": "time"}, "pos": {"ipa": "pos", "gloss": "after", "domain": "time"}, "sob": {"ipa": "sob", "gloss": "sleep", "domain": "time"}, "drem": {"ipa": "drem", "gloss": "dream", "domain": "time"}, "ald": {"ipa": "ald", "gloss": "old", "domain": "time"}, "niv": {"ipa": "niv", "gloss": "new", "domain": "time"}, "chil": {"ipa": "tʃil", "gloss": "keel", "domain": "ship"}, "stur": {"ipa": "stur", "gloss": "mast", "domain": "ship"}, "stir": {"ipa": "stir", "gloss": "steer", "domain": "ship"}, "shechel": {"ipa": "ˈʃe.tʃel", "gloss": "sail", "domain": "ship"}, "hul": {"ipa": "hul", "gloss": "hull", "domain": "ship"}, "porta": {"ipa": "ˈpor.ta", "gloss": "hatch", "domain": "ship"}, "gom": {"ipa": "gom", "gloss": "cargo", "domain": "ship"}, "rem": {"ipa": "rem", "gloss": "oar", "domain": "ship"}, "schir": {"ipa": "stʃir", "gloss": "knife", "domain": "tools"}, "ham": {"ipa": "ham", "gloss": "hammer", "domain": "tools"}, "sag": {"ipa": "sag", "gloss": "saw", "domain": "tools"}, "sheg": {"ipa": "ʃeg", "gloss": "rope", "domain": "tools"}, "net": {"ipa": "net", "gloss": "net", "domain": "tools"}, "kov": {"ipa": "kov", "gloss": "cup", "domain": "tools"}, "pan": {"ipa": "pan", "gloss": "pan", "domain": "tools"}, "vag": {"ipa": "vag", "gloss": "cart", "domain": "tools"}, "ed": {"ipa": "ed", "gloss": "eat", "domain": "food"}, "bib": {"ipa": "bib", "gloss": "drink", "domain": "food"}, "brod": {"ipa": "brod", "gloss": "bread", "domain": "food"}, "lem": {"ipa": "lem", "gloss": "milk", "domain": "food"}, "sup": {"ipa": "sup", "gloss": "soup", "domain": "food"}, "shem": {"ipa": "ʃem", "gloss": "seed", "domain": "food"}, "kres": {"ipa": "kres", "gloss": "grow", "domain": "food"}, "dap": {"ipa": "dap", "gloss": "meat", "domain": "food"}, "hund": {"ipa": "hund", "gloss": "dog", "domain": "beasts"}, "kat": {"ipa": "kat", "gloss": "cat", "domain": "beasts"}, "vurm": {"ipa": "vurm", "gloss": "worm", "domain": "beasts"}, "vejel": {"ipa": "ˈve.dʒel", "gloss": "bird", "domain": "beasts"}, "kabal": {"ipa": "ˈka.bal", "gloss": "horse", "domain": "beasts"}, "mag": {"ipa": "mag", "gloss": "big", "domain": "qualities"}, "min": {"ipa": "min", "gloss": "small", "domain": "qualities"}, "lam": {"ipa": "lam", "gloss": "long", "domain": "qualities"}, "tuk": {"ipa": "tuk", "gloss": "short", "domain": "qualities"}, "dem": {"ipa": "dem", "gloss": "heavy", "domain": "qualities"}, "lit": {"ipa": "lit", "gloss": "light", "domain": "qualities"}, "rav": {"ipa": "rav", "gloss": "fast", "domain": "qualities"}, "hal": {"ipa": "hal", "gloss": "slow", "domain": "qualities"}, "mal": {"ipa": "mal", "gloss": "bad", "domain": "qualities"}, "pol": {"ipa": "pol", "gloss": "full", "domain": "qualities"}, "vak": {"ipa": "vak", "gloss": "empty", "domain": "qualities"}, "lek": {"ipa": "lek", "gloss": "near", "domain": "qualities"}, "telur": {"ipa": "ˈte.lur", "gloss": "far", "domain": "qualities"}, "rej": {"ipa": "redʒ", "gloss": "straight", "domain": "qualities"}, "kriv": {"ipa": "kriv", "gloss": "crooked", "domain": "qualities"}, "vid": {"ipa": "vid", "gloss": "see", "domain": "verbs"}, "klut": {"ipa": "klut", "gloss": "hear", "domain": "verbs"}, "dot": {"ipa": "dot", "gloss": "give", "domain": "verbs"}, "kaver": {"ipa": "ˈka.ver", "gloss": "take", "domain": "verbs"}, "mak": {"ipa": "mak", "gloss": "make", "domain": "verbs"}, "brek": {"ipa": "brek", "gloss": "break", "domain": "verbs"}, "menda": {"ipa": "ˈmen.da", "gloss": "mend", "domain": "verbs"}, "porter": {"ipa": "ˈpor.ter", "gloss": "carry", "domain": "verbs"}, "jek": {"ipa": "dʒek", "gloss": "throw", "domain": "verbs"}, "binda": {"ipa": "ˈbin.da", "gloss": "bind", "domain": "verbs"}, "snid": {"ipa": "snid", "gloss": "cut", "domain": "verbs"}, "bren": {"ipa": "bren", "gloss": "burn", "domain": "verbs"}, "nad": {"ipa": "nad", "gloss": "swim", "domain": "verbs"}, "pal": {"ipa": "pal", "gloss": "fall", "domain": "verbs"}, "stan": {"ipa": "stan", "gloss": "stand", "domain": "verbs"}, "shed": {"ipa": "ʃed", "gloss": "sit", "domain": "verbs"}, "ben": {"ipa": "ben", "gloss": "come", "domain": "verbs"}, "lib": {"ipa": "lib", "gloss": "live", "domain": "verbs"}, "nek": {"ipa": "nek", "gloss": "die", "domain": "verbs"}, "venda": {"ipa": "ˈven.da", "gloss": "find", "domain": "verbs"}, "lus": {"ipa": "lus", "gloss": "lose", "domain": "verbs"}, "vis": {"ipa": "vis", "gloss": "know", "domain": "mind"}, "log": {"ipa": "log", "gloss": "think", "domain": "mind"}, "vil": {"ipa": "vil", "gloss": "want", "domain": "mind"}, "luv": {"ipa": "luv", "gloss": "love", "domain": "mind"}, "dred": {"ipa": "dred", "gloss": "fear", "domain": "mind"}, "gōd": {"ipa": "goːd", "gloss": "joy", "domain": "mind"}, "trur": {"ipa": "trur", "gloss": "grief", "domain": "mind"}, "hov": {"ipa": "hov", "gloss": "hope", "domain": "mind"}, "mem": {"ipa": "mem", "gloss": "memory", "domain": "mind"}, "chent": {"ipa": "tʃent", "gloss": "hundred", "domain": "number"}, "halb": {"ipa": "halb", "gloss": "half", "domain": "number"}, "mol": {"ipa": "mol", "gloss": "many", "domain": "number"}, "pau": {"ipa": "pau", "gloss": "few", "domain": "number"}, "metur": {"ipa": "ˈme.tur", "gloss": "measure", "domain": "number"}, "salvat": {"ipa": "ˈsal.vat", "gloss": "seawater", "domain": "sea"}, "luzkad": {"ipa": "ˈluz.kad", "gloss": "lighthouse-pulse", "domain": "sky"}, "steren": {"ipa": "ˈste.ren", "gloss": "star-road", "domain": "sky"}, "navdol": {"ipa": "ˈnav.dol", "gloss": "shipyard", "domain": "ship"}, "kilver": {"ipa": "ˈkil.ver", "gloss": "keel-truth", "domain": "mind"}, "zemkad": {"ipa": "ˈzem.kad", "gloss": "eclipse", "domain": "sky"}, "tidkadur": {"ipa": "tidˈka.dur", "gloss": "tide-cycle", "domain": "time"}, "memdol": {"ipa": "ˈmem.dol", "gloss": "archive", "domain": "mind"}, "mignet": {"ipa": "ˈmig.net", "gloss": "fishing net", "domain": "tools"}, "tandol": {"ipa": "ˈtan.dol", "gloss": "anchor", "domain": "ship"}, "pirmor": {"ipa": "ˈpir.mor", "gloss": "volcano", "domain": "world"}, "venosh": {"ipa": "ˈve.noʃ", "gloss": "storm-front", "domain": "world"}, "lukmar": {"ipa": "ˈluk.mar", "gloss": "lens", "domain": "tools"}, "kruren": {"ipa": "ˈkru.ren", "gloss": "vein", "domain": "body"}, "solhau": {"ipa": "solˈhau", "gloss": "dawn", "domain": "time"}, "solnuv": {"ipa": "ˈsol.nuv", "gloss": "dusk", "domain": "time"}}, "REV": {"crossing-speech": "Sūchel", "this language": "Sūchel", "old pelagic": "Pelgar", "assembly's tongue": "Pelgar", "cross the seam": "sū", "crossing": "sūath", "crosser": "sīl", "seam-pilot": "sīl", "threading engine": "Sōrn", "drive": "Sōrn", "seam 𝔍": "jel", "seam-pearl": "jelmar", "seam-scar": "jelvos", "seam-crosser": "jelsīl", "opened path": "Idrenes", "bridge": "Idrenes", "opened way": "idren", "beacon": "kad", "pulse": "kad", "time-as-kept": "kad", "beacon-cycle": "kadur", "dark time": "zukad", "unanchored duration": "zukad", "adrift": "zu", "dark-time anchor =zu": "zu", "self": "mi", "proper-time anchor =mi": "mi", "beacon-time anchor =ka": "ka", "gap-particle": "ne", "unspeakable interval": "ne", "gap": "nexath", "hole in a life": "nexath", "down-tower": "nuv", "deeper": "nuv", "surfaceward": "hau", "up-tower": "hau", "surface": "hōl", "running under": "nuvran", "dive-desync vertigo": "nuvran", "diver": "nuvi", "depth-pilot": "nuvi", "depth-well": "nuvdol", "tower": "tur", "oct": "tur", "tolerance": "kav", "curvature limit κ": "kav", "at-the-limit": "Kaveth", "pattern": "tem", "woven form": "tem", "pattern that may cross": "tem", "information reef": "temor", "reef": "mor", "sea-rock": "mor", "pearl": "mar", "sea-stone": "mar", "formless mouth": "velosh", "nothing": "vel", "no-thing": "vel", "truth": "ver", "speak-true": "ver", "spin": "vur", "whirl": "vur", "go mad": "vur", "madman": "vurel", "spun-one": "vurel", "madman's theorem": "Vurel-lor", "tragic truth": "eshe-ver", "logic λl": "pevlor", "rule": "lor", "law": "lor", "assembly": "somath", "gathering": "somath", "pelagian assembly": "Pelgar Somath", "ship": "nav", "one's own ship": "navmai", "hand": "mān", "crew-hand": "mān", "crewmate": "mān", "speech": "chel", "tongue": "chel", "language": "chel", "speech — preserved in liturgy": "kel", "run": "ran", "reach": "tel", "arrive at": "tel", "three": "tel", "endure": "dur", "survive": "dur", "pit": "dol", "well": "dol", "mouth": "osh", "wound": "vos", "i": "en", "you": "ish", "she/he/it": "an", "we": "eni", "held-as-kin": "ishmai", "entangled-possession suffix": "-mai", "nominalizer": "-ath", "locative case": "-eth", "dative case": "-ol", "genitive": "-en", "not": "vo", "negation particle": "vo", "be": "ve", "one": "sa", "two": "vor", "four": "mek", "five": "pev", "six": "shen", "seven": "hep", "eight": "ok", "nine": "nur", "ten": "dak", "go": "jed", "move": "jed", "hold": "tan", "keep": "tan", "open": "id", "wait": "men", "remain": "men", "again": "ret", "breath": "ān", "blood": "kru", "still": "gal", "becalmed vacuum": "gal", "alignment": "lesh", "fair phase": "lesh", "luck": "lesh", "kinsman": "maiel", "bound-one": "maiel", "all": "om", "every": "om", "question particle": "vu", "imperative": "-u", "vocative particle": "ō", "mood t: classically true": "-a", "settled": "-a", "mood t⁻: true-as-approached": "-im", "mood t⁺: held-from-above": "-ur", "unaccredited": "-ur", "mood t•: seam-true": "-eshe", "self-dual": "-eshe", "perfective aspect": "-t-", "plural": "-i", "agent suffix": "-el", "duration suffix": "-ur(dur)", "mother": "am", "father": "at", "child": "bem", "sibling": "shir", "crossing-partner": "shir", "friend": "dam", "hearth-mate": "dam", "stranger": "gur", "one from outside coverage": "gur", "captain": "mār", "widow": "velan", "one left in coverage": "velan", "name": "nom", "elder": "bal", "keel-laid-first": "bal", "head": "chep", "eye": "luk", "ear": "tol", "heart": "ned", "bone": "bon", "skin": "der", "hull of the body": "der", "foot": "pod", "voice": "jish", "flesh": "mus", "muscle": "mus", "breathe": "shen", "water": "vat", "drinking water": "vat", "salt": "sal", "sea's taste": "sal", "earth": "tir", "ground": "tir", "settled land": "tir", "fire": "pir", "light": "luz", "shadow": "zem", "dark": "zem", "wind": "ven", "storm": "rōd", "rain": "sniv", "falling water": "sniv", "cold": "chir", "warm": "tev", "kept-alive": "tev", "wave": "mōr", "tide": "tid", "breathing of the sea": "tid", "seafloor": "grun", "true bottom": "grun", "foam": "skum", "spent wave": "skum", "fish": "mig", "kelp": "velk", "weed of the deep": "velk", "current": "salm", "sea's road": "salm", "star": "ster", "moon": "lun", "any moon": "lun", "sun": "sol", "home star": "sol", "sky": "heban", "upper sea": "heban", "cloud": "nubes", "day": "dag", "one waking": "dag", "night": "zun", "year": "jer", "one full beacon-round": "jer", "now": "nun", "this pulse": "nun", "before": "ant", "upstream in time": "ant", "after": "pos", "downstream in time": "pos", "sleep": "sob", "dream": "drem", "unanchored seeing": "drem", "old": "ald", "worn smooth": "ald", "new": "niv", "unworn": "niv", "keel": "chil", "first truth of a ship": "chil", "mast": "stur", "ship's tower": "stur", "steer": "stir", "sail": "shechel", "wind-catcher": "shechel", "hull": "hul", "hatch": "porta", "door": "porta", "cargo": "gom", "carried weight": "gom", "oar": "rem", "row": "rem", "knife": "schir", "blade": "schir", "hammer": "ham", "striking stone": "ham", "saw": "sag", "toothed blade": "sag", "rope": "sheg", "line": "sheg", "net": "net", "woven catcher": "net", "cup": "kov", "vessel": "kov", "pan": "pan", "flat vessel": "pan", "cart": "vag", "rolling carrier": "vag", "eat": "ed", "drink": "bib", "bread": "brod", "keel-loaf": "brod", "milk": "lem", "soup": "sup", "broth": "sup", "wet meal": "sup", "seed": "shem", "grow": "kres", "meat": "dap", "flesh-food": "dap", "dog": "hund", "hold-beast": "hund", "cat": "kat", "ship-cat": "kat", "worm": "vurm", "hull-borer": "vurm", "bird": "vejel", "air-swimmer": "vejel", "horse": "kabal", "ground-runner": "kabal", "big": "mag", "great": "mag", "small": "min", "long": "lam", "short": "tuk", "heavy": "dem", "fast": "rav", "slow": "hal", "held-back": "hal", "good": "bon", "sound": "bon", "bad": "mal", "unsound": "mal", "full": "pol", "empty": "vak", "hollow": "vak", "near": "lek", "within hail": "lek", "far": "telur", "at reach's end": "telur", "straight": "rej", "true-cut": "rej", "crooked": "kriv", "off-true": "kriv", "see": "vid", "hear": "klut", "give": "dot", "take": "kaver", "seize": "kaver", "make": "mak", "build": "mak", "break": "brek", "mend": "menda", "repair": "menda", "carry": "porter", "throw": "jek", "bind": "binda", "lash": "binda", "cut": "snid", "burn": "bren", "swim": "nad", "fall": "pal", "stand": "stan", "sit": "shed", "come": "ben", "live": "lib", "die": "nek", "find": "venda", "lose": "lus", "know": "vis", "think": "log", "reason": "log", "want": "vil", "love": "luv", "fear": "dred", "joy": "gōd", "grief": "trur", "ne-shaped feeling": "trur", "hope": "hov", "hold toward t⁻": "hov", "memory": "mem", "what the gap cannot hold": "mem", "hundred": "chent", "half": "halb", "many": "mol", "few": "pau", "measure": "metur", "taken size": "metur", "seawater": "salvat", "brine": "salvat", "lighthouse-pulse": "luzkad", "beacon's visible light": "luzkad", "star-road": "steren", "plotted course": "steren", "shipyard": "navdol", "keel-truth": "kilver", "fact that survives docking": "kilver", "eclipse": "zemkad", "beacon shadowed": "zemkad", "tide-cycle": "tidkadur", "working month": "tidkadur", "archive": "memdol", "fishing net": "mignet", "anchor": "tandol", "held pause": "tandol", "volcano": "pirmor", "storm-front": "venosh", "lens": "lukmar", "vein": "kruren", "dawn": "solhau", "sun surfacing": "solhau", "dusk": "solnuv", "sun diving": "solnuv", "cross": "sū", "arrive": "tel", "speak": "ver"}, "STEMS": {"sūchel": {"gl": "crossing-speech", "ipa": "ˈsuː.tʃel", "domain": "core"}, "pelgar": {"gl": "Old Pelagic", "ipa": "ˈpel.gar", "domain": "core"}, "sū": {"gl": "cross the seam", "ipa": "suː", "domain": "physics"}, "sūath": {"gl": "crossing", "ipa": "ˈsuː.ath", "domain": "physics"}, "sīl": {"gl": "crosser", "ipa": "siːl", "domain": "fleet"}, "sōrn": {"gl": "threading engine", "ipa": "soːrn", "domain": "fleet"}, "jel": {"gl": "seam 𝔍", "ipa": "dʒel", "domain": "physics"}, "jelmar": {"gl": "seam-pearl", "ipa": "ˈdʒel.mar", "domain": "physics"}, "jelvos": {"gl": "seam-scar", "ipa": "ˈdʒel.vos", "domain": "physics"}, "jelsīl": {"gl": "seam-crosser", "ipa": "ˈdʒel.siːl", "domain": "fleet"}, "idrenes": {"gl": "opened path", "ipa": "iˈdre.nes", "domain": "physics"}, "idren": {"gl": "bridge", "ipa": "ˈi.dren", "domain": "core"}, "kad": {"gl": "beacon", "ipa": "kad", "domain": "fleet"}, "kadur": {"gl": "beacon-cycle", "ipa": "ˈka.dur", "domain": "fleet"}, "zukad": {"gl": "dark time", "ipa": "ˈzu.kad", "domain": "argot"}, "zu": {"gl": "adrift", "ipa": "zu", "domain": "grammar"}, "mi": {"gl": "self", "ipa": "mi", "domain": "grammar"}, "ka": {"gl": "beacon-time anchor =ka", "ipa": "ka", "domain": "grammar"}, "ne": {"gl": "gap-particle", "ipa": "ne", "domain": "grammar"}, "nexath": {"gl": "gap", "ipa": "ˈne.ksath", "domain": "core"}, "nuv": {"gl": "down-tower", "ipa": "nuv", "domain": "grammar"}, "hau": {"gl": "surfaceward", "ipa": "hau", "domain": "grammar"}, "hōl": {"gl": "surface", "ipa": "hoːl", "domain": "fleet"}, "nuvran": {"gl": "running under", "ipa": "ˈnuv.ran", "domain": "argot"}, "nuvi": {"gl": "diver", "ipa": "ˈnu.vi", "domain": "fleet"}, "nuvdol": {"gl": "depth-well", "ipa": "ˈnuv.dol", "domain": "physics"}, "tur": {"gl": "Tower", "ipa": "tur", "domain": "physics"}, "turmai": {"gl": "Tower", "ipa": "ˈtur.mai", "domain": "physics"}, "kav": {"gl": "tolerance", "ipa": "kav", "domain": "physics"}, "kaveth": {"gl": "at-the-Limit", "ipa": "ˈka.veth", "domain": "physics"}, "tem": {"gl": "pattern", "ipa": "tem", "domain": "physics"}, "temor": {"gl": "information reef", "ipa": "ˈte.mor", "domain": "physics"}, "mor": {"gl": "reef", "ipa": "mor", "domain": "core"}, "mar": {"gl": "pearl", "ipa": "mar", "domain": "core"}, "velosh": {"gl": "Formless mouth", "ipa": "ˈve.loʃ", "domain": "physics"}, "vel": {"gl": "nothing", "ipa": "vel", "domain": "core"}, "ver": {"gl": "truth", "ipa": "ver", "domain": "core"}, "vur": {"gl": "spin", "ipa": "vur", "domain": "core"}, "vurel": {"gl": "madman", "ipa": "ˈvu.rel", "domain": "core"}, "vurel-lor": {"gl": "Madman's Theorem", "ipa": "ˈvu.rel lor", "domain": "physics"}, "eshe-ver": {"gl": "Tragic Truth", "ipa": "ˈe.ʃe ver", "domain": "physics"}, "pevlor": {"gl": "logic ΛL", "ipa": "ˈpev.lor", "domain": "physics"}, "lor": {"gl": "rule", "ipa": "lor", "domain": "core"}, "somath": {"gl": "assembly", "ipa": "ˈso.math", "domain": "core"}, "pelgar somath": {"gl": "Pelagian Assembly", "ipa": "ˈpel.gar ˈso.math", "domain": "fleet"}, "nav": {"gl": "ship", "ipa": "nav", "domain": "fleet"}, "navmai": {"gl": "one's own ship", "ipa": "ˈnav.mai", "domain": "fleet"}, "mān": {"gl": "hand", "ipa": "maːn", "domain": "fleet"}, "chel": {"gl": "speech", "ipa": "tʃel", "domain": "core"}, "kel": {"gl": "speech — preserved in liturgy", "ipa": "kel", "domain": "core"}, "ran": {"gl": "run", "ipa": "ran", "domain": "core"}, "tel": {"gl": "reach", "ipa": "tel", "domain": "core"}, "dur": {"gl": "endure", "ipa": "dur", "domain": "core"}, "dol": {"gl": "pit", "ipa": "dol", "domain": "core"}, "osh": {"gl": "mouth", "ipa": "oʃ", "domain": "core"}, "vos": {"gl": "wound", "ipa": "vos", "domain": "core"}, "en": {"gl": "I", "ipa": "en", "domain": "grammar"}, "ish": {"gl": "you", "ipa": "iʃ", "domain": "grammar"}, "an": {"gl": "she/he/it", "ipa": "an", "domain": "grammar"}, "eni": {"gl": "we", "ipa": "ˈe.ni", "domain": "grammar"}, "enmai": {"gl": "we", "ipa": "ˈen.mai", "domain": "grammar"}, "ishmai": {"gl": "you", "ipa": "ˈiʃ.mai", "domain": "grammar"}, "-mai": {"gl": "entangled-possession suffix", "ipa": "mai", "domain": "grammar"}, "-ath": {"gl": "nominalizer", "ipa": "ath", "domain": "grammar"}, "-eth": {"gl": "locative case", "ipa": "eth", "domain": "grammar"}, "-ol": {"gl": "dative case", "ipa": "ol", "domain": "grammar"}, "-en": {"gl": "genitive", "ipa": "en", "domain": "grammar"}, "vo": {"gl": "not", "ipa": "vo", "domain": "grammar"}, "ve": {"gl": "be", "ipa": "ve", "domain": "grammar"}, "sa": {"gl": "one", "ipa": "sa", "domain": "number"}, "vor": {"gl": "two", "ipa": "vor", "domain": "number"}, "telnum": {"gl": "three", "ipa": "tel", "domain": "number"}, "mek": {"gl": "four", "ipa": "mek", "domain": "number"}, "pev": {"gl": "five", "ipa": "pev", "domain": "number"}, "shen": {"gl": "six", "ipa": "ʃen", "domain": "number"}, "hep": {"gl": "seven", "ipa": "hep", "domain": "number"}, "ok": {"gl": "eight", "ipa": "ok", "domain": "number"}, "nur": {"gl": "nine", "ipa": "nur", "domain": "number"}, "dak": {"gl": "ten", "ipa": "dak", "domain": "number"}, "jed": {"gl": "go", "ipa": "", "domain": "core"}, "tan": {"gl": "hold", "ipa": "", "domain": "core"}, "id": {"gl": "open", "ipa": "", "domain": "core"}, "men": {"gl": "wait", "ipa": "", "domain": "core"}, "ret": {"gl": "again", "ipa": "", "domain": "core"}, "ān": {"gl": "breath", "ipa": "aːn", "domain": "core"}, "kru": {"gl": "blood", "ipa": "", "domain": "core"}, "gal": {"gl": "Still", "ipa": "", "domain": "core"}, "lesh": {"gl": "alignment", "ipa": "", "domain": "core"}, "maiel": {"gl": "kinsman", "ipa": "ˈmai.el", "domain": "core"}, "om": {"gl": "all", "ipa": "", "domain": "core"}, "vu": {"gl": "question particle", "ipa": "", "domain": "grammar"}, "-u": {"gl": "imperative", "ipa": "u", "domain": "grammar"}, "ō": {"gl": "vocative particle", "ipa": "oː", "domain": "grammar"}, "-a": {"gl": "mood T: classically true", "ipa": "a", "domain": "grammar"}, "-im": {"gl": "mood T⁻: true-as-approached", "ipa": "im", "domain": "grammar"}, "-ur": {"gl": "mood T⁺: held-from-above", "ipa": "ur", "domain": "grammar"}, "-eshe": {"gl": "mood T•: seam-true", "ipa": "ˈe.ʃe", "domain": "grammar"}, "-t-": {"gl": "perfective aspect", "ipa": "t", "domain": "grammar"}, "-i": {"gl": "plural", "ipa": "i", "domain": "grammar"}, "-el": {"gl": "agent suffix", "ipa": "el", "domain": "grammar"}, "-ur(dur)": {"gl": "duration suffix", "ipa": "ur", "domain": "grammar"}, "am": {"gl": "mother", "ipa": "am", "domain": "kin"}, "at": {"gl": "father", "ipa": "at", "domain": "kin"}, "bem": {"gl": "child", "ipa": "bem", "domain": "kin"}, "shir": {"gl": "sibling", "ipa": "ʃir", "domain": "kin"}, "dam": {"gl": "friend", "ipa": "dam", "domain": "kin"}, "gur": {"gl": "stranger", "ipa": "gur", "domain": "kin"}, "mār": {"gl": "captain", "ipa": "maːr", "domain": "kin"}, "velan": {"gl": "widow", "ipa": "ˈve.lan", "domain": "kin"}, "nom": {"gl": "name", "ipa": "nom", "domain": "kin"}, "bal": {"gl": "elder", "ipa": "bal", "domain": "kin"}, "chep": {"gl": "head", "ipa": "tʃep", "domain": "body"}, "luk": {"gl": "eye", "ipa": "luk", "domain": "body"}, "tol": {"gl": "ear", "ipa": "tol", "domain": "body"}, "ned": {"gl": "heart", "ipa": "ned", "domain": "body"}, "bon": {"gl": "bone", "ipa": "bon", "domain": "body"}, "der": {"gl": "skin", "ipa": "der", "domain": "body"}, "pod": {"gl": "foot", "ipa": "pod", "domain": "body"}, "jish": {"gl": "voice", "ipa": "dʒiʃ", "domain": "body"}, "mus": {"gl": "flesh", "ipa": "mus", "domain": "body"}, "vat": {"gl": "water", "ipa": "vat", "domain": "world"}, "sal": {"gl": "salt", "ipa": "sal", "domain": "world"}, "tir": {"gl": "earth", "ipa": "tir", "domain": "world"}, "pir": {"gl": "fire", "ipa": "pir", "domain": "world"}, "luz": {"gl": "light", "ipa": "luz", "domain": "world"}, "zem": {"gl": "shadow", "ipa": "zem", "domain": "world"}, "ven": {"gl": "wind", "ipa": "ven", "domain": "world"}, "rōd": {"gl": "storm", "ipa": "roːd", "domain": "world"}, "sniv": {"gl": "rain", "ipa": "sniv", "domain": "world"}, "chir": {"gl": "cold", "ipa": "tʃir", "domain": "world"}, "tev": {"gl": "warm", "ipa": "tev", "domain": "world"}, "mōr": {"gl": "wave", "ipa": "moːr", "domain": "sea"}, "tid": {"gl": "tide", "ipa": "tid", "domain": "sea"}, "grun": {"gl": "seafloor", "ipa": "grun", "domain": "sea"}, "skum": {"gl": "foam", "ipa": "skum", "domain": "sea"}, "mig": {"gl": "fish", "ipa": "mig", "domain": "sea"}, "velk": {"gl": "kelp", "ipa": "velk", "domain": "sea"}, "salm": {"gl": "current", "ipa": "salm", "domain": "sea"}, "ster": {"gl": "star", "ipa": "ster", "domain": "sky"}, "lun": {"gl": "moon", "ipa": "lun", "domain": "sky"}, "sol": {"gl": "sun", "ipa": "sol", "domain": "sky"}, "heban": {"gl": "sky", "ipa": "ˈhe.ban", "domain": "sky"}, "nubes": {"gl": "cloud", "ipa": "ˈnu.bes", "domain": "sky"}, "dag": {"gl": "day", "ipa": "dag", "domain": "time"}, "zun": {"gl": "night", "ipa": "zun", "domain": "time"}, "jer": {"gl": "year", "ipa": "dʒer", "domain": "time"}, "nun": {"gl": "now", "ipa": "nun", "domain": "time"}, "ant": {"gl": "before", "ipa": "ant", "domain": "time"}, "pos": {"gl": "after", "ipa": "pos", "domain": "time"}, "sob": {"gl": "sleep", "ipa": "sob", "domain": "time"}, "drem": {"gl": "dream", "ipa": "drem", "domain": "time"}, "ald": {"gl": "old", "ipa": "ald", "domain": "time"}, "niv": {"gl": "new", "ipa": "niv", "domain": "time"}, "chil": {"gl": "keel", "ipa": "tʃil", "domain": "ship"}, "stur": {"gl": "mast", "ipa": "stur", "domain": "ship"}, "stir": {"gl": "steer", "ipa": "stir", "domain": "ship"}, "shechel": {"gl": "sail", "ipa": "ˈʃe.tʃel", "domain": "ship"}, "hul": {"gl": "hull", "ipa": "hul", "domain": "ship"}, "porta": {"gl": "hatch", "ipa": "ˈpor.ta", "domain": "ship"}, "gom": {"gl": "cargo", "ipa": "gom", "domain": "ship"}, "rem": {"gl": "oar", "ipa": "rem", "domain": "ship"}, "schir": {"gl": "knife", "ipa": "stʃir", "domain": "tools"}, "ham": {"gl": "hammer", "ipa": "ham", "domain": "tools"}, "sag": {"gl": "saw", "ipa": "sag", "domain": "tools"}, "sheg": {"gl": "rope", "ipa": "ʃeg", "domain": "tools"}, "net": {"gl": "net", "ipa": "net", "domain": "tools"}, "kov": {"gl": "cup", "ipa": "kov", "domain": "tools"}, "pan": {"gl": "pan", "ipa": "pan", "domain": "tools"}, "vag": {"gl": "cart", "ipa": "vag", "domain": "tools"}, "ed": {"gl": "eat", "ipa": "ed", "domain": "food"}, "bib": {"gl": "drink", "ipa": "bib", "domain": "food"}, "brod": {"gl": "bread", "ipa": "brod", "domain": "food"}, "lem": {"gl": "milk", "ipa": "lem", "domain": "food"}, "sup": {"gl": "soup", "ipa": "sup", "domain": "food"}, "shem": {"gl": "seed", "ipa": "ʃem", "domain": "food"}, "kres": {"gl": "grow", "ipa": "kres", "domain": "food"}, "dap": {"gl": "meat", "ipa": "dap", "domain": "food"}, "hund": {"gl": "dog", "ipa": "hund", "domain": "beasts"}, "kat": {"gl": "cat", "ipa": "kat", "domain": "beasts"}, "vurm": {"gl": "worm", "ipa": "vurm", "domain": "beasts"}, "vejel": {"gl": "bird", "ipa": "ˈve.dʒel", "domain": "beasts"}, "kabal": {"gl": "horse", "ipa": "ˈka.bal", "domain": "beasts"}, "mag": {"gl": "big", "ipa": "mag", "domain": "qualities"}, "min": {"gl": "small", "ipa": "min", "domain": "qualities"}, "lam": {"gl": "long", "ipa": "lam", "domain": "qualities"}, "tuk": {"gl": "short", "ipa": "tuk", "domain": "qualities"}, "dem": {"gl": "heavy", "ipa": "dem", "domain": "qualities"}, "lit": {"gl": "light", "ipa": "lit", "domain": "qualities"}, "rav": {"gl": "fast", "ipa": "rav", "domain": "qualities"}, "hal": {"gl": "slow", "ipa": "hal", "domain": "qualities"}, "mal": {"gl": "bad", "ipa": "mal", "domain": "qualities"}, "pol": {"gl": "full", "ipa": "pol", "domain": "qualities"}, "vak": {"gl": "empty", "ipa": "vak", "domain": "qualities"}, "lek": {"gl": "near", "ipa": "lek", "domain": "qualities"}, "telur": {"gl": "far", "ipa": "ˈte.lur", "domain": "qualities"}, "rej": {"gl": "straight", "ipa": "redʒ", "domain": "qualities"}, "kriv": {"gl": "crooked", "ipa": "kriv", "domain": "qualities"}, "vid": {"gl": "see", "ipa": "vid", "domain": "verbs"}, "klut": {"gl": "hear", "ipa": "klut", "domain": "verbs"}, "dot": {"gl": "give", "ipa": "dot", "domain": "verbs"}, "kaver": {"gl": "take", "ipa": "ˈka.ver", "domain": "verbs"}, "mak": {"gl": "make", "ipa": "mak", "domain": "verbs"}, "brek": {"gl": "break", "ipa": "brek", "domain": "verbs"}, "menda": {"gl": "mend", "ipa": "ˈmen.da", "domain": "verbs"}, "porter": {"gl": "carry", "ipa": "ˈpor.ter", "domain": "verbs"}, "jek": {"gl": "throw", "ipa": "dʒek", "domain": "verbs"}, "binda": {"gl": "bind", "ipa": "ˈbin.da", "domain": "verbs"}, "snid": {"gl": "cut", "ipa": "snid", "domain": "verbs"}, "bren": {"gl": "burn", "ipa": "bren", "domain": "verbs"}, "nad": {"gl": "swim", "ipa": "nad", "domain": "verbs"}, "pal": {"gl": "fall", "ipa": "pal", "domain": "verbs"}, "stan": {"gl": "stand", "ipa": "stan", "domain": "verbs"}, "shed": {"gl": "sit", "ipa": "ʃed", "domain": "verbs"}, "ben": {"gl": "come", "ipa": "ben", "domain": "verbs"}, "lib": {"gl": "live", "ipa": "lib", "domain": "verbs"}, "nek": {"gl": "die", "ipa": "nek", "domain": "verbs"}, "venda": {"gl": "find", "ipa": "ˈven.da", "domain": "verbs"}, "lus": {"gl": "lose", "ipa": "lus", "domain": "verbs"}, "vis": {"gl": "know", "ipa": "vis", "domain": "mind"}, "log": {"gl": "think", "ipa": "log", "domain": "mind"}, "vil": {"gl": "want", "ipa": "vil", "domain": "mind"}, "luv": {"gl": "love", "ipa": "luv", "domain": "mind"}, "dred": {"gl": "fear", "ipa": "dred", "domain": "mind"}, "gōd": {"gl": "joy", "ipa": "goːd", "domain": "mind"}, "trur": {"gl": "grief", "ipa": "trur", "domain": "mind"}, "hov": {"gl": "hope", "ipa": "hov", "domain": "mind"}, "mem": {"gl": "memory", "ipa": "mem", "domain": "mind"}, "chent": {"gl": "hundred", "ipa": "tʃent", "domain": "number"}, "halb": {"gl": "half", "ipa": "halb", "domain": "number"}, "mol": {"gl": "many", "ipa": "mol", "domain": "number"}, "pau": {"gl": "few", "ipa": "pau", "domain": "number"}, "metur": {"gl": "measure", "ipa": "ˈme.tur", "domain": "number"}, "salvat": {"gl": "seawater", "ipa": "ˈsal.vat", "domain": "sea"}, "luzkad": {"gl": "lighthouse-pulse", "ipa": "ˈluz.kad", "domain": "sky"}, "steren": {"gl": "star-road", "ipa": "ˈste.ren", "domain": "sky"}, "navdol": {"gl": "shipyard", "ipa": "ˈnav.dol", "domain": "ship"}, "kilver": {"gl": "keel-truth", "ipa": "ˈkil.ver", "domain": "mind"}, "zemkad": {"gl": "eclipse", "ipa": "ˈzem.kad", "domain": "sky"}, "tidkadur": {"gl": "tide-cycle", "ipa": "tidˈka.dur", "domain": "time"}, "memdol": {"gl": "archive", "ipa": "ˈmem.dol", "domain": "mind"}, "mignet": {"gl": "fishing net", "ipa": "ˈmig.net", "domain": "tools"}, "tandol": {"gl": "anchor", "ipa": "ˈtan.dol", "domain": "ship"}, "pirmor": {"gl": "volcano", "ipa": "ˈpir.mor", "domain": "world"}, "venosh": {"gl": "storm-front", "ipa": "ˈve.noʃ", "domain": "world"}, "lukmar": {"gl": "lens", "ipa": "ˈluk.mar", "domain": "tools"}, "kruren": {"gl": "vein", "ipa": "ˈkru.ren", "domain": "body"}, "solhau": {"gl": "dawn", "ipa": "solˈhau", "domain": "time"}, "solnuv": {"gl": "dusk", "ipa": "ˈsol.nuv", "domain": "time"}, "ani": {"gl": "they", "ipa": "", "domain": "grammar", "pron": true}}, "PRON_ENGLISH": {"en": "I", "ish": "you", "an": "she", "eni": "we", "enmai": "we", "ishmai": "you", "ani": "they"}, "GLYPHS": {"p": {"w": 100, "strokes": [[70, 10, 70, 120], [70, 10, 30, 10, 30, 45, 70, 45]], "paths": [], "fills": []}, "b": {"w": 100, "strokes": [[70, 10, 70, 120], [70, 10, 30, 10, 30, 45, 70, 45], [70, 120, 45, 120]], "paths": [], "fills": []}, "t": {"w": 100, "strokes": [[10, 10, 90, 10], [50, 10, 50, 120], [35, 10, 35, 40, 65, 40, 65, 10]], "paths": [], "fills": []}, "d": {"w": 100, "strokes": [[10, 10, 90, 10], [50, 10, 50, 120], [35, 10, 35, 40, 65, 40, 65, 10], [50, 120, 75, 120]], "paths": [], "fills": []}, "k": {"w": 100, "strokes": [[30, 10, 30, 120], [30, 10, 70, 10, 70, 45, 30, 45]], "paths": [], "fills": []}, "g": {"w": 100, "strokes": [[30, 10, 30, 120], [30, 10, 70, 10, 70, 45, 30, 45], [30, 120, 55, 120]], "paths": [], "fills": []}, "ch": {"w": 100, "strokes": [[10, 10, 90, 10], [50, 10, 50, 120], [30, 22, 70, 60]], "paths": [], "fills": []}, "j": {"w": 100, "strokes": [[10, 10, 90, 10], [50, 10, 50, 120], [30, 22, 70, 60], [50, 120, 75, 120]], "paths": [], "fills": []}, "s": {"w": 100, "strokes": [[70, 10, 30, 45, 70, 80, 30, 115]], "paths": [], "fills": []}, "z": {"w": 100, "strokes": [[30, 10, 70, 45, 30, 80, 70, 115], [45, 120, 70, 120]], "paths": [], "fills": []}, "sh": {"w": 100, "strokes": [[20, 10, 80, 10], [70, 22, 30, 55, 70, 88, 30, 120]], "paths": [], "fills": []}, "v": {"w": 100, "strokes": [[70, 10, 30, 120], [30, 120, 55, 120]], "paths": [], "fills": []}, "m": {"w": 100, "strokes": [[30, 10, 30, 120], [70, 10, 70, 120], [30, 10, 70, 10]], "paths": [], "fills": []}, "n": {"w": 100, "strokes": [[30, 10, 30, 120], [30, 10, 70, 10], [70, 10, 70, 55]], "paths": [], "fills": []}, "r": {"w": 100, "strokes": [[30, 10, 30, 120], [30, 60, 68, 44]], "paths": [], "fills": []}, "l": {"w": 100, "strokes": [[30, 10, 30, 120], [30, 120, 78, 120]], "paths": [], "fills": []}, "h": {"w": 100, "strokes": [[30, 10, 30, 52], [30, 74, 30, 120]], "paths": [], "fills": []}, "a": {"w": 60, "strokes": [[10, 120, 30, 76, 50, 120]], "paths": [], "fills": []}, "e": {"w": 60, "strokes": [[10, 96, 50, 96]], "paths": [], "fills": []}, "i": {"w": 60, "strokes": [[30, 78, 30, 120]], "paths": [], "fills": []}, "o": {"w": 60, "strokes": [[30, 76, 52, 98, 30, 120, 8, 98, 30, 76]], "paths": [], "fills": []}, "u": {"w": 60, "strokes": [[10, 76, 30, 120, 50, 76]], "paths": [], "fills": []}, "mT": {"w": 60, "strokes": [[12, 80, 48, 80, 48, 118, 12, 118, 12, 80]], "paths": [], "fills": []}, "mTm": {"w": 60, "strokes": [[12, 80, 48, 80, 48, 118, 12, 118, 12, 80], [12, 99, 0, 99]], "paths": [], "fills": []}, "mTp": {"w": 60, "strokes": [[12, 80, 48, 80, 48, 118, 12, 118, 12, 80], [48, 99, 60, 99]], "paths": [], "fills": []}, "mTs": {"w": 60, "strokes": [], "paths": [], "fills": ["M14,82 L46,82 L46,116 L14,116 Z"]}, "mF": {"w": 60, "strokes": [[12, 80, 48, 80, 48, 118, 12, 118, 12, 80], [12, 80, 48, 118], [48, 80, 12, 118]], "paths": [], "fills": []}, "aka": {"w": 60, "strokes": [[4, 112, 18, 84, 32, 112, 46, 84]], "paths": [], "fills": []}, "ami": {"w": 60, "strokes": [[46, 84, 14, 116]], "paths": [], "fills": []}, "azu": {"w": 60, "strokes": [], "paths": ["M46,84 A22,22 0 1 0 46,114"], "fills": []}, "gap": {"w": 70, "strokes": [[35, 4, 35, 136]], "paths": [], "fills": []}, "q": {"w": 60, "strokes": [[10, 116, 24, 92], [32, 116, 46, 92]], "paths": [], "fills": []}}, "LONGBAR": [8, 62, 52, 62], "SIGIL": {"@T": "mT", "@T-": "mTm", "@T+": "mTp", "@Ts": "mTs", "@F": "mF", "=ka": "aka", "=mi": "ami", "=zu": "azu", "|": "gap", "?": "q"}, "CURRENT": {"glyphs": {"p": {"w": 100, "pen": [[[0, 88, 4.2], [18, 87, 5], [36, 82, 5.5], [48, 128, 7.5], [56, 110, 10.5], [54, 90, 8], [42, 82, 6], [32, 92, 4.5], [32, 110, 7], [46, 122, 12], [64, 130, 9.5], [80, 86, 5.5], [100, 88, 4.2]]]}, "b": {"w": 100, "pen": [[[0, 88, 4.2], [18, 87, 5], [36, 82, 5.5], [48, 128, 7.5], [56, 110, 10.5], [54, 90, 8], [42, 82, 6], [32, 92, 4.5], [32, 110, 7], [46, 122, 12], [64, 130, 9.5], [80, 86, 5.5], [100, 88, 4.2]]], "dropAt": 86}, "t": {"w": 98, "pen": [[[0, 88, 4.2], [18, 87, 5], [36, 82, 5.5], [48, 102, 7.5], [56, 84, 10.5], [54, 64, 8], [42, 56, 6], [32, 66, 4.5], [32, 84, 7], [46, 96, 12], [64, 104, 9.5], [80, 86, 5.5], [100, 88, 4.2]]]}, "d": {"w": 98, "pen": [[[0, 88, 4.2], [18, 87, 5], [36, 82, 5.5], [48, 102, 7.5], [56, 84, 10.5], [54, 64, 8], [42, 56, 6], [32, 66, 4.5], [32, 84, 7], [46, 96, 12], [64, 104, 9.5], [80, 86, 5.5], [100, 88, 4.2]]], "dropAt": 84}, "k": {"w": 106, "pen": [[[0, 88, 4.2], [18, 87, 5], [36, 82, 5.5], [48, 68, 7.5], [56, 50, 10.5], [54, 30, 8], [42, 22, 6], [32, 32, 4.5], [32, 50, 7], [46, 62, 12], [64, 70, 9.5], [80, 86, 5.5], [100, 88, 4.2]]]}, "g": {"w": 106, "pen": [[[0, 88, 4.2], [18, 87, 5], [36, 82, 5.5], [48, 68, 7.5], [56, 50, 10.5], [54, 30, 8], [42, 22, 6], [32, 32, 4.5], [32, 50, 7], [46, 62, 12], [64, 70, 9.5], [80, 86, 5.5], [100, 88, 4.2]]], "dropAt": 92}, "ch": {"w": 110, "pen": [[[0, 88, 4.2], [16, 87, 5], [32, 82, 5.5], [44, 84, 7.5], [52, 66, 10.5], [50, 46, 8], [38, 38, 6], [28, 48, 4.5], [28, 66, 7], [42, 78, 12], [58, 86, 8], [70, 102, 6], [78, 108, 4.5], [86, 90, 4.8], [100, 88, 4.2]]]}, "j": {"w": 110, "pen": [[[0, 88, 4.2], [16, 87, 5], [32, 82, 5.5], [44, 84, 7.5], [52, 66, 10.5], [50, 46, 8], [38, 38, 6], [28, 48, 4.5], [28, 66, 7], [42, 78, 12], [58, 86, 8], [70, 102, 6], [78, 108, 4.5], [86, 90, 4.8], [100, 88, 4.2]]], "dropAt": 96}, "v": {"w": 88, "pen": [[[0, 88, 4.2], [14, 88, 5], [26, 94, 6.5], [36, 110, 9.5], [43, 121, 11], [50, 110, 8], [58, 96, 5.5], [68, 86, 4.8], [80, 84, 4.6], [100, 88, 4.2]]], "dropAt": 74}, "s": {"w": 96, "pen": [[[0, 88, 4.2], [16, 88, 5], [28, 80, 6], [36, 62, 9], [44, 56, 7], [52, 72, 10], [58, 94, 11], [64, 110, 8], [72, 112, 5.5], [80, 96, 5], [86, 87, 4.8], [100, 88, 4.2]]]}, "z": {"w": 96, "pen": [[[0, 88, 4.2], [16, 88, 5], [28, 96, 6], [36, 114, 9], [44, 120, 7], [52, 104, 10], [58, 82, 11], [64, 66, 8], [72, 64, 5.5], [80, 80, 5], [86, 89, 4.8], [100, 88, 4.2]]], "dropAt": 82}, "sh": {"w": 102, "pen": [[[0, 88, 4.2], [14, 88, 5], [24, 78, 5.5], [32, 52, 8], [38, 32, 9], [46, 28, 6.5], [52, 44, 9.5], [58, 64, 11], [66, 74, 7], [74, 60, 5], [82, 72, 4.8], [92, 84, 4.6], [100, 88, 4.2]]]}, "m": {"w": 98, "pen": [[[0, 88, 4.2], [16, 87, 5], [30, 92, 7], [36, 106, 10.5], [46, 113, 12.5], [58, 112, 10.5], [66, 102, 8], [72, 92, 6], [84, 87, 5], [100, 88, 4.2]]]}, "n": {"w": 84, "pen": [[[0, 88, 4.2], [14, 88, 5], [24, 80, 6], [32, 64, 9.5], [42, 56, 11], [52, 60, 9], [58, 72, 6.5], [62, 86, 5.5], [68, 98, 6.5], [76, 102, 6], [86, 94, 5], [100, 88, 4.2]]]}, "r": {"w": 86, "pen": [[[0, 88, 4.2], [18, 88, 5], [34, 86, 5.5], [44, 78, 6.5], [50, 56, 7.5], [53, 36, 3.5], [55, 50, 3], [58, 72, 6], [64, 84, 7.5], [76, 88, 5], [100, 88, 4.2]]]}, "l": {"w": 94, "pen": [[[0, 88, 4.2], [16, 89, 5], [28, 94, 6.5], [40, 104, 9.5], [54, 112, 11.5], [68, 112, 8.5], [80, 104, 5.5], [88, 94, 4.6], [100, 88, 4.2]]]}, "h": {"w": 96, "pen": [[[0, 88, 4.2], [14, 88, 5], [26, 86, 5.5], [36, 80, 4.5], [44, 72, 2.2], [48, 66, 0.6]], [[56, 104, 0.6], [62, 100, 2.2], [70, 94, 4.5], [80, 90, 5], [100, 88, 4.2]]]}, "a": {"w": 58, "pen": [[[0, 88, 4.2], [10, 87, 5], [18, 80, 6], [26, 70, 7.5], [33, 70, 6.5], [40, 78, 5.5], [48, 86, 4.8], [60, 88, 4.2]]], "vowel": true}, "e": {"w": 52, "pen": [[[0, 88, 4.2], [10, 86, 5], [20, 80, 6.5], [32, 79, 6], [44, 83, 5], [60, 88, 4.2]]], "vowel": true}, "i": {"w": 46, "pen": [[[0, 88, 4.2], [12, 88, 5], [20, 86, 5.5], [26, 76, 4.5], [29, 66, 1.6], [33, 76, 3], [38, 84, 4.8], [48, 88, 4.6], [60, 88, 4.2]]], "vowel": true}, "o": {"w": 56, "pen": [[[0, 88, 4.2], [8, 89, 5], [14, 94, 6], [22, 101, 7.5], [31, 103, 7], [40, 99, 6], [46, 93, 5], [52, 89, 4.6], [60, 88, 4.2]]], "vowel": true}, "u": {"w": 56, "pen": [[[0, 88, 4.2], [8, 88, 5], [13, 92, 5.5], [18, 102, 7.5], [26, 109, 8], [35, 107, 7], [42, 98, 5.5], [48, 91, 4.8], [60, 88, 4.2]]], "vowel": true}, "mT": {"w": 60, "pen": [[[12, 99, 2.5], [20, 84, 5], [33, 82, 5.5], [44, 92, 5], [48, 99, 4.5], [42, 110, 5], [30, 116, 5.5], [18, 112, 5], [13, 101, 2.5]]], "sigil": true}, "mTm": {"w": 60, "pen": [[[12, 99, 2.5], [20, 84, 5], [33, 82, 5.5], [44, 92, 5], [48, 99, 4.5], [42, 110, 5], [30, 116, 5.5], [18, 112, 5], [13, 101, 2.5]], [[12, 99, 3.5], [5, 98, 3], [0, 104, 1.2]]], "sigil": true}, "mTp": {"w": 60, "pen": [[[12, 99, 2.5], [20, 84, 5], [33, 82, 5.5], [44, 92, 5], [48, 99, 4.5], [42, 110, 5], [30, 116, 5.5], [18, 112, 5], [13, 101, 2.5]], [[48, 99, 3.5], [55, 98, 3], [60, 104, 1.2]]], "sigil": true}, "mTs": {"w": 60, "pen": [], "sigil": true, "penAcc2": [[[30, 80, 1.5], [30, 87, 24], [30, 99, 35], [30, 111, 24], [30, 118, 1.5]]]}, "mF": {"w": 60, "pen": [[[12, 99, 2.5], [20, 84, 5], [33, 82, 5.5], [44, 92, 5], [48, 99, 4.5], [42, 110, 5], [30, 116, 5.5], [18, 112, 5], [13, 101, 2.5]], [[8, 118, 1.2], [22, 106, 4.8], [38, 93, 4.8], [52, 80, 1.2]]], "sigil": true}, "aka": {"w": 60, "pen": [[[4, 106, 1.5], [11, 90, 4.5], [18, 85, 5], [25, 98, 5.5], [31, 114, 5], [38, 116, 4.5], [44, 102, 3], [46, 94, 1.5]]], "sigil": true}, "ami": {"w": 60, "pen": [[[46, 84, 1.2], [38, 92, 4.6], [26, 104, 5], [14, 116, 1.5]]], "sigil": true}, "azu": {"w": 60, "pen": [], "sigil": true, "penAcc": [[[50, 76, 4.6], [10, 124, 4.6]]]}, "gap": {"w": 70, "pen": [], "sigil": true, "penSub": [[[35, 4, 0.8], [35, 15, 3.6]], [[35, 125, 3.6], [35, 136, 0.8]]]}, "q": {"w": 60, "pen": [[[10, 116, 1.2], [16, 103, 4.2], [24, 88, 1.5]], [[31, 118, 1.2], [37, 105, 4.2], [45, 90, 1.5]]], "sigil": true}}, "arcpen": [[14, 54, 0.7], [22, 47, 4.2], [34, 46, 4.2], [44, 52, 0.7]], "leadin": [[-15, 73, 0.5], [-8, 80, 2.8], [0, 88, 4.2]], "leadout": [[0, 88, 4.2], [9, 85, 2.8], [18, 78, 1.2], [23, 70, 0.5]]}, "VERBS": {"go": {"stem": "jed", "ipa": "", "kind": "motion", "gl": "go"}, "run": {"stem": "ran", "ipa": "ran", "kind": "motion", "gl": "run"}, "surface": {"stem": "hōl", "ipa": "hoːl", "kind": "normal", "gl": "surface"}, "cross": {"stem": "sū", "ipa": "suː", "kind": "seam", "gl": "cross"}, "hold": {"stem": "tan", "ipa": "", "kind": "normal", "gl": "hold"}, "keep": {"stem": "tan", "ipa": "", "kind": "normal", "gl": "keep"}, "wait": {"stem": "men", "ipa": "", "kind": "normal", "gl": "wait"}, "remain": {"stem": "men", "ipa": "", "kind": "normal", "gl": "remain"}, "reach": {"stem": "tel", "ipa": "tel", "kind": "normal", "gl": "reach"}, "arrive": {"stem": "tel", "ipa": "tel", "kind": "normal", "gl": "arrive"}, "endure": {"stem": "dur", "ipa": "dur", "kind": "normal", "gl": "endure"}, "survive": {"stem": "dur", "ipa": "dur", "kind": "normal", "gl": "survive"}, "speak": {"stem": "ver", "ipa": "ver", "kind": "normal", "gl": "speak"}, "be": {"stem": "ve", "ipa": "ve", "kind": "normal", "gl": "be"}, "open": {"stem": "id", "ipa": "", "kind": "normal", "gl": "open"}, "spin": {"stem": "vur", "ipa": "vur", "kind": "normal", "gl": "spin"}, "see": {"stem": "vid", "ipa": "vid", "kind": "normal", "gl": "see"}, "hear": {"stem": "klut", "ipa": "klut", "kind": "normal", "gl": "hear"}, "give": {"stem": "dot", "ipa": "dot", "kind": "normal", "gl": "give"}, "take": {"stem": "kaver", "ipa": "ˈka.ver", "kind": "normal", "gl": "take"}, "seize": {"stem": "kaver", "ipa": "ˈka.ver", "kind": "normal", "gl": "seize"}, "make": {"stem": "mak", "ipa": "mak", "kind": "normal", "gl": "make"}, "build": {"stem": "mak", "ipa": "mak", "kind": "normal", "gl": "build"}, "break": {"stem": "brek", "ipa": "brek", "kind": "normal", "gl": "break"}, "mend": {"stem": "menda", "ipa": "ˈmen.da", "kind": "normal", "gl": "mend"}, "repair": {"stem": "menda", "ipa": "ˈmen.da", "kind": "normal", "gl": "repair"}, "carry": {"stem": "porter", "ipa": "ˈpor.ter", "kind": "normal", "gl": "carry"}, "throw": {"stem": "jek", "ipa": "dʒek", "kind": "normal", "gl": "throw"}, "bind": {"stem": "binda", "ipa": "ˈbin.da", "kind": "normal", "gl": "bind"}, "lash": {"stem": "binda", "ipa": "ˈbin.da", "kind": "normal", "gl": "lash"}, "cut": {"stem": "snid", "ipa": "snid", "kind": "normal", "gl": "cut"}, "burn": {"stem": "bren", "ipa": "bren", "kind": "normal", "gl": "burn"}, "swim": {"stem": "nad", "ipa": "nad", "kind": "normal", "gl": "swim"}, "fall": {"stem": "pal", "ipa": "pal", "kind": "normal", "gl": "fall"}, "stand": {"stem": "stan", "ipa": "stan", "kind": "normal", "gl": "stand"}, "sit": {"stem": "shed", "ipa": "ʃed", "kind": "normal", "gl": "sit"}, "come": {"stem": "ben", "ipa": "ben", "kind": "normal", "gl": "come"}, "live": {"stem": "lib", "ipa": "lib", "kind": "normal", "gl": "live"}, "die": {"stem": "nek", "ipa": "nek", "kind": "normal", "gl": "die"}, "find": {"stem": "venda", "ipa": "ˈven.da", "kind": "normal", "gl": "find"}, "lose": {"stem": "lus", "ipa": "lus", "kind": "normal", "gl": "lose"}, "know": {"stem": "vis", "ipa": "vis", "kind": "normal", "gl": "know"}, "think": {"stem": "log", "ipa": "log", "kind": "normal", "gl": "think"}, "reason": {"stem": "log", "ipa": "log", "kind": "normal", "gl": "reason"}, "want": {"stem": "vil", "ipa": "vil", "kind": "normal", "gl": "want"}, "love": {"stem": "luv", "ipa": "luv", "kind": "normal", "gl": "love"}, "hope": {"stem": "hov", "ipa": "hov", "kind": "normal", "gl": "hope"}, "eat": {"stem": "ed", "ipa": "ed", "kind": "normal", "gl": "eat"}, "drink": {"stem": "bib", "ipa": "bib", "kind": "normal", "gl": "drink"}, "sleep": {"stem": "sob", "ipa": "sob", "kind": "normal", "gl": "sleep"}, "grow": {"stem": "kres", "ipa": "kres", "kind": "normal", "gl": "grow"}, "steer": {"stem": "stir", "ipa": "stir", "kind": "normal", "gl": "steer"}, "breathe": {"stem": "shen", "ipa": "ʃen", "kind": "normal", "gl": "breathe"}}, "IRREG": {"went": ["go", true], "gone": ["go", true], "came": ["come", true], "saw": ["see", true], "seen": ["see", true], "held": ["hold", true], "gave": ["give", true], "given": ["give", true], "took": ["take", true], "taken": ["take", true], "knew": ["know", true], "known": ["know", true], "ate": ["eat", true], "eaten": ["eat", true], "slept": ["sleep", true], "ran": ["run", true], "found": ["find", true], "made": ["make", true], "broke": ["break", true], "broken": ["break", true], "swam": ["swim", true], "stood": ["stand", true], "sat": ["sit", true], "lost": ["lose", true], "said": ["speak", true], "spoke": ["speak", true], "is": ["be", false], "are": ["be", false], "am": ["be", false], "was": ["be", true], "were": ["be", true], "be": ["be", false], "been": ["be", true]}, "PRON_SUBJ": {"i": {"su": "en", "ipa": "en", "person": 1, "tag": "1SG", "gl": "I"}, "we": {"su": "eni", "ipa": "ˈe.ni", "person": 1, "tag": "1PL", "gl": "we"}, "you": {"su": "ish", "ipa": "iʃ", "person": 2, "tag": "2SG", "gl": "you"}, "he": {"su": "an", "ipa": "an", "person": 3, "tag": "3SG", "gl": "he"}, "she": {"su": "an", "ipa": "an", "person": 3, "tag": "3SG", "gl": "she"}, "it": {"su": "an", "ipa": "an", "person": 3, "tag": "3SG", "gl": "it"}, "they": {"su": "ani", "ipa": "ˈa.ni", "person": 3, "tag": "3PL", "gl": "they"}}, "PRON_OBJ": {"me": {"su": "enen", "ipa": "ˈe.nen", "person": 1, "tag": "1SG.ACC", "gl": "me"}, "us": {"su": "enin", "ipa": "ˈe.nin", "person": 1, "tag": "1PL.ACC", "gl": "us"}, "you": {"su": "ishen", "ipa": "ˈi.ʃen", "person": 2, "tag": "2SG.ACC", "gl": "you"}, "him": {"su": "anen", "ipa": "ˈa.nen", "person": 3, "tag": "3SG.ACC", "gl": "him"}, "her": {"su": "anen", "ipa": "ˈa.nen", "person": 3, "tag": "3SG.ACC", "gl": "her"}, "it": {"su": "anen", "ipa": "ˈa.nen", "person": 3, "tag": "3SG.ACC", "gl": "it"}, "them": {"su": "anin", "ipa": "ˈa.nin", "person": 3, "tag": "3PL.ACC", "gl": "them"}}, "CORE": {"seam": "jel", "self": "mi", "drift": "zu", "engine": "Sōrn", "gap": "nexath", "still": "gal", "assembly": "somath"}, "DIR": {"down": "nuv", "under": "nuv", "deeper": "nuv", "below": "nuv", "deep": "nuv", "up": "hau", "above": "hau", "surfaceward": "hau", "adrift": "zu"}, "NEG": ["arent", "cannot", "cant", "couldnt", "didnt", "doesnt", "dont", "isnt", "never", "no", "none", "nor", "not", "shouldnt", "wasnt", "werent", "wont", "wouldnt"], "QLEAD": ["am", "are", "can", "could", "did", "do", "does", "is", "shall", "should", "was", "were", "will", "would"], "DARK": ["adrift", "dark", "darkness", "lost", "unanchored", "unknown"], "TPLUS": ["may", "maybe", "might", "perhaps", "possibly"], "TMINUS": ["almost", "approach", "approaching", "nearing", "nearly"], "DROP": ["a", "an", "and", "at", "by", "for", "from", "his", "in", "its", "my", "of", "on", "our", "own", "please", "the", "their", "to", "with", "your"], "ENMARK": ["a", "am", "an", "and", "are", "at", "be", "been", "did", "do", "does", "for", "he", "her", "him", "i", "in", "is", "it", "me", "my", "no", "not", "of", "on", "our", "she", "that", "the", "them", "they", "this", "to", "us", "was", "we", "were", "will", "with", "you", "your"], "MOODSUF": {"T": "a", "Tm": "im", "Tp": "ur", "Ts": "eshe"}, "MOODTAG": {"T": "T", "Tm": "T⁻", "Tp": "T⁺", "Ts": "T•"}, "MOOD_PEEL": {"a": "T", "im": "T⁻", "ur": "T⁺", "eshe": "T•"}, "ANCHOR_GLOSS": {"ka": "BEAC", "mi": "PROP", "zu": "DARK"}, "HCASE": {"ol": "DAT", "eth": "LOC", "en": "GEN"}, "DIRPEEL": {"nuv": "DOWN", "hau": "UP", "zu": "adrift"}, "FUNC": {"vo": "NEG", "vu": "Q"}, "SOLID": [["mai", "ENT", "ENT"], ["eshe", "MOOD", "T•"], ["en", "ACC", "ACC"], ["u", "IMP", "IMP"], ["i", "PL", "PL"], ["n", "ACC", "ACC"]], "MOOD_ADV": {"T": "", "T⁻": "true-as-approached", "T⁺": "held from above", "T•": "seam-true"}, "ANCHOR_ADV": {"BEAC": "in beacon time", "PROP": "by our own clock", "DARK": "in dark time"}};</script>
+<script>
+window.onerror=function(msg){
+  var b=document.createElement("div");
+  b.style.cssText="position:fixed;left:0;right:0;bottom:0;background:#e8362a;color:#08070a;"+
+    "font:12px monospace;padding:6px 12px;z-index:99";
+  b.textContent="translator error: "+msg; document.body.appendChild(b);
+};
+const D=window.ODYT;
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+
+/* =====================================================================
+   Navcher renderer (stencil hands) — geometry embedded from odylang.navcher
+   ===================================================================== */
+let GSTYLE="carve";
+function strokeAttrs(color){
+  return GSTYLE==="carve"
+    ? `fill="none" stroke="${color}" stroke-width="7" stroke-linecap="square" stroke-linejoin="miter"`
+    : `fill="none" stroke="${color}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"`;
+}
+const glowAttrs=color=>`fill="none" stroke="${color}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.16"`;
+function polyMarkup(pts,color){
+  const c=[]; for(let i=0;i<pts.length;i+=2) c.push(pts[i]+","+pts[i+1]);
+  let out="";
+  if(GSTYLE==="trace") out+=`<polyline points="${c.join(" ")}" ${glowAttrs(color)}/>`;
+  out+=`<polyline points="${c.join(" ")}" ${strokeAttrs(color)}/>`;
+  if(GSTYLE==="trace") for(let i=0;i<pts.length;i+=2) out+=`<circle cx="${pts[i]}" cy="${pts[i+1]}" r="3" fill="${color}"/>`;
+  return out;
+}
+function glyphMarkup(key,x,scale,color,long){
+  const g=D.GLYPHS[key]; if(!g) return {m:"",w:0};
+  let out=`<g transform="translate(${x},0) scale(${scale})">`;
+  for(const pts of g.strokes) out+=polyMarkup(pts,color);
+  for(const d of g.paths){ if(GSTYLE==="trace") out+=`<path d="${d}" ${glowAttrs(color)}/>`; out+=`<path d="${d}" ${strokeAttrs(color)}/>`; }
+  for(const d of g.fills){ if(GSTYLE==="trace") out+=`<path d="${d}" fill="${color}" opacity="0.18" transform="translate(-2,-2) scale(1.02)"/>`; out+=`<path d="${d}" fill="${color}"/>`; }
+  if(long){ const L=D.LONGBAR; out+=polyMarkup([L[0],L[1],L[2],L[3]],color); }
+  return {m:out+"</g>", w:g.w*scale};
+}
+function wordSvg(tokens,scale,color){
+  let x=6,body="";
+  for(const t of tokens){
+    if(t===" "){ x+=100*scale; continue; }
+    let key=t,long=false;
+    if(D.SIGIL[t]) key=D.SIGIL[t];
+    else if(t.endsWith(":")){ key=t.slice(0,-1); long=true; }
+    const r=glyphMarkup(key,x,scale,color,long); body+=r.m; x+=r.w;
+  }
+  const h=Math.ceil(150*scale)+8;
+  return `<svg viewBox="0 0 ${Math.ceil(x+6)} ${Math.ceil(140*scale)+8}" width="${Math.ceil(x+6)}" height="${h}" role="img">`+body+`</svg>`;
+}
+/* careful-hand tokenizer for free text (mirror of navcher.tokens_careful) */
+function tokenizeCareful(text){
+  const out=[],s=text.toLowerCase();
+  const macron={"ā":"a","ē":"e","ī":"i","ō":"o","ū":"u"};
+  const spacedCase=["ol","eth","en"];
+  let i=0;
+  while(i<s.length){
+    const c=s[i];
+    if(c===" "){ out.push(" "); i++; continue; }
+    if(c==="-"){
+      const rest=s.slice(i+1).split(/[^a-zāēīōū]/)[0];
+      if(spacedCase.includes(rest)) out.push(" ");
+      i++; continue;
+    }
+    if(c==="="){ i++; continue; }
+    const two=s.slice(i,i+2);
+    if(two==="ch"||two==="sh"){ out.push(two); i+=2; continue; }
+    if(two==="th"){ out.push("t","h"); i+=2; continue; }
+    if(c==="x"){ out.push("k","s"); i++; continue; }
+    if(macron[c]){ out.push(macron[c]+":"); i++; continue; }
+    if(D.GLYPHS[c]) out.push(c);
+    i++;
+  }
+  return out;
+}
+
+/* =====================================================================
+   Current Hand ribbon engine (compact port of odylang.currenthand)
+   ===================================================================== */
+const CH=(function(){
+  const G=D.CURRENT.glyphs, ARCPEN=D.CURRENT.arcpen, LEADIN=D.CURRENT.leadin, LEADOUT=D.CURRENT.leadout;
+  const SLANT=0.10;
+  const cr1=(a,b,c,d,t)=>{const t2=t*t,t3=t2*t;return 0.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);};
+  function ribbon(pts,f){
+    const n=pts.length; if(n<2) return "";
+    const g=i=>pts[i<0?0:(i>n-1?n-1:i)];
+    const S=[],SEG=8;
+    for(let i=0;i<n-1;i++){
+      const p0=g(i-1),p1=g(i),p2=g(i+1),p3=g(i+2),top=(i===n-2)?SEG:SEG-1;
+      for(let t=0;t<=top;t++){const u=t/SEG;
+        S.push([cr1(p0[0],p1[0],p2[0],p3[0],u),cr1(p0[1],p1[1],p2[1],p3[1],u),Math.max(0.3,cr1(p0[2],p1[2],p2[2],p3[2],u))*f]);}
+    }
+    const L=[],R=[];
+    for(let i=0;i<S.length;i++){
+      const a=S[i>0?i-1:0],b=S[i<S.length-1?i+1:S.length-1];
+      const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len,hw=S[i][2]/2;
+      L.push((S[i][0]+nx*hw).toFixed(1)+","+(S[i][1]+ny*hw).toFixed(1));
+      R.push((S[i][0]-nx*hw).toFixed(1)+","+(S[i][1]-ny*hw).toFixed(1));
+    }
+    R.reverse();
+    return "M"+L.join(" L")+" L"+R.join(" L")+" Z";
+  }
+  const DROPPEN=cx=>[[cx,100,0.8],[cx+1.5,106,5.5],[cx+0.8,113,8],[cx-1,117,3.2]];
+  const sxOf=g=>g.sigil?1:(g.vowel?g.w/60:g.w/100);
+  const wOf=k=>G[k.charAt(k.length-1)===":"?k.slice(0,-1):k].w;
+  const isSig=k=>!!(G[k]&&G[k].sigil);
+  function build(keys){
+    const swayF=x=>0.4*(3.4*Math.sin(x/56)+1.7*Math.sin(x/19+2.1));
+    const strokes=[]; let s=0,inRun=false;
+    const pushPen=(pen,sx,off,sig,color,s0)=>strokes.push({color:color||"ink",rigid:!!sig,s0:s0||0,
+      pts:pen.map(pt=>{const x=pt[0],y=pt[1],w=pt[2];const S=x*sx+(sig?0:(88-y)*SLANT)+off;return [S,y+(sig?0:swayF(S)),w];})});
+    keys.forEach(k=>{
+      if(k===" "){ if(inRun)pushPen(LEADOUT,1,s,false); inRun=false; s+=62; return; }
+      if(isSig(k)){
+        if(inRun){pushPen(LEADOUT,1,s,false);inRun=false;}
+        s+=18; const g=G[k],s0=s+30;
+        (g.pen||[]).forEach(pn=>pushPen(pn,1,s,true,"ink",s0));
+        (g.penAcc||[]).forEach(pn=>pushPen(pn,1,s,true,"acc2",s0));
+        (g.penAcc2||[]).forEach(pn=>pushPen(pn,1,s,true,"acc2",s0));
+        (g.penSub||[]).forEach(pn=>pushPen(pn,1,s,true,"sub",s0));
+        s+=wOf(k)+18; return;
+      }
+      if(!inRun){pushPen(LEADIN,1,s,false);inRun=true;}
+      const long=k.charAt(k.length-1)===":", g=G[long?k.slice(0,-1):k];
+      if(!g) return;
+      const sx=sxOf(g);
+      (g.pen||[]).forEach(pn=>pushPen(pn,sx,s,false));
+      if(long)pushPen(ARCPEN,sx,s,false);
+      if(g.dropAt!=null)pushPen(DROPPEN(g.dropAt),1,s,false,"acc");
+      s+=wOf(k);
+    });
+    if(inRun)pushPen(LEADOUT,1,s,false);
+    return {strokes,total:s};
+  }
+  const linear=(s,y)=>[s,y];
+  const mapStrokes=(th,fn)=>th.strokes.map(st=>({color:st.color,pts:st.pts.map(p=>{const q=fn(p[0],p[1]);return [q[0],q[1],p[2]];})}));
+  const PAPER={ink:"#E8E3D6",acc:"#6fa8ff",acc2:"#e8362a",sub:"#8c8a82"};
+  function fig(strokes,inkW,px){
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    const elems=strokes.map(st=>{st.pts.forEach(p=>{x0=Math.min(x0,p[0]-p[2]);y0=Math.min(y0,p[1]-p[2]);x1=Math.max(x1,p[0]+p[2]);y1=Math.max(y1,p[1]+p[2]);});
+      return {d:ribbon(st.pts,inkW),fill:PAPER[st.color]||PAPER.ink};});
+    const pad=18,bw=(x1-x0)+2*pad,bh=(y1-y0)+2*pad,py=px*bh/bw;
+    return {vb:(x0-pad).toFixed(0)+" "+(y0-pad).toFixed(0)+" "+bw.toFixed(0)+" "+bh.toFixed(0),elems,w:px,h:py};
+  }
+  const TOK={"@T":"mT","@T-":"mTm","@T+":"mTp","@Ts":"mTs","@F":"mF","=ka":"aka","=mi":"ami","=zu":"azu","|":"gap","?":"q"};
+  function lineSvg(tokens){
+    const keys=tokens.map(t=>TOK[t]||(t.endsWith(":")?t:t)).filter(k=>k===" "||k==="gap"||G[k.charAt(k.length-1)===":"?k.slice(0,-1):k]);
+    const th=build(keys.length?keys:[" "]);
+    const F=fig(mapStrokes(th,linear),0.85, Math.min(560, Math.max(120, th.total*0.5)));
+    let out=`<svg viewBox="${F.vb}" width="${F.w.toFixed(0)}" height="${F.h.toFixed(0)}" role="img">`;
+    F.elems.forEach(e=>{out+=`<path d="${e.d}" fill="${e.fill}"/>`;});
+    return out+"</svg>";
+  }
+  return {lineSvg};
+})();
+
+function stripSvg(tokens){
+  const clean=(tokens||[]).filter(t=>t!=null);
+  if(GSTYLE==="current"){ try{ return CH.lineSvg(clean); }catch(e){ return ""; } }
+  return wordSvg(clean,0.30,"#f5d76e");
+}
+
+/* =====================================================================
+   audio 1 — RHYTHM : the codex beat player (docs/04)
+   ===================================================================== */
+let AC=null;
+function actx(){ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==="suspended")AC.resume(); return AC; }
+function playRhythm(syl){
+  const ctx=actx(); let t=ctx.currentTime+0.05;
+  for(const tok of (syl||[])){
+    if(tok==="/"){ t+=0.09; continue; }
+    if(tok==="|"){ t+=0.5; continue; }
+    const hi=/[A-Z]/.test(tok), long=tok.includes(":"), dur=(hi?0.24:0.13)+(long?0.15:0);
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type="triangle"; o.frequency.value=hi?520:340;
+    g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.22,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t+dur+0.02);
+    t+=dur+0.055;
+  }
+}
+
+/* =====================================================================
+   audio 2 — VOICE : a WebAudio formant synth mirroring voice_spec()
+   buzz source -> three BiquadFilter bandpass resonators (Q = f/bw),
+   noise buffers for fricatives + stop bursts, long-vowel timing.
+   ===================================================================== */
+let NOISE=null;
+function noiseBuf(ctx){
+  if(NOISE&&NOISE.sampleRate===ctx.sampleRate) return NOISE;
+  const n=Math.floor(ctx.sampleRate*0.6), b=ctx.createBuffer(1,n,ctx.sampleRate), d=b.getChannelData(0);
+  let x=99173; for(let i=0;i<n;i++){ x=(x*1103515245+12345)&0x7fffffff; d[i]=(x/0x3fffffff)-1; }
+  NOISE=b; return b;
+}
+function voicedVowel(ctx,dest,t,dur,F,f0,V){
+  const osc=ctx.createOscillator(); osc.type="sawtooth"; osc.frequency.setValueAtTime(f0,t);
+  osc.frequency.linearRampToValueAtTime(f0*(1-(V.declination||0.15)*0.12),t+dur);
+  const amp=ctx.createGain();
+  amp.gain.setValueAtTime(0.0001,t); amp.gain.linearRampToValueAtTime(0.9,t+Math.min(0.03,dur*0.3));
+  amp.gain.setValueAtTime(0.9,Math.max(t+0.03,t+dur-0.04)); amp.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  const bw=V.formantBandwidths||[90,110,170], ga=V.formantAmps||[1,0.6,0.32];
+  for(let i=0;i<3;i++){
+    const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=F[i]||500;
+    bp.Q.value=Math.max(2,(F[i]||500)/(bw[i]||110));
+    const g=ctx.createGain(); g.gain.value=ga[i]||0.4;
+    osc.connect(bp); bp.connect(g); g.connect(amp);
+  }
+  amp.connect(dest); osc.start(t); osc.stop(t+dur+0.02);
+}
+function noiseSeg(ctx,dest,t,dur,lo,hi,center,gain){
+  const src=ctx.createBufferSource(); src.buffer=noiseBuf(ctx); src.loop=true;
+  const bp=ctx.createBiquadFilter(); bp.type="bandpass";
+  if(lo&&hi){ bp.frequency.value=(lo+hi)/2; bp.Q.value=Math.max(0.7,((lo+hi)/2)/Math.max(1,hi-lo)); }
+  else { bp.frequency.value=center||3000; bp.Q.value=3; }
+  const g=ctx.createGain();
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(gain,t+0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  src.connect(bp); bp.connect(g); g.connect(dest); src.start(t); src.stop(t+dur+0.02);
+}
+function playVoice(tokens){
+  const V=D.VOICE; if(!V){ toast("no voice model"); return; }
+  const ctx=actx(); const master=ctx.createGain(); master.gain.value=V.headroom||0.85; master.connect(ctx.destination);
+  const tm=V.timing||{}; let t=ctx.currentTime+0.06, f0=V.f0||120;
+  const vs=V.formants||{};
+  for(const raw of (tokens||[])){
+    if(raw===" "){ t+=(tm.wordGapMs||55)/1000; continue; }
+    if(raw==="|"){ t+=(tm.pauseMs||320)/1000; continue; }
+    const long=raw.endsWith(":"), base=long?raw.slice(0,-1):raw;
+    if(has(vs,base)){
+      let dur=((tm.vowelMs||150)/1000)*(long?(tm.longFactor||1.7):1);
+      voicedVowel(ctx,master,t,dur,vs[base],f0,V);
+      t+=dur; f0*=(1-(V.declination||0.15)*0.05); continue;
+    }
+    const c=V.consonants&&V.consonants[base];
+    if(c){
+      if(c.manner==="stop"||c.manner==="affricate"){
+        const clo=(c.closure_ms||45)/1000, bd=c.manner==="affricate"?(c.dur_ms||70)/1000:0.028;
+        noiseSeg(ctx,master,t+clo,bd,c.noise_lo,c.noise_hi,c.burst_hz||1500,c.voiced?0.26:0.42);
+        t+=clo+bd; continue;
+      }
+      if(c.manner==="fricative"||c.manner==="aspirate"){
+        const dur=(c.dur_ms||90)/1000; noiseSeg(ctx,master,t,dur,c.noise_lo,c.noise_hi,3000,c.voiced?0.24:0.36);
+        if(c.voiced){ voicedVowel(ctx,master,t,dur,[300,900,2200],f0,V); }
+        t+=dur; continue;
+      }
+      /* nasal / liquid / tap : a short voiced formant segment */
+      const dur=(c.dur_ms||60)/1000, F=(c.formants&&c.formants.length)?c.formants:[400,1200,2400];
+      voicedVowel(ctx,master,t,dur,F,f0*0.98,V); t+=dur; continue;
+    }
+    t+=0.02;
+  }
+}
+
+/* =====================================================================
+   audio 3 — SPEAK : window.speechSynthesis on an English respelling
+   ===================================================================== */
+function respellIpa(ipa){
+  if(!ipa) return "";
+  return ipa.replace(/[ˈˌ]/g,"").replace(/tʃ/g,"ch").replace(/dʒ/g,"j")
+    .replace(/ʃ/g,"sh").replace(/ʒ/g,"zh").replace(/ŋ/g,"ng")
+    .replace(/θ/g,"th").replace(/ð/g,"th").replace(/ː/g,"")
+    .replace(/ɛ/g,"e").replace(/ə/g,"uh").replace(/ɑ/g,"ah")
+    .replace(/ɔ/g,"aw").replace(/ʊ/g,"oo").replace(/[.]/g," ")
+    .replace(/[^A-Za-z ]/g," ").replace(/\s+/g," ").trim();
+}
+function respellSuchel(su){
+  if(!su) return "";
+  const m={"ā":"aa","ē":"ay","ī":"ee","ō":"oh","ū":"oo"};
+  return su.replace(/[āēīōū]/g,c=>m[c]||c).replace(/[-=]/g," ").replace(/[.!?]/g,"").trim();
+}
+function speak(text){
+  if(!("speechSynthesis" in window)){ toast("speech synthesis is unavailable in this browser"); return; }
+  const u=new SpeechSynthesisUtterance(text); u.rate=0.82; u.pitch=0.9;
+  try{ window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); }
+  catch(e){ toast("speech synthesis failed"); }
+}
+
+/* =====================================================================
+   idiom lookup + normalisation (mirror of translate._norm_idiom)
+   ===================================================================== */
+function normIdiom(s){
+  s=String(s||"").split(/[—–]/)[0].toLowerCase();
+  s=s.replace(/[^a-z0-9\s]/g," ");
+  return s.replace(/\s+/g," ").trim();
+}
+const IDIOM_MAP={};
+for(const c of D.IDIOMS){
+  if(c.key) IDIOM_MAP[c.key]=c;
+  for(const a of (c.aliases||[])){ const k=normIdiom(a); if(k) IDIOM_MAP[k]=c; }
+}
+
+/* =====================================================================
+   EN -> SU compose (compact port of translate._compose)
+   ===================================================================== */
+function enWords(s){ return (s.toLowerCase().replace(/['’]/g,"").match(/[a-z0-9]+/g))||[]; }
+function inSet(arr,w){ return arr.indexOf(w)>=0; }
+function singular(w){
+  if(w.endsWith("ies")) return w.slice(0,-3)+"y";
+  if(w.endsWith("ses")||w.endsWith("shes")||w.endsWith("ches")) return w.slice(0,-2);
+  if(w.endsWith("s")&&!w.endsWith("ss")) return w.slice(0,-1);
+  return w;
+}
+function lemmaVerb(w){
+  if(D.IRREG[w]){ const a=D.IRREG[w],s=D.VERBS[a[0]]; return s?{spec:s,pfv:a[1],lemma:a[0],word:w}:null; }
+  if(D.VERBS[w]) return {spec:D.VERBS[w],pfv:false,lemma:w,word:w};
+  const cands=[];
+  if(w.endsWith("ies")) cands.push([w.slice(0,-3)+"y",false]);
+  if(w.endsWith("ing")){ cands.push([w.slice(0,-3),false]); cands.push([w.slice(0,-3)+"e",false]); }
+  if(w.endsWith("ed")){ cands.push([w.slice(0,-2),true]); cands.push([w.slice(0,-2)+"e",true]); cands.push([w.slice(0,-1),true]); }
+  if(w.endsWith("d")) cands.push([w.slice(0,-1),true]);
+  if(w.endsWith("es")) cands.push([w.slice(0,-2),false]);
+  if(w.endsWith("s")) cands.push([w.slice(0,-1),false]);
+  for(const [c,pfv] of cands) if(D.VERBS[c]) return {spec:D.VERBS[c],pfv:pfv,lemma:c,word:w};
+  return null;
+}
+function nounRef(w){
+  for(const c of [w,singular(w)]){
+    if(D.CORE[c]){ const f=D.CORE[c],l=D.LEX[f]; if(l) return {form:f,ipa:l.ipa,gloss:l.gloss,domain:l.domain,en:w}; }
+    if(D.REV[c]){ const f=D.REV[c],l=D.LEX[f]||{}; return {form:f,ipa:l.ipa||"",gloss:l.gloss||c,domain:l.domain||"",en:w}; }
+  }
+  return null;
+}
+function accForm(stem){ return /[aeiouāēīōū]$/.test(stem)?stem+"-n":stem+"-en"; }
+function tword(en,su,gloss,ipa,known){ return {en:en,su:su,gloss:gloss,ipa:ipa,known:known!==false}; }
+
+function composeEN(src){
+  const words=enWords(src);
+  const notes=[];
+  if(!words.length) return scaffold(src,[],"empty input");
+  const neg=words.some(w=>inSet(D.NEG,w));
+  const tplus=words.some(w=>inSet(D.TPLUS,w));
+  const tminus=words.some(w=>inSet(D.TMINUS,w));
+  const dark=words.some(w=>inSet(D.DARK,w));
+  const qMark=/\?/.test(src), exMark=/!/.test(src);
+  const leadingQ=inSet(D.QLEAD,words[0]);
+  let direction=null;
+  for(const w of words){ if(has(D.DIR,w)){ direction=D.DIR[w]; break; } }
+
+  /* classify (functional cues consumed) */
+  const seq=[];
+  for(const w of words){
+    if(inSet(D.DROP,w)||inSet(D.NEG,w)||inSet(D.QLEAD,w)||inSet(D.TPLUS,w)||inSet(D.TMINUS,w)||has(D.DIR,w)||inSet(D.DARK,w)) continue;
+    if(has(D.PRON_SUBJ,w)||has(D.PRON_OBJ,w)){ seq.push({role:"pron",text:w}); continue; }
+    const lv=lemmaVerb(w); if(lv){ seq.push({role:"verb",text:w,data:lv}); continue; }
+    const nn=nounRef(w); if(nn){ seq.push({role:"noun",text:w,data:nn}); continue; }
+    seq.push({role:"unknown",text:w});
+  }
+  const verbIdx=seq.findIndex(t=>t.role==="verb");
+  const nominals=seq.filter(t=>t.role==="pron"||t.role==="noun");
+  const unknowns=seq.filter(t=>t.role==="unknown");
+  if(verbIdx<0 && !nominals.length) return wordByWord(src,words);
+
+  const before=verbIdx>=0?seq.slice(0,verbIdx):seq;
+  const after=verbIdx>=0?seq.slice(verbIdx+1):[];
+  let subject=null; for(let i=before.length-1;i>=0;i--){ if(before[i].role==="pron"||before[i].role==="noun"){ subject=before[i]; break; } }
+  const objects=after.filter(t=>t.role==="pron"||t.role==="noun");
+
+  let subjPerson=null;
+  if(subject){ subjPerson=subject.role==="pron"?(D.PRON_SUBJ[subject.text]||D.PRON_OBJ[subject.text]).person:3; }
+  const anchor=dark?"zu":(subjPerson===1?"mi":"ka");
+  const anchorTag={ka:"BEAC",mi:"PROP",zu:"DARK"}[anchor];
+  const isImperative=verbIdx>=0 && (exMark || subject===null);
+  const isQuestion=(leadingQ||qMark) && !isImperative;
+
+  const tw=[], surf=[];
+  let punct=".";
+
+  function pushSubj(t){
+    const p=D.PRON_SUBJ[t.text]||D.PRON_OBJ[t.text];
+    if(t.role==="pron"&&p){ surf.push(p.su); tw.push(tword(t.text,p.su,p.tag,p.ipa,true)); }
+    else if(t.role==="noun"){ const r=t.data; surf.push(r.form); tw.push(tword(t.text,r.form,r.gloss,r.ipa,true)); }
+  }
+  function pushObj(t){
+    if(t.role==="pron"){ const p=D.PRON_OBJ[t.text]||D.PRON_SUBJ[t.text]; surf.push(p.su); tw.push(tword(t.text,p.su,p.tag,p.ipa,true)); }
+    else { const r=t.data, f=accForm(r.form); surf.push(f); tw.push(tword(t.text,f,r.gloss+".ACC",r.ipa,true)); }
+  }
+  function pushDir(){ if(direction){ const tag=D.DIRPEEL[direction]||direction.toUpperCase(); surf.push(direction); tw.push(tword(direction,direction,tag,"",true)); } }
+  function pushNeg(){ surf.push("vo"); tw.push(tword("not","vo","NEG","",true)); }
+
+  if(verbIdx<0){
+    for(const t of nominals){ (t===subject)?pushSubj(t):pushObj(t); }
+    for(const t of unknowns){ tw.push(tword(t.text,"—","?","",false)); notes.push("no Sūchel word for '"+t.text+"'"); }
+    return finish(src,surf,tw,notes,nominals.length,unknowns.length,punct,"composed");
+  }
+
+  const spec=seq[verbIdx].data.spec, pfv=seq[verbIdx].data.pfv, motion=spec.kind==="motion";
+  let mood="T"; if(tplus)mood="Tp"; if(tminus)mood="Tm"; if(spec.kind==="seam")mood="Ts";
+  const moodTag=D.MOODTAG[mood];
+
+  if(isImperative){
+    if(neg) pushNeg();
+    if(motion) pushDir();
+    for(const t of objects) pushObj(t);
+    const imp=spec.stem+"-u";
+    surf.push(imp); tw.push(tword(seq[verbIdx].text,imp,spec.gl+"-IMP",spec.ipa,true));
+    if(exMark) punct="!";
+  } else {
+    if(subject) pushSubj(subject);
+    for(const t of objects) pushObj(t);
+    if(motion) pushDir();
+    if(neg) pushNeg();
+    let v=spec.stem+(pfv?"-t":"")+"-"+D.MOODSUF[mood]+"="+anchor;
+    let vg=spec.gl+(pfv?"-PFV":"")+"-"+moodTag+"="+anchorTag;
+    surf.push(v); tw.push(tword(seq[verbIdx].text,v,vg,spec.ipa,true));
+    if(isQuestion){ surf.push("vu"); tw.push(tword("?","vu","Q","",true)); punct="?"; }
+  }
+  for(const t of unknowns){ tw.push(tword(t.text,"—","?","",false)); notes.push("no Sūchel word for '"+t.text+"'"); }
+  const content=nominals.length+1;
+  return finish(src,surf,tw,notes,content,unknowns.length,punct,"composed");
+}
+
+function finish(src,surf,tw,notes,content,unknownN,punct,src_kind){
+  if(!surf.length) return wordByWord(src,enWords(src));
+  const total=content+unknownN, conf=Math.round(90*content/(total||1))/100;
+  const text=surf.join(" ")+punct;
+  const gloss=tw.map(w=>w.gloss).join(" ");
+  const ipa=surf.join(" ");
+  if(unknownN) notes.push("some words were left untranslated; confidence lowered");
+  notes.push("composed client-side — run ‘odylang serve’ for the full grammar engine");
+  return {dir:"en2su",su:text,ipa:"",gloss:gloss,tokens:tokenizeCareful(text),
+    syl:syllabify(surf),words:tw,conf:conf,notes:notes,src:conf>=0.9?"composed":(conf>=0.4?"word-by-word":"scaffold"),en:src};
+}
+function scaffold(src,unknowns,why){
+  return {dir:"en2su",su:"[?]",ipa:"",gloss:"[?]",tokens:[],syl:[],words:[],
+    conf:0.1,notes:[why+": could not compose a Sūchel clause"],src:"scaffold",en:src};
+}
+function wordByWord(src,words){
+  const tw=[]; let known=0;
+  for(const w of words){
+    if(inSet(D.DROP,w)) continue;
+    const nn=nounRef(w), lv=lemmaVerb(w);
+    if(nn){ tw.push(tword(w,nn.form,nn.gloss,nn.ipa,true)); known++; }
+    else if(lv){ tw.push(tword(w,lv.spec.stem,lv.spec.gl,lv.spec.ipa,true)); known++; }
+    else if(has(D.PRON_SUBJ,w)){ const p=D.PRON_SUBJ[w]; tw.push(tword(w,p.su,p.gl,p.ipa,true)); known++; }
+    else tw.push(tword(w,"—","?","",false));
+  }
+  if(!tw.length) return scaffold(src,[],"no lexical match");
+  const conf=Math.round(60*known/(tw.length||1))/100;
+  const su=tw.filter(w=>w.known).map(w=>w.su).join(" ");
+  return {dir:"en2su",su:su||"—",ipa:"",gloss:tw.map(w=>w.su+"="+w.gloss).join(" "),
+    tokens:tokenizeCareful(su),syl:syllabify(tw.filter(w=>w.known).map(w=>w.su)),words:tw,conf:conf,
+    notes:["word-by-word gloss — run ‘odylang serve’ for the full grammar engine"],
+    src:"word-by-word",en:src};
+}
+/* a light syllable/rhythm array for composed lines: one beat per surface word,
+   stress the verb-ish final beat, mark long vowels. */
+function syllabify(surf){
+  const out=[];
+  surf.forEach((w,i)=>{ if(i)out.push("/"); const long=/[āēīōū:]/.test(w);
+    let s=w.replace(/[-=]/g,"").replace(/[āēīōū]/g,"a"); if(long)s+=":";
+    out.push(i===surf.length-1?s.toUpperCase():s); });
+  return out;
+}
+
+/* =====================================================================
+   SU -> EN peel (compact port of translate.from_suchel)
+   ===================================================================== */
+const PUNCT=" \t\r\n.,!?:;…—–\"'“”‘’()[]{}";
+function fwd(form){ return form?D.STEMS[form.toLowerCase()]:null; }
+function stripPunct(s){ let a=0,b=s.length; while(a<b&&PUNCT.indexOf(s[a])>=0)a++; while(b>a&&PUNCT.indexOf(s[b-1])>=0)b--; return s.slice(a,b); }
+function peel(core){
+  if(fwd(core)) return [core,[]];
+  const tags=[];
+  while(core.indexOf("-")>=0){
+    const idx=core.lastIndexOf("-"), head=core.slice(0,idx), last=core.slice(idx+1).toLowerCase();
+    if(has(D.MOOD_PEEL,last)) tags.push(["MOOD",D.MOOD_PEEL[last]]);
+    else if(last==="t") tags.push(["PFV","PFV"]);
+    else if(last==="u") tags.push(["IMP","IMP"]);
+    else if(has(D.HCASE,last)) tags.push(["CASE",D.HCASE[last]]);
+    else if(last==="mai") tags.push(["ENT","ENT"]);
+    else if(last==="i") tags.push(["PL","PL"]);
+    else break;
+    core=head; if(fwd(core)) break;
+  }
+  let guard=0;
+  while(!fwd(core)&&guard<6){
+    guard++; let did=false;
+    for(const [suf,ktag,label] of D.SOLID){
+      if(core.toLowerCase().endsWith(suf)&&core.length>suf.length&&fwd(core.slice(0,-suf.length))){
+        tags.push([ktag,label]); core=core.slice(0,-suf.length); did=true; break;
+      }
+    }
+    if(!did) break;
+  }
+  return [core,tags.reverse()];
+}
+function parseWord(raw){
+  const tok=stripPunct(raw); if(!tok||tok==="|") return null;
+  const low=tok.toLowerCase();
+  if(has(D.FUNC,low)) return {kind:"func",raw:tok,tag:D.FUNC[low]};
+  if(low==="ne") return {kind:"gap",raw:tok,tag:"GAP"};
+  if(has(D.DIRPEEL,low)&&tok.indexOf("=")<0) return {kind:"dir",raw:tok,tag:D.DIRPEEL[low]};
+  let anchor="",core=tok;
+  if(core.indexOf("=")>=0){ const i=core.lastIndexOf("="); const anc=core.slice(i+1).toLowerCase(); core=core.slice(0,i); anchor=D.ANCHOR_GLOSS[anc]||anc; }
+  let neg=false;
+  if(core.toLowerCase().indexOf("vo-")===0){ neg=true; core=core.slice(3); }
+  const [stem,tags]=peel(core);
+  const ref=fwd(stem), known=!!ref;
+  const gl=(D.PRON_ENGLISH[stem]||(ref?ref.gl:stem));
+  return {kind:"word",raw:tok,known:known,stem:stem,gl:gl,tags:tags,anchor:anchor,neg:neg,ipa:ref?ref.ipa:"",domain:ref?ref.domain:""};
+}
+function chunkGloss(p){
+  if(p.kind==="func"||p.kind==="gap"||p.kind==="dir") return p.tag;
+  let out=(p.neg?"NEG-":"")+(p.gl||p.stem);
+  for(const [,label] of p.tags) out+="-"+label;
+  if(p.anchor) out+="="+p.anchor;
+  return out;
+}
+function paraphrase(parsed){
+  if(!parsed.length) return "";
+  const main=[],adv=[]; let q=false,neg=false;
+  for(const p of parsed){
+    if(p.kind==="gap"){ main.push("— (the gap)"); continue; }
+    if(p.kind==="func"){ if(p.tag==="NEG")neg=true; else if(p.tag==="Q")q=true; continue; }
+    if(p.kind==="dir"){ adv.push("("+p.tag.toLowerCase()+")"); continue; }
+    let w=p.gl||p.stem; if(p.neg)neg=true;
+    if(p.tags.some(t=>t[0]==="PFV")) w+=" (perfective)";
+    main.push(w);
+    for(const [,label] of p.tags){ const a=D.MOOD_ADV[label]; if(a)adv.push(a); }
+    if(p.anchor){ const a=D.ANCHOR_ADV[p.anchor]; if(a&&adv.indexOf(a)<0)adv.push(a); }
+  }
+  let body=main.join(" "); if(neg) body=body?("not "+body):"not";
+  let text=body; if(adv.length) text+=" — "+adv.join(", "); text+=q?"?":"."; return text.trim();
+}
+function peelSU(src){
+  const parsed=[];
+  for(const raw of src.split(/\s+/)){ const p=parseWord(raw); if(p)parsed.push(p); }
+  if(!parsed.length) return {dir:"su2en",para:"",gloss:"",tokens:[],words:[],conf:0,notes:["nothing to parse"],su:src};
+  const gloss=parsed.map(chunkGloss).join(" ");
+  const words=parsed.map(p=>{
+    if(p.kind!=="word") return tword(p.tag,p.raw,chunkGloss(p),"",true);
+    return tword(p.gl||p.stem,p.raw,chunkGloss(p),p.ipa,p.known);
+  });
+  const total=parsed.length, known=parsed.filter(p=>p.known||p.kind==="func"||p.kind==="dir"||p.kind==="gap").length;
+  const conf=total?Math.round(100*known/total)/100:0;
+  const notes=[];
+  for(const p of parsed){ if(p.kind==="word"&&!p.known) notes.push("unknown stem '"+p.stem+"' kept verbatim"); }
+  notes.push("morphology peeled client-side from the phoneme grammar");
+  const tokens=[]; parsed.forEach((p,i)=>{ if(i)tokens.push(" "); if(p.kind==="gap"){tokens.push("|");return;} tokenizeCareful(p.raw).forEach(t=>tokens.push(t)); });
+  return {dir:"su2en",para:paraphrase(parsed),gloss:gloss,tokens:tokens,words:words,conf:conf,notes:notes,su:src};
+}
+
+/* =====================================================================
+   direction detection (mirror of translate.detect_direction)
+   ===================================================================== */
+function detectDir(text){
+  let su=0,en=0,tot=0;
+  for(const raw of text.split(/\s+/)){
+    const t=stripPunct(raw); if(!t||t==="|") continue;
+    const low=t.toLowerCase(); let flag=null;
+    if(/[āēīōū]/.test(low)||t.indexOf("=")>=0) flag=true;
+    else if(has(D.FUNC,low)||has(D.DIRPEEL,low)) flag=true;
+    else { const p=parseWord(t); if(p){ flag=(p.kind!=="word")?true:!!p.known; } }
+    if(flag===null) continue; tot++; if(flag)su++; else if(inSet(D.ENMARK,low))en++;
+  }
+  return (tot&&su>0&&su>=en)?"su2en":"en2su";
+}
+
+/* =====================================================================
+   rendering the transcript
+   ===================================================================== */
+const chat=document.getElementById("chat");
+const CARDS=[];   /* keep result objects so re-lettering on hand-switch works */
+function toast(m){
+  const t=document.createElement("div"); t.className="toast"; t.textContent=m;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2600);
+}
+function confChip(conf,src){
+  let cls="composed",label="COMPOSED "+conf.toFixed(2);
+  if(conf>=1){ cls="attested"; label="ATTESTED 1.00"; }
+  else if(src==="word-by-word"){ cls="wbw"; label="WORD-BY-WORD "+conf.toFixed(2); }
+  else if(conf<0.4){ cls="scaffold"; label="SCAFFOLD "+conf.toFixed(2); }
+  else if(conf<0.9){ cls="wbw"; label="PARTIAL "+conf.toFixed(2); }
+  return `<span class="chip ${cls}">${label}</span>`;
+}
+function glossUnits(words){
+  if(!words||!words.length) return "";
+  return `<div class="gloss">`+words.map(w=>
+    `<div class="gunit${w.known?"":" unk"}"><span class="g-su">${esc(w.su)}</span><span class="g-gl">${esc(w.gloss)}</span></div>`
+  ).join("")+`</div>`;
+}
+function beatRow(syl){
+  if(!syl||!syl.length) return "";
+  return `<span class="rhythm">`+syl.map(t=>{
+    if(t==="/") return `<span class="beat sp">/</span>`;
+    if(t==="|") return `<span class="beat gap">▮</span>`;
+    return `<span class="beat${/[A-Z]/.test(t)?" hi":""}">${esc(t)}</span>`;
+  }).join("")+`</span>`;
+}
+function addYou(text){
+  const m=document.createElement("div"); m.className="msg you";
+  m.innerHTML=`<span class="who">YOU</span><div class="bub">${esc(text)}</div>`;
+  chat.appendChild(m); scrollDown();
+}
+function addCard(res){
+  const idx=CARDS.push(res)-1;
+  const m=document.createElement("div"); m.className="msg agent";
+  const su2en=res.dir==="su2en";
+  const speakText=su2en?respellSuchel(res.su):(res.ipa?respellIpa(res.ipa):respellSuchel(res.su));
+  const hasRhythm=!su2en && res.syl && res.syl.length;
+  const hasVoice=res.tokens && res.tokens.length;
+  let inner=`<span class="who">TRANSLATOR</span><div class="card ${su2en?"su2en":""}" data-i="${idx}">`;
+  if(su2en){
+    inner+=`<div class="para">${esc(res.para||"(no reading)")}</div>`;
+    inner+=`<div class="eng">source: <span style="color:var(--gold)">${esc(res.su)}</span></div>`;
+    inner+=glossUnits(res.words);
+  } else {
+    inner+=`<div class="su">${esc(res.su)}</div>`;
+    if(res.ipa) inner+=`<div class="ipa">[${esc(res.ipa)}]</div>`;
+    if(res.en) inner+=`<div class="eng">for: “${esc(res.en)}”</div>`;
+    inner+=glossUnits(res.words);
+  }
+  inner+=`<div class="navc" data-navc="${idx}"></div>`;
+  inner+=`<div class="audio">`+
+    `<button class="ab" data-act="voice" data-i="${idx}"${hasVoice?"":" disabled"}>▶ VOICE</button>`+
+    `<button class="ab gold" data-act="rhythm" data-i="${idx}"${hasRhythm?"":" disabled"}>▶ RHYTHM</button>`+
+    `<button class="ab blue" data-act="speak" data-i="${idx}"${speakText?"":" disabled"}>▶ SPEAK</button>`+
+    (hasRhythm?beatRow(res.syl):"")+`</div>`;
+  inner+=`<div class="meta">${confChip(res.conf,res.src)}</div>`;
+  if(res.notes&&res.notes.length) inner+=`<div class="note">`+res.notes.map(n=>esc(n).replace(/‘odylang serve’/g,"<code>odylang serve</code>")).join(" · ")+`</div>`;
+  inner+=`</div>`;
+  m.innerHTML=inner; chat.appendChild(m);
+  letterCard(idx);
+  scrollDown();
+}
+function letterCard(idx){
+  const box=chat.querySelector(`[data-navc="${idx}"]`); if(!box) return;
+  const res=CARDS[idx];
+  box.innerHTML=stripSvg(res.tokens);
+}
+function reletterAll(){ CARDS.forEach((_,i)=>letterCard(i)); }
+function scrollDown(){ requestAnimationFrame(()=>{ chat.scrollTop=chat.scrollHeight; window.scrollTo(0,document.body.scrollHeight); }); }
+
+/* the translate dispatcher */
+let DIR="auto";
+function respondTo(text){
+  addYou(text);
+  let dir=DIR==="auto"?detectDir(text):DIR;
+  let res;
+  if(dir==="su2en"){ res=peelSU(text.trim()); }
+  else {
+    const hit=IDIOM_MAP[normIdiom(text)];
+    if(hit){ res={dir:"en2su",su:hit.su,ipa:hit.ipa,gloss:hit.gloss,tokens:hit.tokens,syl:hit.syl,
+                  words:idiomWords(hit),conf:hit.conf,notes:hit.notes.slice(),src:hit.src,en:hit.en}; }
+    else res=composeEN(text);
+  }
+  addCard(res);
+}
+function idiomWords(hit){
+  /* rebuild interlinear units from the precomputed gloss + tokens split by spaces */
+  const glosses=(hit.gloss||"").split(/\s+/), forms=(hit.su||"").replace(/[.!?]$/,"").split(/\s+/);
+  const out=[];
+  for(let i=0;i<Math.max(glosses.length,forms.length);i++){
+    out.push(tword("",forms[i]||"",glosses[i]||"","",true));
+  }
+  return out;
+}
+
+/* =====================================================================
+   audio button + control wiring
+   ===================================================================== */
+chat.addEventListener("click",e=>{
+  const b=e.target.closest(".ab"); if(!b||b.disabled) return;
+  const res=CARDS[+b.dataset.i]; if(!res) return;
+  const act=b.dataset.act;
+  if(act==="voice") playVoice(res.tokens);
+  else if(act==="rhythm") playRhythm(res.syl);
+  else if(act==="speak"){ const t=res.dir==="su2en"?respellSuchel(res.su):(res.ipa?respellIpa(res.ipa):respellSuchel(res.su)); speak(t); }
+});
+
+const dirSeg=document.getElementById("dir");
+dirSeg.addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return;
+  DIR=b.dataset.d; dirSeg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+  document.getElementById("in").focus();
+});
+const handSeg=document.getElementById("hand");
+handSeg.addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return;
+  GSTYLE=b.dataset.h; handSeg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+  reletterAll();
+});
+
+const dock=document.getElementById("dock"), input=document.getElementById("in");
+dock.addEventListener("submit",e=>{ e.preventDefault(); const v=input.value.trim(); if(!v)return;
+  respondTo(v); input.value=""; input.focus(); });
+
+/* starter chips: a friendly spread across attested + composed */
+const STARTERS=["hello","take her down","open the seam","we crossed","I go down",
+  "do you hear me","surface again","she has gone adrift","ver ish-ol.","hōl-t-eshe=zu.","kad ver-a=ka vu?"];
+const stEl=document.getElementById("starters");
+stEl.innerHTML=STARTERS.map(s=>`<button class="s">${esc(s)}</button>`).join("");
+stEl.addEventListener("click",e=>{ const b=e.target.closest(".s"); if(!b)return; respondTo(b.textContent); });
+
+/* opening line from the agent */
+(function greet(){
+  const hi=IDIOM_MAP[normIdiom("hello")]||D.IDIOMS[0];
+  addCard({dir:"en2su",su:hi.su,ipa:hi.ipa,gloss:hi.gloss,tokens:hi.tokens,syl:hi.syl,
+    words:idiomWords(hi),conf:hi.conf,notes:["I am the Sūchel translator. Say hello, or try a phrase — EN↔SŪCHEL, AUTO-detected. "+(D.IDIOMS.length)+" phrases loaded offline."],
+    src:hi.src,en:"hello"});
+})();
+</script>
+</body>
+</html>

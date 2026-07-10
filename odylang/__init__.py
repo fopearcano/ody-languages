@@ -20,7 +20,14 @@ rudgar, sel, beltsel
              the sisters, at naming depth (sound changes + 20 place names)
 lorkel       working Old Pelagic: the Wolori's Neo-Pelagic coinages
 family       the shibboleth: one proto-word through every mouth
+vocabulary   a coined working vocabulary, derived across the whole family
 navcher      the fleet script, rendered to SVG
+currenthand  the Current Hand — the redesigned pen script (design 07-E)
+translate    bidirectional English <-> Sūchel translation engine
+tts          a stdlib formant speech synthesizer (Sūchel -> WAV audio)
+translator_web  the offline translator chat web app
+server       a stdlib HTTP service (the LibreChat tool surface) + chat page
+webgen       the interactive web codex (one self-contained HTML file)
 """
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"

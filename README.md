@@ -71,6 +71,31 @@ suite (~840 tests).
   handoff's own JS). `odylang write --hand current` letters any line;
   `odylang page record|scrawl|watch|vigil|disc --seed N` renders the five
   page registers (samples in `examples/currenthand/`).
+* **The translator** (`odylang.translate`, `tts`, `translator_web`, `server`)
+  — a full English↔Sūchel translation system you can talk to and hear.
+  The engine generates Sūchel *through the grammar* (SOV, the verb carries
+  mood + temporal anchor) and indexes its bilingual dictionary from the
+  *derived* lexicon, so it never invents words; it tries the attested
+  phrasebook first, composes otherwise, and is honest about confidence and
+  unknown words. `odylang.tts` is a dependency-free **formant speech
+  synthesizer** — real WAV audio for a language no human speaks, with the
+  codex's prosody (the mood carries the beat). `odylang serve` runs a
+  stdlib HTTP service (`/translate`, `/tts`, `/openapi.json`) that hosts a
+  **translator chat page** and doubles as a **LibreChat tool** — a drop-in
+  OpenAPI Action + "Sūchel Translator" agent config in
+  `integrations/librechat/` (works with a local model via LM Studio/Ollama
+  or with the Anthropic/OpenAI cloud APIs). A prebuilt offline chat page
+  ships as `examples/translator.html`.
+
+  ```console
+  $ odylang translate "the beacon holds"
+  kad tan-a=ka.
+    IPA    kad taˈna.ka
+    GLOSS  beacon hold-T=BEAC
+    conf   0.90  (en2su)
+  $ odylang say "surface again" -o hail.wav   # synthesize speech to WAV
+  $ odylang serve                              # chat page + LibreChat tool API
+  ```
 * **The interactive codex** (`odylang.webgen`) — `odylang web -o codex.html`
   builds the whole system into ONE self-contained web page (no server, no
   dependencies, no network): the shibboleth explorer with live derivation

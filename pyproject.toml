@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "odylang"
-version = "1.1.0"
+version = "1.2.0"
 description = "The languages of the crossable universe: Old Pelagic and its daughters (Suchel, Nubhel, Rudgar, Sel, Beltsel) and the ancestor's working register Lorkel, the Navcher script, and the four-rule stress algorithm — implemented from the NERV//Pelagian Assembly language codices (docs/), built with Peterson's language-invention method."
 requires-python = ">=3.9"
 readme = "README.md"
