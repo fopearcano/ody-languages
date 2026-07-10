@@ -59,8 +59,19 @@ suite (~840 tests).
 
 ## Quickstart
 
-No dependencies (Python ≥ 3.9). `pip install -e .` for the `odylang`
-command, or run `python3 -m odylang.cli`.
+The implementation lives on the `claude/peterson-language-system-q2z1l9`
+branch — check it out first if you cloned `main`.
+
+No dependencies (Python ≥ 3.9), so no install is required: from the repo
+root, `python3 -m odylang.cli phrase 40` just works.  For the `odylang`
+command, install with `python3 -m pip install -e .` (macOS/zsh usually has
+no bare `pip` on PATH); if your Python is externally managed
+(Homebrew/PEP 668), use a venv first:
+
+```console
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e .
+```
 
 ```console
 $ odylang derive suchel '*suw-kel'
