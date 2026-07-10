@@ -558,16 +558,34 @@ const CH=(function(){
     return {vb:(x0-pad).toFixed(0)+" "+(y0-pad).toFixed(0)+" "+bw.toFixed(0)+" "+bh.toFixed(0),elems,w:px,h:py};
   }
   const TOK={"@T":"mT","@T-":"mTm","@T+":"mTp","@Ts":"mTs","@F":"mF","=ka":"aka","=mi":"ami","=zu":"azu","|":"gap","?":"q"};
-  function _svg(tokens,squared,cmap){
+  /* Logos: snap every segment to one of 8 compass directions — carved cuts */
+  function carve(strokes){
+    const step=2*Math.PI/8;
+    strokes.forEach(st=>{
+      const pts=st.pts; if(pts.length<2) return;
+      const out=[pts[0].slice()];
+      for(let i=1;i<pts.length;i++){
+        const dx=pts[i][0]-pts[i-1][0], dy=pts[i][1]-pts[i-1][1], L=Math.hypot(dx,dy), w=pts[i][2];
+        if(L<1e-6){ out.push([out[out.length-1][0],out[out.length-1][1],w]); continue; }
+        const a=Math.round(Math.atan2(dy,dx)/step)*step;
+        out.push([out[out.length-1][0]+L*Math.cos(a), out[out.length-1][1]+L*Math.sin(a), w]);
+      }
+      st.pts=out;
+    });
+    return strokes;
+  }
+  function _svg(tokens,squared,cmap,doCarve){
     const keys=tokens.map(t=>TOK[t]||(t.endsWith(":")?t:t)).filter(k=>k===" "||k==="gap"||G[k.charAt(k.length-1)===":"?k.slice(0,-1):k]);
     const th=build(keys.length?keys:[" "]);
-    const F=fig(mapStrokes(th,linear),squared?0.92:0.85, Math.min(560, Math.max(120, th.total*0.5)),squared,cmap);
+    let mapped=mapStrokes(th,linear);
+    if(doCarve) carve(mapped);
+    const F=fig(mapped,squared?0.92:0.85, Math.min(560, Math.max(120, th.total*0.5)),squared,cmap);
     let out=`<svg viewBox="${F.vb}" width="${F.w.toFixed(0)}" height="${F.h.toFixed(0)}" role="img">`;
     F.elems.forEach(e=>{out+=`<path d="${e.d}" fill="${e.fill}"/>`;});
     return out+"</svg>";
   }
-  function lineSvg(tokens){ return _svg(tokens,false,PAPER); }
-  function logosSvg(tokens){ return _svg(tokens,true,GOLD); }
+  function lineSvg(tokens){ return _svg(tokens,false,PAPER,false); }
+  function logosSvg(tokens){ return _svg(tokens,true,GOLD,true); }
   return {lineSvg,logosSvg};
 })();
 

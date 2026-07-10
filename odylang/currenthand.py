@@ -83,6 +83,35 @@ def _lin(a: float, b: float, c: float, d: float, t: float) -> float:
     return b + (c - b) * t
 
 
+def _logos_carve(strokes, ndir: int = 8):
+    """Snap every segment of every stroke to one of ``ndir`` compass
+    directions (default 8: horizontal, vertical, and the diagonals),
+    preserving segment length.  This turns the flowing pen skeleton into the
+    rectilinear, rune-like cuts of the **Logos hand** — a monumental carved
+    inscription, the sacred ancestor the Current Hand rounded into cursive.
+    Mutates and returns the stroke list.
+    """
+    step = 2 * math.pi / ndir
+    for st in strokes:
+        pts = st.pts
+        if len(pts) < 2:
+            continue
+        out = [list(pts[0])]
+        for i in range(1, len(pts)):
+            x0, y0 = pts[i - 1][0], pts[i - 1][1]
+            x1, y1, w = pts[i]
+            dx, dy = x1 - x0, y1 - y0
+            length = math.hypot(dx, dy)
+            if length < 1e-6:
+                out.append([out[-1][0], out[-1][1], w])
+                continue
+            ang = round(math.atan2(dy, dx) / step) * step
+            out.append([out[-1][0] + length * math.cos(ang),
+                        out[-1][1] + length * math.sin(ang), w])
+        st.pts = out
+    return strokes
+
+
 def ribbon(pts: Sequence[Sequence[float]], f: float,
            squared: bool = False) -> str:
     """A variable-width ribbon through [x, y, width] control points, offset
@@ -900,9 +929,13 @@ def line_svg(tokens: Sequence[str], palette: str = "light-trace",
     """Render one token line in the Current Hand (flowing) or, with
     ``squared=True``, in the Logos hand (faceted carving)."""
     # the Logos hand is a carved sacred script: it does not ride the living
-    # current, so it is written level (sway 0)
+    # current (written level, sway 0), and every segment is snapped to a
+    # compass-cut facet
     th = build(keys_from_tokens(tokens), sway=0 if squared else sway)
-    fig = _fig(_map_strokes(th, _linear), ink_weight, px, squared)
+    mapped = _map_strokes(th, _linear)
+    if squared:
+        _logos_carve(mapped)
+    fig = _fig(mapped, ink_weight, px, squared)
     pal = PALETTES[palette]
     colors = {"#24282E": pal["ink"], "#33707C": pal["acc"],
               "#A65B3F": pal["acc2"], "#8A8478": pal["sub"]}

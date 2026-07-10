@@ -1281,9 +1281,11 @@ const CH = (function(){
   /* living hand: bone-white ink.  Logos hand: illuminated gold, sacred. */
   const DARK={'#24282E':'#E8E3D6','#33707C':'#6fa8ff','#A65B3F':'#e8362a','#8A8478':'#8c8a82'};
   const GOLD={'#24282E':'#f5d76e','#33707C':'#e8362a','#A65B3F':'#e8362a','#8A8478':'#8c8a82'};
-  function _lineSvg(tokens,squared,cmap){
+  function _lineSvg(tokens,squared,cmap,doCarve){
     const th=build(tokens.map(t=>TOK[t]||t), squared?{sway:0}:undefined);
-    const F=fig(mapStrokes(th,linear),squared?0.92:0.85,560,squared);
+    let mapped=mapStrokes(th,linear);
+    if(doCarve) carve(mapped);
+    const F=fig(mapped,squared?0.92:0.85,560,squared);
     let out=`<svg viewBox="${F.vb}" width="${F.w.toFixed(0)}" height="${F.h.toFixed(0)}" role="img">`;
     F.elems.forEach(e=>{
       const col=cmap[e.fill]||e.fill;
@@ -1291,8 +1293,25 @@ const CH = (function(){
     });
     return out+'</svg>';
   }
-  function lineSvg(tokens){ return _lineSvg(tokens,false,DARK); }
-  function logosSvg(tokens){ return _lineSvg(tokens,true,GOLD); }
+  /* Logos: snap every segment to one of 8 compass directions — carved,
+     rune-like cuts (rectilinear + diagonal), preserving segment length. */
+  function carve(strokes,nd){
+    const step=2*Math.PI/(nd||8);
+    strokes.forEach(st=>{
+      const pts=st.pts; if(pts.length<2) return;
+      const out=[pts[0].slice()];
+      for(let i=1;i<pts.length;i++){
+        const dx=pts[i][0]-pts[i-1][0], dy=pts[i][1]-pts[i-1][1], L=Math.hypot(dx,dy), w=pts[i][2];
+        if(L<1e-6){ out.push([out[out.length-1][0],out[out.length-1][1],w]); continue; }
+        const a=Math.round(Math.atan2(dy,dx)/step)*step;
+        out.push([out[out.length-1][0]+L*Math.cos(a), out[out.length-1][1]+L*Math.sin(a), w]);
+      }
+      st.pts=out;
+    });
+    return strokes;
+  }
+  function lineSvg(tokens){ return _lineSvg(tokens,false,DARK,false); }
+  function logosSvg(tokens){ return _lineSvg(tokens,true,GOLD,true); }
   function figMarkup(F){
     let out=`<svg viewBox="${F.vb}" style="width:${F.w.toFixed(0)}px;height:${F.h.toFixed(0)}px;max-width:100%" role="img">`;
     F.elems.forEach(e=>{out+=`<path d="${e.d}" fill="${e.fill}"${e.op!=null?` opacity="${e.op}"`:''}/>`;});
