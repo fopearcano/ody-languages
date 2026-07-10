@@ -452,8 +452,15 @@ details .inner{padding:12px 14px}
 """
 
 _JS = r"""
+window.onerror = function(msg){
+  var b = document.createElement("div");
+  b.style.cssText = "position:fixed;left:0;right:0;bottom:0;background:#e8362a;"+
+    "color:#08070a;font:12px monospace;padding:6px 12px;z-index:99";
+  b.textContent = "codex error: " + msg;
+  document.body.appendChild(b);
+};
 const D = window.ODY;
-const esc = s => String(s ?? "").replace(/[&<>"]/g,
+const esc = s => String(s === null || s === undefined ? "" : s).replace(/[&<>"]/g,
   c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 /* ---------- Navcher renderer (geometry embedded from odylang.navcher) --- */
@@ -917,17 +924,24 @@ function show(key){
   nav.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.t===key));
   const tab=TABS.find(t=>t[0]===key);
   view.innerHTML=""; tab[2](view);
-  if(location.hash!=="#"+key) history.replaceState(null,"","#"+key);
+  try{ if(location.hash!=="#"+key) history.replaceState(null,"","#"+key); }
+  catch(e){ /* some browsers restrict history on file:// — cosmetic only */ }
 }
 for(const st of ["carve","trace"]){
-  document.getElementById("st-"+st).onclick=()=>{
+  const btn=document.getElementById("st-"+st);
+  if(!btn) continue;
+  btn.onclick=()=>{
     GSTYLE=st;
-    document.getElementById("st-carve").classList.toggle("on",st==="carve");
-    document.getElementById("st-trace").classList.toggle("on",st==="trace");
+    for(const other of ["carve","trace"]){
+      const o=document.getElementById("st-"+other);
+      if(o) o.classList.toggle("on",other===st);
+    }
     show(CURRENT);
   };
 }
-nav.querySelectorAll("button").forEach(b=>b.onclick=()=>show(b.dataset.t));
+nav.addEventListener("click",e=>{
+  const b=e.target.closest("button[data-t]"); if(b) show(b.dataset.t);
+});
 renderHero();
 show(TABS.some(t=>t[0]===location.hash.slice(1)) ? location.hash.slice(1) : "suchel");
 """
