@@ -385,7 +385,7 @@ BLUE = (0.18, 0.34, 0.52)      # beacon — glosses, links
 RULE = (0.80, 0.62, 0.30)
 
 PAGE_W, PAGE_H = 595.28, 841.89
-ML, MR, MT, MB = 64.0, 60.0, 74.0, 58.0
+ML, MR, MT, MB = 52.0, 48.0, 58.0, 46.0
 CW = PAGE_W - ML - MR
 
 
@@ -467,60 +467,80 @@ class _Doc:
                 y += size * 1.35
             y += size * 0.5
 
+    def masthead(self, lines: Sequence[Tuple[str, str, float, tuple]]):
+        """A compact centred title block at the top of the current page,
+        leaving the rest of the page free (for the contents).  Returns the y
+        just below it."""
+        y = MT + 22
+        for text, face, size, color in lines:
+            for ln in text.split("\n"):
+                w = self.fonts[face].width(ln, size)
+                self._raw_text((PAGE_W - w) / 2, y, ln, face, size, color)
+                y += size * 1.28
+            y += size * 0.3
+        y += 6
+        self._raw_line(ML, y, PAGE_W - MR, y, 0.8, RULE)
+        self.y = y + 18
+        return self.y
+
     def heading(self, text: str, level: int = 1):
-        sizes = {1: 17, 2: 13, 3: 11}
-        size = sizes.get(level, 11)
+        sizes = {1: 15, 2: 12, 3: 10.5}
+        size = sizes.get(level, 10.5)
         if level == 1:
-            # open the section on a fresh, header-free page; the running header
-            # (drawn by later _new_page calls) picks up the new section name
-            self._new_page(header=False)
+            # sections flow continuously to save paper: break to a new page
+            # only when the heading plus a few lines would not fit; otherwise
+            # just leave breathing room above it
+            if self.y + size * 5.0 > PAGE_H - MB:
+                self._new_page()
+            elif self.pages[-1]:
+                self.space(size * 1.15)
             self.section = text
             self.headers[-1] = text
         else:
-            self._ensure(size * 2.4)
-            self.space(size * 0.8)
+            self._ensure(size * 3.0)
+            self.space(size * 0.6)
         color = INK if level == 1 else GOLD
         self._raw_text(ML, self.y + size, text, "bold", size, color)
-        self.y += size * 1.25
+        self.y += size * 1.2
         if level <= 2:
             self._raw_line(ML, self.y, PAGE_W - MR, self.y,
-                           0.9 if level == 1 else 0.4, RULE)
-            self.y += size * 0.5
+                           0.8 if level == 1 else 0.4, RULE)
+            self.y += size * 0.4
         else:
-            self.y += size * 0.25
+            self.y += size * 0.2
 
-    def para(self, s: str, face: str = "serif", size: float = 9.6,
-             color: tuple = INK, lead: float = 1.42, indent: float = 0.0,
+    def para(self, s: str, face: str = "serif", size: float = 9.3,
+             color: tuple = INK, lead: float = 1.32, indent: float = 0.0,
              width: Optional[float] = None):
         width = (width or CW) - indent
         for ln in self.wrap(s, face, size, width):
             self._ensure(size * lead)
             self._raw_text(ML + indent, self.y + size, ln, face, size, color)
             self.y += size * lead
-        self.y += size * 0.35
+        self.y += size * 0.28
 
     def gloss(self, suchel: str, gloss: str, translation: str,
               ipa: str = "", label: str = ""):
         """One interlinear example: Sūchel line, morpheme gloss, translation."""
-        need = 11 * 3.6 + (11 if ipa else 0)
+        need = 10 * 3.4 + (9.5 if ipa else 0)
         self._ensure(need)
-        x = ML + 10
+        x = ML + 9
         if label:
-            self._raw_text(ML, self.y + 9, label, "mono", 8, FAINT)
-        for ln in self.wrap(suchel, "mono", 10.5, CW - 12):
-            self._raw_text(x, self.y + 10.5, ln, "mono", 10.5, GOLD)
-            self.y += 13
+            self._raw_text(ML, self.y + 8.5, label, "mono", 7.6, FAINT)
+        for ln in self.wrap(suchel, "mono", 10, CW - 11):
+            self._raw_text(x, self.y + 10, ln, "mono", 10, GOLD)
+            self.y += 11.5
         if ipa:
-            for ln in self.wrap(ipa, "serif", 8.8, CW - 12):
-                self._raw_text(x, self.y + 8.8, ln, "serif", 8.8, DIM)
-                self.y += 10.5
-        for ln in self.wrap(gloss, "mono", 8.6, CW - 12):
-            self._raw_text(x, self.y + 8.6, ln, "mono", 8.6, BLUE)
-            self.y += 10.5
-        for ln in self.wrap("“" + translation + "”", "serif", 9.4, CW - 12):
-            self._raw_text(x, self.y + 9.4, ln, "serif", 9.4, INK)
-            self.y += 12
-        self.y += 6
+            for ln in self.wrap(ipa, "serif", 8.4, CW - 11):
+                self._raw_text(x, self.y + 8.4, ln, "serif", 8.4, DIM)
+                self.y += 9.6
+        for ln in self.wrap(gloss, "mono", 8.2, CW - 11):
+            self._raw_text(x, self.y + 8.2, ln, "mono", 8.2, BLUE)
+            self.y += 9.6
+        for ln in self.wrap("“" + translation + "”", "serif", 9.1, CW - 11):
+            self._raw_text(x, self.y + 9.1, ln, "serif", 9.1, INK)
+            self.y += 10.8
+        self.y += 4.5
 
     def table(self, rows: Sequence[Sequence[str]], cols: Sequence[float],
               faces: Sequence[str], sizes: Sequence[float],
@@ -730,22 +750,19 @@ def build_pdf() -> bytes:
 
     d = _Doc(_load_faces())
 
-    # -- title page ----------------------------------------------------------
-    d.title_page([
-        ("SŪCHEL", "bold", 40, GOLD),
-        ("THE CROSSING-SPEECH", "serif", 13, DIM),
-        ("\nA Grammar, Vocabulary\n& Sentence Manual", "bold", 20, INK),
-        ("\ndaughter of Old Pelagic · tongue of the fleets", "serif", 10.5, DIM),
-        ("\n\nYou cannot speak without conjugating the truth.", "serif", 11, RED),
-        ("\n\nGenerated by odylang — every form derived, not typed.",
-         "serif", 9, FAINT),
+    # -- masthead + contents share the first page (compact front matter) -----
+    d.masthead([
+        ("SŪCHEL", "bold", 32, GOLD),
+        ("THE CROSSING-SPEECH", "serif", 11, DIM),
+        ("A Grammar, Vocabulary & Sentence Manual", "bold", 15, INK),
+        ("daughter of Old Pelagic · tongue of the fleets", "serif", 9.5, DIM),
+        ("You cannot speak without conjugating the truth.", "serif", 9.5, RED),
     ])
+    toc_page_index = len(d.pages) - 1     # the contents fill this page's tail
+    toc_y = d.y
 
-    # -- contents (page numbers filled after layout via a dry run) -----------
-    # simple approach: reserve one TOC page now, fill after we know pages
-    d.section = ""
+    # content flows from a fresh page after the front matter
     d._new_page(header=False)
-    toc_page_index = len(d.pages) - 1
 
     # -- 1. the family -------------------------------------------------------
     d.heading("The language & its family", 1)
@@ -986,10 +1003,10 @@ def build_pdf() -> bytes:
            "TrueType face so the macrons and IPA render true.",
            size=8.6, color=FAINT)
 
-    # -- fill the reserved TOC page ------------------------------------------
+    # -- fill the contents onto the front page, below the masthead -----------
     saved = d.pages
-    d.pages = [saved[toc_page_index]]  # draw onto the reserved page
-    d.y = MT
+    d.pages = [saved[toc_page_index]]  # draw onto the front page
+    d.y = toc_y
     order = ["The language & its family", "Phonology",
              "Stress — the mood carries the beat", "Nouns & pronouns",
              "The verb", "The four systems", "Vocabulary", "Sentences",

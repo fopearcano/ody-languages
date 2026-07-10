@@ -61,7 +61,7 @@ def test_document_object_graph(pdf):
 def test_pages_count_is_reasonable(pdf):
     m = pdf.split(b"/Type /Pages")[1]
     count = int(m.split(b"/Count")[1].split(b">>")[0].strip())
-    assert 15 <= count <= 40, count            # a real, multi-page book
+    assert 10 <= count <= 30, count            # a real, compact multi-page book
 
 
 def test_composite_font_is_wired(pdf):
@@ -193,21 +193,18 @@ def test_text_extraction_sentinels(pdf):
 
 
 def test_toc_page_numbers_match_footers(pdf):
-    # the reserved table-of-contents page must reference the same page numbers
-    # the running footers print — the layout's off-by-one trap
+    # the contents (on the front page, below the masthead) must reference the
+    # same page numbers the running footers print — the layout's off-by-one trap
     fitz = pytest.importorskip("fitz")
     doc = fitz.open(stream=pdf, filetype="pdf")
-    # footer number printed on each page (bottom-centre)
-    for sec, claim in [("The language & its family", None),
-                       ("Phonology", None), ("Vocabulary", None),
-                       ("Sentences", None)]:
-        # find the TOC line 'sec' -> number
-        toc = doc[1].get_text().split("\n")
+    toc = doc[0].get_text().split("\n")        # masthead + CONTENTS share page 0
+    for sec in ("The language & its family", "Phonology", "Vocabulary",
+                "Sentences"):
         idx = toc.index(sec)
         claimed = int(toc[idx + 1])
-        # the section heading must actually sit on that printed page
+        # the section heading must actually sit on that printed page ...
         page = doc[claimed]
         assert sec in page.get_text()
-        # and the printed footer of that page equals the claim
+        # ... and that page's printed footer equals the claim
         lines = [l for l in page.get_text().split("\n") if l.strip()]
         assert lines[-1].strip() == str(claimed)
