@@ -23,4 +23,4 @@ family       the shibboleth: one proto-word through every mouth
 navcher      the fleet script, rendered to SVG
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"

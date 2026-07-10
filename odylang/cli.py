@@ -18,6 +18,8 @@ from __future__ import annotations
 import argparse
 import sys
 
+from . import __version__
+
 
 def _print_derivation(d):
     print(d.trace())
@@ -211,6 +213,8 @@ def main(argv=None):
         prog="odylang",
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--version", action="version",
+                    version=f"odylang {__version__}")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("derive", help="replay a sound-change derivation")
