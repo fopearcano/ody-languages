@@ -306,11 +306,18 @@ _TITLE = "SŪCHEL TRANSLATOR — talk to the crossing-speech"
 _MARKUP = """
 <div class="wrap">
   <header class="head">
-    <div class="brand">SŪCHEL <span class="tr">TRANSLATOR</span></div>
+    <div class="brandrow">
+      <div class="brand">SŪCHEL <span class="tr">TRANSLATOR</span></div>
+      <a class="codexlink" href="__CODEX_URL__" target="_blank" rel="noopener"
+         title="the interactive codex: the whole language family, lexicons, script and grammar behind this translator">THE CODEX ↗</a>
+    </div>
     <p class="tag">A translator you <b>talk to</b>. Type English or Sūchel and the
       agent answers. The grammar is real — SOV, and the verb carries both its
       <b>veridical mood</b> and its <b>temporal anchor</b>. Every Sūchel line can be
-      heard: the audio is synthesized from the phoneme model, not recorded.</p>
+      heard: the audio is synthesized from the phoneme model, not recorded.
+      The whole knowledge system behind it — every root, sound change, and
+      glyph — lives in <a class="codexinline" href="__CODEX_URL__" target="_blank"
+      rel="noopener">the codex</a>.</p>
     <div class="ctl">
       <div class="seg" id="dir" role="group" aria-label="translation direction">
         <button data-d="auto" class="on">AUTO</button>
@@ -354,8 +361,15 @@ body{background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:14p
 .wrap{max-width:860px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;
   padding:0 16px}
 .head{padding:26px 0 14px;border-bottom:1px solid var(--line)}
+.brandrow{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .brand{color:var(--gold);font-size:22px;letter-spacing:.28em;font-weight:700}
 .brand .tr{color:var(--red);letter-spacing:.24em}
+.codexlink{color:var(--blue);text-decoration:none;font-size:11px;letter-spacing:.22em;
+  border:1px solid var(--goldline);padding:5px 12px;white-space:nowrap}
+.codexlink:hover{color:var(--gold);border-color:var(--gold)}
+.codexlink:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+.codexinline{color:var(--blue);text-decoration:none;border-bottom:1px solid var(--goldline)}
+.codexinline:hover{color:var(--gold)}
 .tag{color:var(--dim);font-size:12.5px;max-width:66ch;margin:10px 0 16px;line-height:1.65}
 .tag b{color:var(--ink);font-weight:400}
 .ctl{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
@@ -1143,29 +1157,41 @@ def _data_json() -> str:
     return json.dumps(collect(), ensure_ascii=False).replace("</", "<\\/")
 
 
-def page_fragment() -> str:
+#: where the "THE CODEX ↗" link points by default — the sibling file that
+#: ``odylang web`` writes.  ``odylang serve`` overrides it with ``/codex``;
+#: the published artifact overrides it with the codex's artifact URL.
+DEFAULT_CODEX_URL = "odylang-web.html"
+
+
+def _markup(codex_url: str) -> str:
+    return _MARKUP.replace("__CODEX_URL__", codex_url)
+
+
+def page_fragment(codex_url: str = DEFAULT_CODEX_URL) -> str:
     """Title + style + markup + data + script, WITHOUT the html/head/body
     skeleton — for a host that supplies the document shell (mirrors
-    :func:`odylang.webgen.fragment`)."""
-    return (f"<title>{_TITLE}</title>\n<style>{_CSS}</style>\n{_MARKUP}\n"
+    :func:`odylang.webgen.fragment`).  ``codex_url`` is where the header's
+    "THE CODEX" link points."""
+    return (f"<title>{_TITLE}</title>\n<style>{_CSS}</style>\n{_markup(codex_url)}\n"
             f"<script>window.ODYT = {_data_json()};</script>\n"
             f"<script>{_JS}</script>\n")
 
 
-def page() -> str:
-    """A COMPLETE standalone HTML document (offline; embedded snapshot)."""
+def page(codex_url: str = DEFAULT_CODEX_URL) -> str:
+    """A COMPLETE standalone HTML document (offline; embedded snapshot).
+    ``codex_url`` sets the target of the header's link to the codex."""
     return ("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n"
             "<meta charset=\"utf-8\">\n"
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
             f"<title>{_TITLE}</title>\n<style>{_CSS}</style>\n"
             "</head>\n<body>\n"
-            f"{_MARKUP}\n"
+            f"{_markup(codex_url)}\n"
             f"<script>window.ODYT = {_data_json()};</script>\n"
             f"<script>{_JS}</script>\n"
             "</body>\n</html>\n")
 
 
-def write(path: str) -> None:
+def write(path: str, codex_url: str = DEFAULT_CODEX_URL) -> None:
     """Write the standalone document to ``path``."""
     with open(path, "w", encoding="utf-8") as fh:
-        fh.write(page())
+        fh.write(page(codex_url))

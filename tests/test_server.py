@@ -296,3 +296,13 @@ def test_cli_serve_help_does_not_block():
         main(["serve", "--help"])
     assert exc.value.code == 0
 
+
+
+def test_codex_route_serves_html_and_translator_links_to_it(base_url):
+    status, headers, body = _get(base_url + "/codex")
+    assert status == 200
+    assert headers.get("Content-Type", "").startswith("text/html")
+    assert body.decode("utf-8").startswith("<!DOCTYPE html>")
+    # the translator page served at / points its codex link here
+    _s, _h, root = _get(base_url + "/")
+    assert 'href="/codex"' in root.decode("utf-8")

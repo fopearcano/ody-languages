@@ -182,3 +182,18 @@ def test_page_and_fragment_share_the_snapshot(doc):
     doc_blob = re.search(r"window\.ODYT = (\{.*?\});</script>", doc, re.S)
     assert frag_blob and doc_blob
     assert frag_blob.group(1) == doc_blob.group(1)
+
+
+def test_codex_link_present():
+    from odylang import translator_web as tw
+    doc = tw.page()
+    assert "THE CODEX" in doc
+    assert 'href="odylang-web.html"' in doc  # default sibling target
+
+
+def test_codex_url_is_configurable():
+    from odylang import translator_web as tw
+    assert 'href="/codex"' in tw.page(codex_url="/codex")
+    assert 'href="/codex"' in tw.page_fragment(codex_url="/codex")
+    u = "https://claude.ai/code/artifact/abc"
+    assert f'href="{u}"' in tw.page(codex_url=u)
