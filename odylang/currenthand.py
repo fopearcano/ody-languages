@@ -77,24 +77,39 @@ def _cr1(a: float, b: float, c: float, d: float, t: float) -> float:
                   + (-a + 3 * b - 3 * c + d) * t3)
 
 
-def ribbon(pts: Sequence[Sequence[float]], f: float) -> str:
-    """A variable-width ribbon: Catmull-Rom through [x, y, width] points,
-    offset both ways along the normal, closed as one filled path."""
+def _lin(a: float, b: float, c: float, d: float, t: float) -> float:
+    """Straight interpolation between the two middle control points — the
+    faceted counterpart of :func:`_cr1`.  Used by the Logos (carved) hand."""
+    return b + (c - b) * t
+
+
+def ribbon(pts: Sequence[Sequence[float]], f: float,
+           squared: bool = False) -> str:
+    """A variable-width ribbon through [x, y, width] control points, offset
+    both ways along the normal and closed as one filled path.
+
+    ``squared=False`` (default) smooths the centreline with Catmull-Rom — the
+    flowing **Current Hand**.  ``squared=True`` runs a straight (linear)
+    centreline instead: the same skeleton rendered as faceted, angular cuts —
+    the **Logos hand**, the old sacred carving.  The two are ancestor and
+    descendant: identical control points, curve vs. facet.
+    """
     n = len(pts)
     if n < 2:
         return ""
     def g(i):
         return pts[0 if i < 0 else (n - 1 if i > n - 1 else i)]
     S: List[List[float]] = []
-    SEG = 8
+    interp = _lin if squared else _cr1
+    SEG = 1 if squared else 8
     for i in range(n - 1):
         p0, p1, p2, p3 = g(i - 1), g(i), g(i + 1), g(i + 2)
         top = SEG if i == n - 2 else SEG - 1
         for t in range(top + 1):
             u = t / SEG
-            S.append([_cr1(p0[0], p1[0], p2[0], p3[0], u),
-                      _cr1(p0[1], p1[1], p2[1], p3[1], u),
-                      max(0.3, _cr1(p0[2], p1[2], p2[2], p3[2], u)) * f])
+            S.append([interp(p0[0], p1[0], p2[0], p3[0], u),
+                      interp(p0[1], p1[1], p2[1], p3[1], u),
+                      max(0.3, interp(p0[2], p1[2], p2[2], p3[2], u)) * f])
     L: List[str] = []
     R: List[str] = []
     for i in range(len(S)):
@@ -525,7 +540,8 @@ class Fig:
     height: float
 
 
-def _fig(strokes: List[Stroke], ink_w: float, px: float = 560) -> Fig:
+def _fig(strokes: List[Stroke], ink_w: float, px: float = 560,
+         squared: bool = False) -> Fig:
     x0 = y0 = 1e9
     x1 = y1 = -1e9
     elems = []
@@ -536,7 +552,7 @@ def _fig(strokes: List[Stroke], ink_w: float, px: float = 560) -> Fig:
             x1 = max(x1, X + w)
             y1 = max(y1, Y + w)
         col = st.ink or PAPER.get(st.color, PAPER["ink"])
-        e = {"d": ribbon(st.pts, ink_w), "fill": col}
+        e = {"d": ribbon(st.pts, ink_w, squared), "fill": col}
         if st.op is not None:
             e["opacity"] = st.op
         elems.append(e)
@@ -880,10 +896,13 @@ def keys_from_tokens(tokens: Sequence[str]) -> List[str]:
 
 def line_svg(tokens: Sequence[str], palette: str = "light-trace",
              ink_weight: float = 0.85, sway: Optional[float] = None,
-             px: float = 560) -> str:
-    """Render one token line (careful or bridge) in the Current Hand."""
-    th = build(keys_from_tokens(tokens), sway=sway)
-    fig = _fig(_map_strokes(th, _linear), ink_weight, px)
+             px: float = 560, squared: bool = False) -> str:
+    """Render one token line in the Current Hand (flowing) or, with
+    ``squared=True``, in the Logos hand (faceted carving)."""
+    # the Logos hand is a carved sacred script: it does not ride the living
+    # current, so it is written level (sway 0)
+    th = build(keys_from_tokens(tokens), sway=0 if squared else sway)
+    fig = _fig(_map_strokes(th, _linear), ink_weight, px, squared)
     pal = PALETTES[palette]
     colors = {"#24282E": pal["ink"], "#33707C": pal["acc"],
               "#A65B3F": pal["acc2"], "#8A8478": pal["sub"]}
@@ -900,3 +919,11 @@ def line_svg(tokens: Sequence[str], palette: str = "light-trace",
         parts.append(f'<path d="{e["d"]}" fill="{e["fill"]}"{op}/>')
     parts.append("</svg>")
     return "\n".join(parts)
+
+
+def logos_line_svg(tokens: Sequence[str], palette: str = "light-trace",
+                   ink_weight: float = 0.92, px: float = 560) -> str:
+    """Render one token line in the **Logos hand** — the old sacred carving:
+    the Current Hand's letterforms cut into straight facets, written level."""
+    return line_svg(tokens, palette=palette, ink_weight=ink_weight, px=px,
+                    squared=True)

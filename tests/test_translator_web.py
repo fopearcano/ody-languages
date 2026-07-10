@@ -48,7 +48,7 @@ def test_fragment_has_no_skeleton():
 
 def test_sentinels_present(doc):
     for needle in ("ver ish-ol", "translator", "VOICE", "RHYTHM", "SPEAK",
-                   "SHIP-CARVE", "CURRENT HAND", "hōl-t-eshe=zu"):
+                   "CURRENT HAND", "LOGOS", "hōl-t-eshe=zu"):
         assert needle in doc, needle
 
 
@@ -168,7 +168,7 @@ def test_compose_tables_present(snap):
 def test_client_engine_functions_are_wired(doc):
     # the three translation paths and three audio engines must be in the app
     for fn in ("composeEN", "peelSU", "detectDir", "normIdiom",
-               "playVoice", "playRhythm", "speak", "wordSvg", "lineSvg",
+               "playVoice", "playRhythm", "speak", "logosSvg", "lineSvg",
                "voicedVowel", "createBiquadFilter"):
         assert fn in doc, fn
     # honest fallbacks are labelled

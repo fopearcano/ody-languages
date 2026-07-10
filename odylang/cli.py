@@ -188,11 +188,11 @@ def cmd_write(args):
             sys.exit("give TEXT or --phrase N")
         tokens = tokens_careful(args.text)
         label = args.text
-    if args.hand == "current":
-        from .currenthand import line_svg
-        _emit(line_svg(tokens,
-                       palette="bone-paper" if args.paper else "light-trace"),
-              args.out)
+    if args.hand in ("current", "logos"):
+        from .currenthand import line_svg, logos_line_svg
+        pal = "bone-paper" if args.paper else "light-trace"
+        fn = logos_line_svg if args.hand == "logos" else line_svg
+        _emit(fn(tokens, palette=pal), args.out)
         return
     svg = render_svg([Line(tokens=tokens, label=label)], scale=args.scale)
     _emit(svg, args.out)
@@ -325,12 +325,14 @@ def main(argv=None):
     p = sub.add_parser("write", help="letter a line in Navcher (SVG)")
     p.add_argument("text", nargs="?")
     p.add_argument("--phrase", type=int, help="render phrasebook line N")
-    p.add_argument("--hand", choices=("careful", "bridge", "current"),
-                   default="careful",
-                   help="careful/bridge = the stencil hand; "
-                        "current = the connected pen hand (design 07-E)")
+    p.add_argument("--hand",
+                   choices=("careful", "bridge", "current", "logos"),
+                   default="current",
+                   help="current = the flowing pen hand (default); "
+                        "logos = the old sacred carved hand (squared); "
+                        "careful/bridge = the canonical stencil (docs/03)")
     p.add_argument("--paper", action="store_true",
-                   help="current hand on bone paper instead of dark")
+                   help="current/logos hand on bone paper instead of dark")
     p.add_argument("--scale", type=float, default=0.5)
     p.add_argument("-o", "--out")
     p.set_defaults(fn=cmd_write)

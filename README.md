@@ -68,9 +68,11 @@ suite (~840 tests).
   vowels, a breath-arc = length; upright sigils — T• the filled eye, =zu
   the one straight uniform stroke). The Python engine is byte-exact with
   the design prototype (locked by tests against digests generated from the
-  handoff's own JS). `odylang write --hand current` letters any line;
-  `odylang page record|scrawl|watch|vigil|disc --seed N` renders the five
-  page registers (samples in `examples/currenthand/`).
+  handoff's own JS). `odylang write --hand current` letters any line; its
+  faceted sacred sibling, the **Logos hand** (`--hand logos`), is the same
+  skeleton cut into straight facets — the old carved script of the ancestral
+  tongue. `odylang page record|scrawl|watch|vigil|disc --seed N` renders the
+  five page registers (samples in `examples/currenthand/`).
 * **The translator** (`odylang.translate`, `tts`, `translator_web`, `server`)
   — a full English↔Sūchel translation system you can talk to and hear.
   The engine generates Sūchel *through the grammar* (SOV, the verb carries
@@ -101,9 +103,10 @@ suite (~840 tests).
   dependencies, no network): the shibboleth explorer with live derivation
   traces, searchable lexicons, the 41 lines with playable rhythm and
   Navcher lettering in both hands, the texts, the sisters, and a
-  ship-carve-your-own writer — plus the Current Hand page studies (seeded
-  and tweakable) and a third glyph style for every lettered line on the
-  page. A prebuilt copy ships as
+  write-your-own Navcher box — plus the Current Hand page studies (seeded
+  and tweakable) and a SCRIPT HAND toggle (the flowing **Current Hand** or
+  the old sacred **Logos** carving) on every lettered line. A prebuilt copy
+  ships as
   `examples/odylang-web.html` — just open it in a browser.
 * **Core** — `phonology` (segments, seam-aware syllabification, IPA),
   `word` (the four-rule stress algorithm: *the mood carries the beat*),

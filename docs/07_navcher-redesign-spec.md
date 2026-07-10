@@ -139,7 +139,7 @@ citation form — frequent letters deserve the simplest, fastest shapes:
 - The stencil aesthetic. Straight-only strokes exist because the fleets
   cut letters from hull plate ('stencil-safe'); a display-grade or HUD
   hand may use curves, weights, joins, glow, connection — see the
-  SHIP-CARVE / LIGHT-TRACE toggle in the web codex for a presentational
+  CURRENT HAND / LOGOS toggle in the web codex for a presentational
   precedent. If you add curves, consider what that does to invariant 4:
   =zu's specialness must be re-expressed, not lost.
 - Proportions, stroke count, the em-box metrics, head/foot/slash devices,

@@ -318,9 +318,8 @@ _MARKUP = """
         <button data-d="su2en">SŪ &rarr; EN</button>
       </div>
       <div class="seg" id="hand" role="group" aria-label="Navcher hand">
-        <button data-h="carve" class="on">SHIP-CARVE</button>
-        <button data-h="trace">LIGHT-TRACE</button>
-        <button data-h="current">CURRENT HAND</button>
+        <button data-h="current" class="on">CURRENT HAND</button>
+        <button data-h="logos">LOGOS</button>
       </div>
     </div>
   </header>
@@ -456,44 +455,11 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",
 const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 
 /* =====================================================================
-   Navcher renderer (stencil hands) — geometry embedded from odylang.navcher
+   Navcher — two living hands: the flowing CURRENT HAND (default) and the
+   old sacred LOGOS carving (the same skeleton cut into straight facets).
+   Both are rendered by the CH engine below.
    ===================================================================== */
-let GSTYLE="carve";
-function strokeAttrs(color){
-  return GSTYLE==="carve"
-    ? `fill="none" stroke="${color}" stroke-width="7" stroke-linecap="square" stroke-linejoin="miter"`
-    : `fill="none" stroke="${color}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"`;
-}
-const glowAttrs=color=>`fill="none" stroke="${color}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.16"`;
-function polyMarkup(pts,color){
-  const c=[]; for(let i=0;i<pts.length;i+=2) c.push(pts[i]+","+pts[i+1]);
-  let out="";
-  if(GSTYLE==="trace") out+=`<polyline points="${c.join(" ")}" ${glowAttrs(color)}/>`;
-  out+=`<polyline points="${c.join(" ")}" ${strokeAttrs(color)}/>`;
-  if(GSTYLE==="trace") for(let i=0;i<pts.length;i+=2) out+=`<circle cx="${pts[i]}" cy="${pts[i+1]}" r="3" fill="${color}"/>`;
-  return out;
-}
-function glyphMarkup(key,x,scale,color,long){
-  const g=D.GLYPHS[key]; if(!g) return {m:"",w:0};
-  let out=`<g transform="translate(${x},0) scale(${scale})">`;
-  for(const pts of g.strokes) out+=polyMarkup(pts,color);
-  for(const d of g.paths){ if(GSTYLE==="trace") out+=`<path d="${d}" ${glowAttrs(color)}/>`; out+=`<path d="${d}" ${strokeAttrs(color)}/>`; }
-  for(const d of g.fills){ if(GSTYLE==="trace") out+=`<path d="${d}" fill="${color}" opacity="0.18" transform="translate(-2,-2) scale(1.02)"/>`; out+=`<path d="${d}" fill="${color}"/>`; }
-  if(long){ const L=D.LONGBAR; out+=polyMarkup([L[0],L[1],L[2],L[3]],color); }
-  return {m:out+"</g>", w:g.w*scale};
-}
-function wordSvg(tokens,scale,color){
-  let x=6,body="";
-  for(const t of tokens){
-    if(t===" "){ x+=100*scale; continue; }
-    let key=t,long=false;
-    if(D.SIGIL[t]) key=D.SIGIL[t];
-    else if(t.endsWith(":")){ key=t.slice(0,-1); long=true; }
-    const r=glyphMarkup(key,x,scale,color,long); body+=r.m; x+=r.w;
-  }
-  const h=Math.ceil(150*scale)+8;
-  return `<svg viewBox="0 0 ${Math.ceil(x+6)} ${Math.ceil(140*scale)+8}" width="${Math.ceil(x+6)}" height="${h}" role="img">`+body+`</svg>`;
-}
+let GSTYLE="current";
 /* careful-hand tokenizer for free text (mirror of navcher.tokens_careful) */
 function tokenizeCareful(text){
   const out=[],s=text.toLowerCase();
@@ -527,14 +493,15 @@ const CH=(function(){
   const G=D.CURRENT.glyphs, ARCPEN=D.CURRENT.arcpen, LEADIN=D.CURRENT.leadin, LEADOUT=D.CURRENT.leadout;
   const SLANT=0.10;
   const cr1=(a,b,c,d,t)=>{const t2=t*t,t3=t2*t;return 0.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);};
-  function ribbon(pts,f){
+  const lin=(a,b,c,d,t)=>b+(c-b)*t;  /* Logos: straight facets */
+  function ribbon(pts,f,squared){
     const n=pts.length; if(n<2) return "";
     const g=i=>pts[i<0?0:(i>n-1?n-1:i)];
-    const S=[],SEG=8;
+    const S=[],SEG=squared?1:8,ip=squared?lin:cr1;
     for(let i=0;i<n-1;i++){
       const p0=g(i-1),p1=g(i),p2=g(i+1),p3=g(i+2),top=(i===n-2)?SEG:SEG-1;
       for(let t=0;t<=top;t++){const u=t/SEG;
-        S.push([cr1(p0[0],p1[0],p2[0],p3[0],u),cr1(p0[1],p1[1],p2[1],p3[1],u),Math.max(0.3,cr1(p0[2],p1[2],p2[2],p3[2],u))*f]);}
+        S.push([ip(p0[0],p1[0],p2[0],p3[0],u),ip(p0[1],p1[1],p2[1],p3[1],u),Math.max(0.3,ip(p0[2],p1[2],p2[2],p3[2],u))*f]);}
     }
     const L=[],R=[];
     for(let i=0;i<S.length;i++){
@@ -580,30 +547,34 @@ const CH=(function(){
   }
   const linear=(s,y)=>[s,y];
   const mapStrokes=(th,fn)=>th.strokes.map(st=>({color:st.color,pts:st.pts.map(p=>{const q=fn(p[0],p[1]);return [q[0],q[1],p[2]];})}));
+  /* living hand: bone-white ink.  Logos hand: illuminated gold, sacred. */
   const PAPER={ink:"#E8E3D6",acc:"#6fa8ff",acc2:"#e8362a",sub:"#8c8a82"};
-  function fig(strokes,inkW,px){
+  const GOLD={ink:"#f5d76e",acc:"#e8362a",acc2:"#e8362a",sub:"#8c8a82"};
+  function fig(strokes,inkW,px,squared,cmap){
     let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
     const elems=strokes.map(st=>{st.pts.forEach(p=>{x0=Math.min(x0,p[0]-p[2]);y0=Math.min(y0,p[1]-p[2]);x1=Math.max(x1,p[0]+p[2]);y1=Math.max(y1,p[1]+p[2]);});
-      return {d:ribbon(st.pts,inkW),fill:PAPER[st.color]||PAPER.ink};});
+      return {d:ribbon(st.pts,inkW,squared),fill:cmap[st.color]||cmap.ink};});
     const pad=18,bw=(x1-x0)+2*pad,bh=(y1-y0)+2*pad,py=px*bh/bw;
     return {vb:(x0-pad).toFixed(0)+" "+(y0-pad).toFixed(0)+" "+bw.toFixed(0)+" "+bh.toFixed(0),elems,w:px,h:py};
   }
   const TOK={"@T":"mT","@T-":"mTm","@T+":"mTp","@Ts":"mTs","@F":"mF","=ka":"aka","=mi":"ami","=zu":"azu","|":"gap","?":"q"};
-  function lineSvg(tokens){
+  function _svg(tokens,squared,cmap){
     const keys=tokens.map(t=>TOK[t]||(t.endsWith(":")?t:t)).filter(k=>k===" "||k==="gap"||G[k.charAt(k.length-1)===":"?k.slice(0,-1):k]);
     const th=build(keys.length?keys:[" "]);
-    const F=fig(mapStrokes(th,linear),0.85, Math.min(560, Math.max(120, th.total*0.5)));
+    const F=fig(mapStrokes(th,linear),squared?0.92:0.85, Math.min(560, Math.max(120, th.total*0.5)),squared,cmap);
     let out=`<svg viewBox="${F.vb}" width="${F.w.toFixed(0)}" height="${F.h.toFixed(0)}" role="img">`;
     F.elems.forEach(e=>{out+=`<path d="${e.d}" fill="${e.fill}"/>`;});
     return out+"</svg>";
   }
-  return {lineSvg};
+  function lineSvg(tokens){ return _svg(tokens,false,PAPER); }
+  function logosSvg(tokens){ return _svg(tokens,true,GOLD); }
+  return {lineSvg,logosSvg};
 })();
 
 function stripSvg(tokens){
   const clean=(tokens||[]).filter(t=>t!=null);
-  if(GSTYLE==="current"){ try{ return CH.lineSvg(clean); }catch(e){ return ""; } }
-  return wordSvg(clean,0.30,"#f5d76e");
+  try{ return GSTYLE==="logos" ? CH.logosSvg(clean) : CH.lineSvg(clean); }
+  catch(e){ return ""; }
 }
 
 /* =====================================================================

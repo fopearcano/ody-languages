@@ -91,3 +91,37 @@ def test_specimen_weaves_attested_words():
     for w in (ch.W["enmai"], ch.W["zukad"], ch.W["jel"], ch.W["suchel"],
               ch.W["holt"]):
         assert "|".join(w) in joined
+
+
+def test_logos_hand_is_faceted_not_curved():
+    """The Logos hand shares the Current Hand's skeleton but renders straight
+    facets (linear) instead of Catmull-Rom curves — a different SVG path for
+    the same tokens."""
+    from odylang import navcher
+    toks = navcher.tokens_careful("sūchel jel")
+    current = ch.line_svg(toks)
+    logos = ch.logos_line_svg(toks)
+    assert current != logos
+    assert logos.startswith("<svg") and logos.rstrip().endswith("</svg>")
+    # squared ribbons carry fewer vertices than the 8x-upsampled smooth ones
+    assert logos.count(" L") < current.count(" L")
+
+
+def test_logos_is_deterministic():
+    from odylang import navcher
+    toks = navcher.tokens_careful("enmai ver ish-ol")
+    assert ch.logos_line_svg(toks) == ch.logos_line_svg(toks)
+
+
+def test_ribbon_squared_differs():
+    pts = [[0, 88, 4], [30, 50, 9], [60, 90, 5], [100, 88, 4]]
+    assert ch.ribbon(pts, 1.0, squared=False) != ch.ribbon(pts, 1.0, squared=True)
+
+
+def test_studies_unchanged_by_squared_default():
+    """The five page studies still render with the smooth (curved) ribbon —
+    the byte-lock against the prototype must not regress."""
+    figs = ch.studies(11, 0.6)
+    # a spot check: the record page still produces the same element count as
+    # the reference fixture (full byte-lock is test_pages_byte_exact_...)
+    assert len(figs["record"].elems) == REF["11"][0]["n"]
