@@ -178,15 +178,30 @@ def cmd_write(args):
     if args.phrase is not None:
         from .phrasebook import line
         l = line(args.phrase)
-        tokens = _sentence_tokens(l.sentence, args.hand)
+        hand = "bridge" if args.hand == "bridge" else "careful"
+        tokens = _sentence_tokens(l.sentence, hand)
         label = l.sentence.text()
     else:
         if not args.text:
             sys.exit("give TEXT or --phrase N")
         tokens = tokens_careful(args.text)
         label = args.text
+    if args.hand == "current":
+        from .currenthand import line_svg
+        _emit(line_svg(tokens,
+                       palette="bone-paper" if args.paper else "light-trace"),
+              args.out)
+        return
     svg = render_svg([Line(tokens=tokens, label=label)], scale=args.scale)
     _emit(svg, args.out)
+
+
+def cmd_page(args):
+    from .currenthand import PAGE_META, page_svg
+    if args.register not in PAGE_META:
+        sys.exit("registers: " + ", ".join(PAGE_META))
+    _emit(page_svg(args.register, seed=args.seed, ink_weight=args.ink),
+          args.out)
 
 
 def cmd_chart(args):
@@ -253,10 +268,24 @@ def main(argv=None):
     p = sub.add_parser("write", help="letter a line in Navcher (SVG)")
     p.add_argument("text", nargs="?")
     p.add_argument("--phrase", type=int, help="render phrasebook line N")
-    p.add_argument("--hand", choices=("careful", "bridge"), default="careful")
+    p.add_argument("--hand", choices=("careful", "bridge", "current"),
+                   default="careful",
+                   help="careful/bridge = the stencil hand; "
+                        "current = the connected pen hand (design 07-E)")
+    p.add_argument("--paper", action="store_true",
+                   help="current hand on bone paper instead of dark")
     p.add_argument("--scale", type=float, default=0.5)
     p.add_argument("-o", "--out")
     p.set_defaults(fn=cmd_write)
+
+    p = sub.add_parser("page", help="a Current Hand page study (SVG): the "
+                                    "same specimen in five registers")
+    p.add_argument("register",
+                   help="record | scrawl | watch | vigil | disc")
+    p.add_argument("--seed", type=int, default=11)
+    p.add_argument("--ink", type=float, default=0.6)
+    p.add_argument("-o", "--out")
+    p.set_defaults(fn=cmd_page)
 
     p = sub.add_parser("chart", help="the full Navcher glyph chart (SVG)")
     p.add_argument("-o", "--out")

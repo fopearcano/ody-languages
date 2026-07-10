@@ -81,3 +81,14 @@ def test_cli_web(tmp_path, capsys):
     main(["web", "-o", str(out)])
     assert out.exists() and out.stat().st_size > 50_000
     assert "wrote" in capsys.readouterr().out
+
+
+def test_current_hand_in_payload(data, doc):
+    ch = data["current"]
+    assert len(ch["glyphs"]) == 32
+    assert ch["glyphs"]["b"]["dropAt"] == 86       # voicing = the drop
+    assert len(ch["glyphs"]["h"]["pen"]) == 2      # the ink runs dry
+    assert "penAcc2" in ch["glyphs"]["mTs"]        # the filled eye
+    for needle in ("The record page", "The vigil trace", "The liturgy disc",
+                   "CURRENT HAND", "PAGE STUDIES"):
+        assert needle in doc, needle

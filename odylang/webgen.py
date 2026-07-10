@@ -221,6 +221,30 @@ def collect() -> Dict:
         "endonym": ENDONYM if isinstance(ENDONYM, str) else str(ENDONYM),
     }
 
+    # -- the Current Hand (design handoff 07-E) ---------------------------------
+    from .currenthand import ARCPEN, HAND, LEADIN, LEADOUT
+
+    def _pen_glyph(g):
+        d = {"w": g.w, "pen": [[list(pt) for pt in pn] for pn in g.pen]}
+        if g.drop_at is not None:
+            d["dropAt"] = g.drop_at
+        if g.vowel:
+            d["vowel"] = True
+        if g.sigil:
+            d["sigil"] = True
+        if g.pen_acc:
+            d["penAcc"] = [[list(pt) for pt in pn] for pn in g.pen_acc]
+        if g.pen_acc2:
+            d["penAcc2"] = [[list(pt) for pt in pn] for pn in g.pen_acc2]
+        if g.pen_sub:
+            d["penSub"] = [[list(pt) for pt in pn] for pn in g.pen_sub]
+        return d
+
+    current = {"glyphs": {k: _pen_glyph(g) for k, g in HAND.items()},
+               "arcpen": [list(pt) for pt in ARCPEN],
+               "leadin": [list(pt) for pt in LEADIN],
+               "leadout": [list(pt) for pt in LEADOUT]}
+
     # -- script --------------------------------------------------------------------
     script = {
         "glyphs": {k: {"w": g.w, "strokes": [list(s) for s in g.strokes],
@@ -255,6 +279,7 @@ def collect() -> Dict:
         "nubhel": nubhel,
         "sisters": sisters,
         "lorkel": lorkel,
+        "current": current,
         "script": script,
     }
 
@@ -272,7 +297,8 @@ _MARKUP = """
   <nav id="nav" aria-label="codex sections"></nav>
   <div class="styletog"><span class="lbl">GLYPH STYLE</span>
     <button id="st-carve" class="stbtn on">SHIP-CARVE</button>
-    <button id="st-trace" class="stbtn">LIGHT-TRACE</button></div>
+    <button id="st-trace" class="stbtn">LIGHT-TRACE</button>
+    <button id="st-current" class="stbtn">CURRENT HAND</button></div>
   <div class="railfoot">one proto · two fleets · four mouths<br>
   YOU CANNOT SPEAK WITHOUT<br>CONJUGATING THE TRUTH</div>
 </aside>
@@ -316,6 +342,28 @@ body{background:var(--bg);color:var(--ink);font-family:var(--mono);
   letter-spacing:.2em;padding:4px 10px;border:1px solid var(--goldline);color:var(--dim)}
 .stbtn.on{color:var(--bg);background:var(--gold);border-color:var(--gold)}
 .stbtn:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+.pgcard{background:#0E1218;border:1px solid rgba(232,227,214,0.13);border-radius:3px;
+  padding:24px 26px;display:flex;flex-direction:column;gap:12px}
+.pgcard .rowhead{display:flex;align-items:center;gap:12px}
+.pgchip{font-size:12px;font-weight:600;letter-spacing:.08em;color:#07090C;
+  background:#7FB4C0;border-radius:2px;padding:2px 8px}
+.pgmeta{font-size:11px;letter-spacing:.16em;color:#7FB4C0}
+.pgcard h4{margin:0;font-size:20px;letter-spacing:-.01em;color:#E8E3D6;
+  font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+.pgstory{margin:0;font-size:13px;line-height:1.6;color:#8B93A0;
+  font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+.pgpaper{background:#EDE8DC;border:1px solid rgba(34,38,43,0.3);border-radius:2px;
+  padding:28px 28px 20px;display:flex;flex-direction:column;gap:16px}
+.pgpaper .phead{display:flex;justify-content:space-between;font-size:10px;
+  letter-spacing:.2em;color:#6B7078;border-bottom:1px solid rgba(34,38,43,0.25);
+  padding-bottom:8px}
+.pgpaper .pfig{display:flex;justify-content:center;overflow-x:auto}
+.pgpaper .pcol{border-top:1px solid rgba(34,38,43,0.25);padding-top:8px;
+  font-size:9.5px;letter-spacing:.14em;color:#6B7078}
+.pgctl{display:flex;gap:18px;align-items:center;flex-wrap:wrap;color:var(--dim);font-size:11px}
+.pgctl input[type=number]{width:64px;background:var(--bg);border:1px solid var(--goldline);
+  color:var(--ink);font-family:var(--mono);padding:4px 8px}
+.pgctl input[type=range]{accent-color:#7FB4C0}
 .railfoot{margin-top:auto;color:var(--faint);font-size:9px;letter-spacing:.15em;line-height:2}
 main{flex:1;min-width:0;padding:28px 30px 60px}
 .frame{position:relative;background:var(--panel);padding:26px 28px;
@@ -511,6 +559,9 @@ function wordSvg(tokens,scale,color){
   const h=Math.ceil(150*scale)+8;
   return `<svg viewBox="0 0 ${Math.ceil(x+6)} ${Math.ceil(140*scale)+8}"`+
          ` width="${Math.ceil(x+6)}" height="${h}" role="img">`+body+`</svg>`;
+}
+function stripSvg(tokens,scale,color){
+  return GSTYLE==="current" ? CH.lineSvg(tokens) : wordSvg(tokens,scale,color);
 }
 /* careful-hand tokenizer for the live writer (mirror of navcher.tokens_careful) */
 function tokenizeCareful(text){
@@ -714,7 +765,7 @@ function rPhrase(v){
   v.innerHTML=html;
   for(const l of P.lines){
     const box=v.querySelector(`#navc-${l.n}`);
-    if(box) box.innerHTML=wordSvg(l.tokC,0.28,l.star?"#e8362a":"#f5d76e");
+    if(box) box.innerHTML=stripSvg(l.tokC,0.28,l.star?"#e8362a":"#f5d76e");
   }
   v.querySelectorAll(".play").forEach(b=>b.onclick=()=>{
     const l=P.lines.find(x=>x.n===+b.dataset.n); playSyls(l.syl);
@@ -723,7 +774,7 @@ function rPhrase(v){
     const l=P.lines.find(x=>x.n===+b.dataset.n);
     const box=v.querySelector(`#navc-${l.n}`);
     const bridge=b.dataset.h==="B";
-    box.innerHTML=wordSvg(bridge?l.tokB:l.tokC,0.28,
+    box.innerHTML=stripSvg(bridge?l.tokB:l.tokC,0.28,
       bridge?"#6fa8ff":(l.star?"#e8362a":"#f5d76e"));
     b.parentElement.querySelectorAll(".hand").forEach(x=>x.classList.toggle("on",x===b));
   });
@@ -874,10 +925,10 @@ function rScript(v){
   v.querySelectorAll(".gcard").forEach(card=>{
     const color=card.classList.contains("sp")?"#e8362a":"#f5d76e";
     const tok=card.dataset.k+(card.dataset.long==="1"?":":"");
-    card.querySelector(".g").innerHTML=wordSvg([tok],0.42,color);
+    card.querySelector(".g").innerHTML=stripSvg([tok],0.42,color);
   });
   const input=v.querySelector("#writer-in"), out=v.querySelector("#writer-out");
-  const draw=()=>{ out.innerHTML=wordSvg(tokenizeCareful(input.value),0.42,"#f5d76e"); };
+  const draw=()=>{ out.innerHTML=stripSvg(tokenizeCareful(input.value),0.42,"#f5d76e"); };
   input.oninput=draw; draw();
 }
 
@@ -910,6 +961,386 @@ function rFamily(v){
   });
 }
 
+
+/* ---------- The Current Hand (design handoff 07-E) ----------------------
+   One unbroken pressured line per word, riding a current.  Pen data comes
+   from odylang.currenthand via the payload; the engine below is the
+   handoff prototype's own logic (Navcher Page Studies.dc.html), adapted. */
+const CH = (function(){
+  const G = D.current.glyphs, ARCPEN = D.current.arcpen,
+        LEADIN = D.current.leadin, LEADOUT = D.current.leadout;
+  const SLANT=0.10, LINEH=152, MAXU=1500;
+  const cr1=(a,b,c,d,t)=>{const t2=t*t,t3=t2*t;return 0.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);};
+  function ribbon(pts,f){
+    const n=pts.length; if(n<2) return '';
+    const g=i=>pts[i<0?0:(i>n-1?n-1:i)];
+    const S=[],SEG=8;
+    for(let i=0;i<n-1;i++){
+      const p0=g(i-1),p1=g(i),p2=g(i+1),p3=g(i+2);
+      const top=(i===n-2)?SEG:SEG-1;
+      for(let t=0;t<=top;t++){
+        const u=t/SEG;
+        S.push([cr1(p0[0],p1[0],p2[0],p3[0],u),cr1(p0[1],p1[1],p2[1],p3[1],u),
+                Math.max(0.3,cr1(p0[2],p1[2],p2[2],p3[2],u))*f]);
+      }
+    }
+    const L=[],R=[];
+    for(let i=0;i<S.length;i++){
+      const a=S[i>0?i-1:0],b=S[i<S.length-1?i+1:S.length-1];
+      const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1;
+      const nx=-dy/len,ny=dx/len,hw=S[i][2]/2;
+      L.push((S[i][0]+nx*hw).toFixed(1)+','+(S[i][1]+ny*hw).toFixed(1));
+      R.push((S[i][0]-nx*hw).toFixed(1)+','+(S[i][1]-ny*hw).toFixed(1));
+    }
+    R.reverse();
+    return 'M'+L.join(' L')+' L'+R.join(' L')+' Z';
+  }
+  const DROPPEN=cx=>[[cx,100,0.8],[cx+1.5,106,5.5],[cx+0.8,113,8],[cx-1,117,3.2]];
+  const sxOf=g=>g.sigil?1:(g.vowel?g.w/60:g.w/100);
+  const wOf=k=>G[k.charAt(k.length-1)===':'?k.slice(0,-1):k].w;
+  const isSig=k=>!!(G[k]&&G[k].sigil);
+  function build(keys,o){
+    o=o||{};
+    const swayA=o.sway!=null?o.sway:0.4, ph=o.swayPhase||0;
+    const swayF=x=>swayA*(3.4*Math.sin((x+ph)/56)+1.7*Math.sin((x+ph)/19+2.1));
+    const strokes=[]; let s=0,inRun=false,wordStart=0;
+    const pushPen=(pen,sx,off,sig,color,s0)=>strokes.push({color:color||'ink',rigid:!!sig,s0:s0||0,
+      pts:pen.map(pt=>{
+        const x=pt[0],y=pt[1],w=pt[2];
+        const S=x*sx+(sig?0:(88-y)*SLANT)+off;
+        let Y=y+(sig?0:swayF(S));
+        if(o.wordFall&&!sig) Y+=(o.fallRate!=null?o.fallRate:0.14)*Math.max(0,S-wordStart);
+        return [S,Y,w];
+      })});
+    keys.forEach(k=>{
+      if(k===' '){
+        if(o.spaceCarrier){pushPen([[0,88,4.2],[31,87.2,4.2],[62,88,4.2]],1,s,false);s+=62;return;}
+        if(inRun&&!o.noTails)pushPen(LEADOUT,1,s,false); inRun=false; s+=62; return;
+      }
+      if(isSig(k)){
+        if(inRun&&!o.noTails){pushPen(LEADOUT,1,s,false);inRun=false;}
+        s+=18;
+        const g=G[k],s0=s+30;
+        (g.pen||[]).forEach(pn=>pushPen(pn,1,s,true,'ink',s0));
+        (g.penAcc||[]).forEach(pn=>pushPen(pn,1,s,true,'acc2',s0));
+        (g.penAcc2||[]).forEach(pn=>pushPen(pn,1,s,true,'acc2',s0));
+        (g.penSub||[]).forEach(pn=>pushPen(pn,1,s,true,'sub',s0));
+        s+=wOf(k)+18; return;
+      }
+      if(!inRun){wordStart=s;if(!o.noTails)pushPen(LEADIN,1,s,false);inRun=true;}
+      const long=k.charAt(k.length-1)===':';
+      const g=G[long?k.slice(0,-1):k]; if(!g){return;}
+      const sx=sxOf(g);
+      (g.pen||[]).forEach(pn=>pushPen(pn,sx,s,false));
+      if(long)pushPen(ARCPEN,sx,s,false);
+      if(g.dropAt!=null)pushPen(DROPPEN(g.dropAt),1,s,false,'acc');
+      s+=wOf(k);
+    });
+    if(inRun&&!o.noTails)pushPen(LEADOUT,1,s,false);
+    return {strokes,total:s};
+  }
+  const mapStrokes=(th,fn,rigidFn)=>th.strokes.map(st=>({color:st.color,op:st.op,ink:st.ink,
+    pts:st.pts.map(p=>{const q=(st.rigid&&rigidFn)?rigidFn(p[0],p[1],st.s0):fn(p[0],p[1]);return [q[0],q[1],p[2]];})}));
+  const linear=(s,y)=>[s,y];
+  const mul32=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};
+  /* specimen: frequency-faithful, seeded */
+  const ONS=[['n',70],['l',60],['v',58],['r',55],['m',52],['t',46],['d',30],['k',30],['sh',26],['s',20],['j',16],['z',10],['p',5],['g',4],['ch',3]];
+  const VOWT=[['e',140],['a',110],['u',74],['i',58],['o',53]];
+  const CODA=[['n',30],['l',26],['r',18],['d',13],['s',9],['k',8],['m',8]];
+  const W={hail1:['v','e','r'],hail2:['i','sh','o','l'],enmai:['e','n','m','a','i'],zukad:['z','u','k','a','d'],jel:['j','e','l'],suchel:['s','u:','ch','e','l'],hau:['h','a','u'],holt:['h','o:','l','t'],ve:['v','e']};
+  const PARAS=[[0,1,2],[3,4,5],[6,7,8]];
+  function makeSents(rand){
+    const wpick=tbl=>{let tot=0;for(const p of tbl)tot+=p[1];let r=rand()*tot;for(const p of tbl){if((r-=p[1])<0)return p[0];}return tbl[0][0];};
+    const genWord=()=>{
+      const r0=rand(); const nsyl=r0<0.2?1:(r0<0.75?2:3);
+      const keys=[];
+      for(let i=0;i<nsyl;i++){
+        if(i===0&&rand()<0.12)keys.push('h');
+        else if(!(i===0&&rand()<0.15))keys.push(wpick(ONS));
+        keys.push(wpick(VOWT)+(rand()<0.15?':':''));
+        if(rand()<(i===nsyl-1?0.45:0.2))keys.push(wpick(CODA));
+      }
+      return keys;
+    };
+    const gen=n=>{const a=[];for(let i=0;i<n;i++)a.push(genWord());return a;};
+    const ins=(arr,at,w)=>{arr.splice(at,0,w);return arr;};
+    return [
+      {words:[W.hail1,W.hail2]},
+      {words:ins(gen(4),1,W.enmai),mood:'mT',anchor:'aka'},
+      {words:ins(gen(4),2,W.zukad),mood:'mTm',anchor:'ami'},
+      {words:ins(gen(3),2,W.jel),mood:'mT'},
+      {words:ins(gen(3),1,W.suchel),mood:'mTp',anchor:'aka',q:true},
+      {words:gen(4),mood:'mF',anchor:'aka'},
+      {words:ins(gen(3),2,W.hau),mood:'mT',anchor:'ami'},
+      {words:[W.holt],mood:'mTs',anchor:'azu'},
+      {words:[W.ve],mood:'mT',anchor:'ami'}
+    ];
+  }
+  const realize=(S,hand)=>{
+    const words=S.words.map(w=>w.slice());
+    if(S.mood==='mF')words.unshift(['v','o']);
+    if(hand==='careful'){
+      const suf=({mT:['a'],mTm:['i','m'],mTp:['u','r'],mTs:['e','sh','e'],mF:['a']})[S.mood]||[];
+      const anc=({aka:['k','a'],ami:['m','i'],azu:['z','u']})[S.anchor]||[];
+      if(suf.length||anc.length)words[words.length-1]=words[words.length-1].concat(suf,anc);
+    }else{
+      const tail=[];
+      if(S.mood)tail.push(S.mood);
+      if(S.anchor)tail.push(S.anchor);
+      if(tail.length)words.push(tail);
+    }
+    if(S.q)words.push(['q']);
+    return words;
+  };
+  const wordUnits=keys=>keys.reduce((a,k)=>a+wOf(k)+(isSig(k)?36:0),0)+(keys.some(k=>!isSig(k))?46:0);
+  const flow=(sents,hand,maxU)=>{
+    const stream=[];
+    PARAS.forEach((para,pi)=>{
+      para.forEach(si=>{realize(sents[si],hand).forEach(w=>stream.push(w));});
+      if(pi<PARAS.length-1)stream.push(['gap']);
+    });
+    const lines=[]; let cur=[],u=0;
+    stream.forEach(w=>{
+      const wu=wordUnits(w);
+      if(u>0&&u+62+wu>maxU){lines.push(cur);cur=[];u=0;}
+      if(cur.length){cur.push(' ');u+=62;}
+      w.forEach(k=>cur.push(k)); u+=wu;
+    });
+    if(cur.length)lines.push(cur);
+    return lines;
+  };
+  const PAPER={ink:'#24282E',acc:'#33707C',acc2:'#A65B3F',sub:'#8A8478'};
+  function fig(strokes,inkW,px){
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    const elems=strokes.map(st=>{
+      st.pts.forEach(p=>{x0=Math.min(x0,p[0]-p[2]);y0=Math.min(y0,p[1]-p[2]);
+                         x1=Math.max(x1,p[0]+p[2]);y1=Math.max(y1,p[1]+p[2]);});
+      const col=st.ink||PAPER[st.color]||PAPER.ink;
+      return {d:ribbon(st.pts,inkW),fill:col,op:st.op};
+    });
+    const pad=20,bw=(x1-x0)+2*pad,bh=(y1-y0)+2*pad,py=px*bh/bw;
+    return {vb:(x0-pad).toFixed(0)+' '+(y0-pad).toFixed(0)+' '+bw.toFixed(0)+' '+bh.toFixed(0),
+            elems,w:px,h:py};
+  }
+  const shift=(strokes,dy)=>strokes.forEach(st=>st.pts.forEach(p=>{p[1]+=dy;}));
+  function figRecord(sents,inkW){
+    const all=[];
+    flow(sents,'careful',MAXU).forEach((lineKeys,i)=>{
+      all.push({color:'sub',op:0.32,pts:[[-30,88+i*LINEH,1.3],[MAXU/2,88+i*LINEH,1.3],[MAXU+30,88+i*LINEH,1.3]]});
+      const m=mapStrokes(build(lineKeys,{sway:0}),linear);
+      shift(m,i*LINEH); m.forEach(st=>all.push(st));
+    });
+    return fig(all,inkW,580);
+  }
+  function figScrawl(sents,inkW,seed){
+    const rnd=mul32(seed*331+7);
+    const R2=(a,b)=>a+(b-a)*rnd();
+    const all=[],stream=[];
+    PARAS.forEach((para,pi)=>{
+      para.forEach(si=>realize(sents[si],'bridge').forEach(w=>stream.push(w)));
+      if(pi<PARAS.length-1)stream.push(['gap']);
+    });
+    let x=0,lineY=0,wi=0;
+    const strikeAt=7+Math.floor(rnd()*5);
+    const place=(w,kw,inkK,strike)=>{
+      const sigW=w.every(k=>isSig(k));
+      const wu0=wordUnits(w)*kw;
+      if(x>0&&x+50+wu0>MAXU){
+        if(x+50+wu0<MAXU*1.06&&!sigW)kw*=0.9;
+        else{lineY+=LINEH*R2(0.88,1.15);x=R2(0,46);}
+      }
+      if(x>0)x+=R2(38,78);
+      const th=build(w,sigW?{}:{wordFall:true,fallRate:R2(0.04,0.22),sway:R2(0.5,1.5),swayPhase:R2(0,500)});
+      const dy=sigW?0:R2(-9,9);
+      const x0=x;
+      const m=mapStrokes(th,(s2,y)=>[x0+s2*kw,lineY+dy+88+(y-88)*kw],
+                            (S2,y,s0)=>[x0+s0*kw+(S2-s0),lineY+dy+y]);
+      m.forEach(st=>{st.pts.forEach(p=>{p[2]*=kw*inkK;});all.push(st);});
+      const wuF=wordUnits(w)*kw;
+      if(strike)all.push({color:'ink',pts:[[x0-12,lineY+dy+83,2.4],[x0+wuF/2,lineY+dy+93,3.2],[x0+wuF+14,lineY+dy+80,1.8]]});
+      x+=wuF;
+    };
+    stream.forEach(w=>{
+      const sigW=w.every(k=>isSig(k));
+      const doStrike=!sigW&&wi===strikeAt;
+      place(w,sigW?1:R2(0.85,1.15),sigW?1:R2(0.8,1.1),doStrike);
+      if(doStrike)place(w,R2(0.9,1.1),R2(0.85,1.05),false);
+      if(!sigW)wi++;
+    });
+    return fig(all,inkW,580);
+  }
+  function figWatch(sents,inkW,seed){
+    const all=[],rnd=mul32(seed*97+3);
+    [0,1,2,3,4,5,6,7,8].forEach((si,ln)=>{
+      const S=sents[si];
+      const mS=mapStrokes(build([S.anchor||'ami'],{}),linear);
+      shift(mS,ln*LINEH); mS.forEach(st=>all.push(st));
+      const words=realize({words:S.words,mood:S.mood,q:S.q},'bridge');
+      const keys=[]; words.forEach((w,i)=>{if(i)keys.push(' ');w.forEach(k=>keys.push(k));});
+      const k=si===0?0.55:0.68+rnd()*0.14;
+      const m=mapStrokes(build(keys,{}),(s2,y)=>[150+s2*k,y],(S2,y,s0)=>[150+s0*k+(S2-s0),y]);
+      if(si===0)m.forEach(st=>{if(st.color==='ink')st.ink='#39597A';});
+      shift(m,ln*LINEH); m.forEach(st=>all.push(st));
+    });
+    return fig(all,inkW,580);
+  }
+  function figVigil(sents,inkW){
+    const keys=[];
+    flow(sents,'bridge',1e9).forEach(line=>line.forEach(k=>keys.push(k)));
+    const L=MAXU,gapH=LINEH,strokes=[];
+    let line=0,sl=0,dir=1,gs=0,curW=0;
+    const swayF=x=>0.4*(3.4*Math.sin(x/56)+1.7*Math.sin(x/19+2.1));
+    const put=(pen,sx,sig,color)=>strokes.push({color:color||'ink',
+      pts:pen.map(pt=>{
+        const x=pt[0],y=pt[1],w=pt[2];
+        const S=x*sx+(sig?0:(88-y)*SLANT);
+        const X=sig?((dir>0?sl:L-sl-curW)+S):(dir>0?sl+S:L-sl-S);
+        return [X,line*gapH+y+(sig?0:swayF(gs+S)),w];
+      })});
+    const turn=()=>{
+      const R=gapH/2,cy=line*gapH+88+R,mx=dir>0?L:0,sgn=dir>0?1:-1;
+      const pts=[];
+      for(let a=-90;a<=90;a+=18){const r=a*Math.PI/180;pts.push([mx+sgn*R*Math.cos(r),cy+R*Math.sin(r),a===0?3.2:4.2]);}
+      strokes.push({color:'ink',pts});
+      line++;dir=-dir;sl=0;gs+=Math.PI*R;
+    };
+    keys.forEach(k=>{
+      if(k===' '){
+        if(sl+50>L){turn();return;}
+        put([[0,88,4.2],[25,87.4,4.2],[50,88,4.2]],1,false);sl+=50;gs+=50;return;
+      }
+      const g=G[k.charAt(k.length-1)===':'?k.slice(0,-1):k];
+      curW=wOf(k);
+      const w=curW+(g.sigil?24:0);
+      if(sl+w>L){put([[0,88,4.2],[(L-sl)/2,87.5,4.2],[L-sl,88,4.2]],1,false);gs+=(L-sl);sl=L;turn();}
+      if(g.sigil)sl+=12;
+      const sx=sxOf(g);
+      (g.pen||[]).forEach(pn=>put(pn,sx,g.sigil));
+      (g.penAcc||[]).forEach(pn=>put(pn,sx,g.sigil,'acc2'));
+      (g.penAcc2||[]).forEach(pn=>put(pn,sx,g.sigil,'acc2'));
+      (g.penSub||[]).forEach(pn=>put(pn,sx,g.sigil,'sub'));
+      if(k.charAt(k.length-1)===':')put(ARCPEN,sx,false);
+      if(g.dropAt!=null)put(DROPPEN(g.dropAt),1,false,'acc');
+      sl+=curW+(g.sigil?12:0);gs+=curW;
+    });
+    return fig(strokes,inkW,580);
+  }
+  function figDisc(sents,inkW){
+    const ringSent=S=>{
+      const keys=[];
+      realize(S,'careful').forEach((w,i)=>{if(i)keys.push(' ');w.forEach(k=>keys.push(k));});
+      return build(keys,{spaceCarrier:true,noTails:true,sway:0});
+    };
+    const rings=[{words:[W.jel]},sents[3],sents[8],sents[0],sents[7],sents[1],sents[4]]
+      .map(S=>ringSent(S)).sort((a,b)=>a.total-b.total);
+    const disc=[]; let prevR=0;
+    rings.forEach(th=>{
+      const R=Math.max(prevR+95,th.total/(2*Math.PI));
+      prevR=R;
+      const need=2*Math.PI*R,padU=need-th.total,half=padU/2;
+      th.strokes.forEach(st=>{st.s0+=half;st.pts.forEach(p=>{p[0]+=half;});});
+      if(padU>8){
+        th.strokes.push({color:'ink',pts:[[0,88,4.2],[half/2,87.6,4.2],[half,88,4.2]]});
+        th.strokes.push({color:'ink',pts:[[need-half,88,4.2],[need-half/2,87.6,4.2],[need,88,4.2]]});
+      }
+      const fn=(s2,y)=>{const a=-Math.PI/2+(s2/need)*2*Math.PI,r=R+(88-y);return [r*Math.cos(a),r*Math.sin(a)];};
+      const rigidFn=(S2,y,s0)=>{
+        const a0=-Math.PI/2+(s0/need)*2*Math.PI,ds=S2-s0,rad=88-y;
+        return [(R+rad)*Math.cos(a0)-ds*Math.sin(a0),(R+rad)*Math.sin(a0)+ds*Math.cos(a0)];
+      };
+      mapStrokes(th,fn,rigidFn).forEach(st=>disc.push(st));
+    });
+    return fig(disc,inkW,540);
+  }
+  function studies(seed,inkW){
+    const sents=makeSents(mul32(seed*7919+13));
+    return {record:figRecord(sents,inkW),scrawl:figScrawl(sents,inkW,seed),
+            watch:figWatch(sents,inkW,seed),vigil:figVigil(sents,inkW),
+            disc:figDisc(sents,inkW)};
+  }
+  const TOK={'@T':'mT','@T-':'mTm','@T+':'mTp','@Ts':'mTs','@F':'mF',
+             '=ka':'aka','=mi':'ami','=zu':'azu','|':'gap','?':'q'};
+  const DARK={'#24282E':'#E8E3D6','#33707C':'#6fa8ff','#A65B3F':'#e8362a','#8A8478':'#8c8a82'};
+  function lineSvg(tokens){
+    const th=build(tokens.map(t=>TOK[t]||t));
+    const F=fig(mapStrokes(th,linear),0.85,560);
+    let out=`<svg viewBox="${F.vb}" width="${F.w.toFixed(0)}" height="${F.h.toFixed(0)}" role="img">`;
+    F.elems.forEach(e=>{
+      const col=DARK[e.fill]||e.fill;
+      out+=`<path d="${e.d}" fill="${col}"${e.op!=null?` opacity="${e.op}"`:''}/>`;
+    });
+    return out+'</svg>';
+  }
+  function figMarkup(F){
+    let out=`<svg viewBox="${F.vb}" style="width:${F.w.toFixed(0)}px;height:${F.h.toFixed(0)}px;max-width:100%" role="img">`;
+    F.elems.forEach(e=>{out+=`<path d="${e.d}" fill="${e.fill}"${e.op!=null?` opacity="${e.op}"`:''}/>`;});
+    return out+'</svg>';
+  }
+  return {studies,lineSvg,figMarkup};
+})();
+
+const PAGE_CARDS=[
+ {key:'record',id:'2a',meta:'ALPHA.1 · AT REST',title:'The record page',
+  head:'LOG OF RECORD · CAREFUL HAND · RULED',
+  story:'The admissible register: law, manifests, the log of record. Every suffix spelled so a clerk can verify it letter by letter decades on; ruled carriers because a record must not drift — here even the current is stilled.',
+  col:'sway 0 · ruled carriers · suffixes spelled · specimen §5-faithful'},
+ {key:'scrawl',id:'2b',meta:'AFTER 1a · REFRACTION',title:'The daily scrawl',
+  head:'DAY LEAF · QUICK HAND',
+  story:'What everyday writing actually looks like: baselines wander, words swell and shrink with the wrist, spacing crowds where the plate runs out, and one word is struck through and rewritten without apology. Chaos on top, system underneath: that is how you know it is a real hand.',
+  col:'per-word size · ink · sway · fall all jittered · one strike + rewrite'},
+ {key:'watch',id:'2c',meta:'AFTER 1b · DOPPLER',title:'The watch log',
+  head:'BRIDGE WATCH · BRIDGE HAND · ENTRIES',
+  story:'Not prose — entries. Events written the moment they happen, one line each, opened with the clock they ran on: =mi ship time, =ka beacon-checked, =zu beyond coverage. The writing is compressed because the writer is moving, and how much tells you how fast — the hail came in at a run, λ 0.55, blue.',
+  col:'clock stamped first · clause-mood last · λ betrays speed · sigils at rest'},
+ {key:'vigil',id:'2d',meta:'AFTER 1c · REFLECTION',title:'The vigil trace',
+  head:'VIGIL · BRIDGE HAND · DO NOT LIFT',
+  story:'The continuity-proof register: reactor watches, quarantine nights, long crossings — records whose validity IS the unbroken line. A reader checks not what it says but that it never lifts; a forger would have to fake the folds, and folds return mirrored. Even the silence between paragraphs is written.',
+  col:'one stroke · folds mirrored · continuity is the record'},
+ {key:'disc',id:'2e',meta:'AFTER 1d · CLOSURE',title:'The liturgy disc',
+  head:'LITURGY · CAREFUL HAND · RUNG, NOT CUT',
+  story:'Six sentences rung at their resonant radii (R = phrase ⁄ 2π), nested by length, careful hand throughout — in still time the current sleeps, so nothing sways. Short phrases hold their unused arc as written silence at the seam. jel rings innermost: one word, mostly quiet.',
+  col:'R = phrase/2π · silence held at the seam · uncut'}
+];
+let PG_SEED=11, PG_INK=0.6;
+function rPages(v){
+  let html=sec("PAGE STUDIES — ONE TEXT, FIVE REGISTERS")+
+  `<div class="panel"><p class="use" style="margin:0">The Current Hand (design 07-E)
+   writing the same three paragraphs five ways — a frequency-faithful specimen
+   generated against the codex's own letter distribution, with every attested
+   word woven in: ver ish-ol, enmai, zukad, jel, Sūchel, hau, and the litany
+   hōl-t-eshe=zu closing the page. Silence-marks (ne) stand between paragraphs.</p>
+   <div class="pgctl" style="margin-top:12px">
+     <label>SEED <input id="pg-seed" type="number" min="1" max="99" value="${PG_SEED}"></label>
+     <label>INK <input id="pg-ink" type="range" min="0.45" max="1.2" step="0.05" value="${PG_INK}"></label>
+     <span id="pg-inkv">${PG_INK}</span>
+   </div></div>`;
+  PAGE_CARDS.forEach(c=>{
+    html+=`<div class="pgcard" id="pg-${c.key}">
+      <div class="rowhead"><span class="pgchip">${c.id}</span><span class="pgmeta">${c.meta}</span></div>
+      <h4>${c.title}</h4>
+      <p class="pgstory">${c.story}</p>
+      <div class="pgpaper">
+        <div class="phead"><span>${c.head}</span><span>SŪCHEL</span></div>
+        <div class="pfig" id="pgfig-${c.key}"></div>
+        <div class="pcol">${c.col} · seed <span class="pg-seed-echo">${PG_SEED}</span></div>
+      </div></div>`;
+  });
+  v.innerHTML=html;
+  const draw=()=>{
+    const figs=CH.studies(PG_SEED,PG_INK);
+    PAGE_CARDS.forEach(c=>{
+      const el=v.querySelector('#pgfig-'+c.key);
+      if(el)el.innerHTML=CH.figMarkup(figs[c.key]);
+    });
+    v.querySelectorAll('.pg-seed-echo').forEach(e=>{e.textContent=PG_SEED;});
+  };
+  draw();
+  const seedIn=v.querySelector('#pg-seed'),inkIn=v.querySelector('#pg-ink'),
+        inkV=v.querySelector('#pg-inkv');
+  if(seedIn)seedIn.onchange=()=>{PG_SEED=Math.max(1,Math.min(99,Math.round(+seedIn.value||11)));draw();};
+  if(inkIn)inkIn.oninput=()=>{PG_INK=+inkIn.value;inkV.textContent=inkIn.value;draw();};
+}
+
 /* ---------- nav ----------------------------------------------------------- */
 const TABS=[
   ["family","FAMILY",rFamily],
@@ -919,6 +1350,7 @@ const TABS=[
   ["nubhel","NUBHEL",rNubhel],
   ["sisters","SISTERS",rSisters],
   ["script","SCRIPT",rScript],
+  ["pages","PAGES",rPages],
 ];
 const nav=document.getElementById("nav");
 nav.innerHTML=TABS.map(([k,name])=>
@@ -934,12 +1366,12 @@ function show(key,keepScroll){
   try{ if(location.hash!=="#"+key) history.replaceState(null,"","#"+key); }
   catch(e){ /* some browsers restrict history on file:// — cosmetic only */ }
 }
-for(const st of ["carve","trace"]){
+for(const st of ["carve","trace","current"]){
   const btn=document.getElementById("st-"+st);
   if(!btn) continue;
   btn.onclick=()=>{
     GSTYLE=st;
-    for(const other of ["carve","trace"]){
+    for(const other of ["carve","trace","current"]){
       const o=document.getElementById("st-"+other);
       if(o) o.classList.toggle("on",other===st);
     }

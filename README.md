@@ -52,12 +52,24 @@ suite (~840 tests).
   from the script codex (one curve in the whole system, and it refuses to
   close), rendered to SVG in both careful hand and bridge hand.
   Samples in `examples/navcher/`.
+* **The Current Hand** (`odylang.currenthand`) — the redesigned script,
+  implemented from a Claude Design handoff (design 07-E): one connected,
+  pressured pen-line per word riding a "current", the featural system
+  re-expressed (knot height = place, a released drop = voicing, ripples =
+  vowels, a breath-arc = length; upright sigils — T• the filled eye, =zu
+  the one straight uniform stroke). The Python engine is byte-exact with
+  the design prototype (locked by tests against digests generated from the
+  handoff's own JS). `odylang write --hand current` letters any line;
+  `odylang page record|scrawl|watch|vigil|disc --seed N` renders the five
+  page registers (samples in `examples/currenthand/`).
 * **The interactive codex** (`odylang.webgen`) — `odylang web -o codex.html`
   builds the whole system into ONE self-contained web page (no server, no
   dependencies, no network): the shibboleth explorer with live derivation
   traces, searchable lexicons, the 41 lines with playable rhythm and
   Navcher lettering in both hands, the texts, the sisters, and a
-  ship-carve-your-own writer. A prebuilt copy ships as
+  ship-carve-your-own writer — plus the Current Hand page studies (seeded
+  and tweakable) and a third glyph style for every lettered line on the
+  page. A prebuilt copy ships as
   `examples/odylang-web.html` — just open it in a browser.
 * **Core** — `phonology` (segments, seam-aware syllabification, IPA),
   `word` (the four-rule stress algorithm: *the mood carries the beat*),
