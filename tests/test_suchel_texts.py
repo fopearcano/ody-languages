@@ -48,9 +48,9 @@ EXPECTED = {
 TRANSLATION_STARTS = {
     "pilots_log": ["We crossed at the third beacon.", "—",
                    "We surfaced, in dark time."],
-    "catechism": ["Does a pattern endure at the limit — no?",
-                  "It does not endure — in the Assembly's truth.",
-                  "It endures — seam-true, in the dark."],
+    "catechism": ['"Does a pattern endure at the limit — no?"',
+                  '"It does not endure — in the Assembly\'s truth."',
+                  '"It endures — seam-true, in the dark."'],
     "ne_liturgy": ["The crossers cross, by their own clocks.", "—",
                    "The beacon vouches for nothing.", "—",
                    "We reach toward you — approaching-true, in the dark."],
@@ -87,6 +87,20 @@ def test_pilots_log_arc():
     assert first.sentence.words[-1].display().endswith("=ka")
     assert last.sentence.words[-1].display().endswith("=zu")
     assert gap.sentence.gloss_line() == "GAP"
+
+
+def test_catechism_dialogue_form():
+    """docs/01 §07 TEXT 02: every turn opens with a dash, and the third
+    translation carries its full parenthetical."""
+    for p in st.CATECHISM.lines:
+        assert p.dash
+        assert p.display().startswith("— ")
+    assert st.CATECHISM.lines[0].display() == "— tem kav-eth dur-a=ka, vo?"
+    assert st.CATECHISM.lines[2].translation == (
+        '"It endures — seam-true, in the dark." (the pupil who will not '
+        "pass; the answer that cannot be graded, only punished)")
+    for text in (st.PILOTS_LOG, st.NE_LITURGY):
+        assert not any(p.dash for p in text.lines)
 
 
 def test_catechism_heresy_is_two_morphemes():

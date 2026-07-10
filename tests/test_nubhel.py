@@ -232,3 +232,16 @@ def test_the_two_mergers_two_jokes():
     """D-2 merges *wel with *bel; D-4 merges *mar into *mor (docs/06)."""
     assert NUBHEL.derive("*wel").form == NUBHEL.derive("*bel").form == "bel"
     assert NUBHEL.derive("*mar").form == NUBHEL.derive("*mor").form == "mor"
+
+
+def test_two_fleets_data():
+    """docs/06 §01: the rivalry's cultural data is carried, both sneers
+    verbatim."""
+    from odylang.nubhel import TWO_FLEETS
+    assert set(TWO_FLEETS) == {"sili", "nubi"}
+    assert TWO_FLEETS["sili"]["sneer"] == \
+        '"divers go fast to stay in one universe"'
+    assert TWO_FLEETS["nubi"]["sneer"] == \
+        '"crossing is a shortcut; depth is the truth"'
+    assert "the aged" in TWO_FLEETS["sili"]["calls_the_others"]
+    assert "the gapped" in TWO_FLEETS["nubi"]["calls_the_others"]

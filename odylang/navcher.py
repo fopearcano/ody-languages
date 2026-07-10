@@ -266,13 +266,14 @@ def tokens_bridge(word: Word) -> List[str]:
 # ---------------------------------------------------------------------------
 # rendering — docs/03 drawGlyph / renderWord / sample, DOM-free
 
-#: doc palette (docs/03 :root) — gold letters, red for the special signs,
-#: blue for the bridge hand, the label grey, and the dark panel ground.
+#: doc palette — gold letters, red for the special signs, blue for the
+#: bridge hand, the label grey (docs/03 sample code), and the doc's own
+#: :root dark ground (--bg: #08070a).
 GOLD = "#f5d76e"
 RED = "#e8362a"
 BLUE = "#6fa8ff"
 INK = "#8c8a82"
-BACKGROUND = "#0c0c0e"
+BACKGROUND = "#08070a"
 
 _STROKE_WIDTH = 7        # pre-scale (docs/03 drawGlyph: const sw=7)
 _WORD_SPACE = 100        # ' ' advances a full consonant width

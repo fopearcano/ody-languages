@@ -21,7 +21,7 @@ the canon (``Sōrn``, ``neks``) still parse.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Sequence
+from typing import List, Optional, Sequence
 
 # ---------------------------------------------------------------------------
 # segment inventory
@@ -47,6 +47,22 @@ _IPA = {
     "ch": "tʃ", "j": "dʒ", "sh": "ʃ", "x": "ks", "y": "j",
     "kh": "x", "gh": "ɣ", "ts": "ts", "dz": "dz", "th": "th",
     "ā": "aː", "ē": "eː", "ī": "iː", "ō": "oː", "ū": "uː",
+}
+
+#: docs/04 §01 positional and phonetic notes ("anchors for an English
+#: mouth").  Transcriptions throughout the codices are broad — [r], not the
+#: allophone — so these stay descriptive data rather than IPA behaviour.
+PHONETIC_NOTES = {
+    "r": "tapped [ɾ] between vowels, brief trill [r] at word-start; "
+         "never the English glide",
+    "h": "word-initial only (hōl, hau, hep); elsewhere old *h has already "
+         "become vowel length",
+    "k": "lightly aspirated at most",
+    "g": "always hard",
+    "s": "always voiceless",
+    "finals": "crisp finals; no swallowed stops",
+    "length": "length ≠ quality — hold the sound, do not change it. "
+              "A long vowel is a held breath",
 }
 
 _ONSET_FIRST = set("pbtdkgvszfx") | {"ch", "j", "sh", "kh", "gh", "ts", "dz", "th"}

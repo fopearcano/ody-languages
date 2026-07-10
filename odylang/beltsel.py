@@ -227,7 +227,7 @@ PLACES: List[Place] = [
     Place("Tselsom", "*kel-som", "Speech-gathering",
           "the great forum where the Assembly convenes", cited=("B-1",)),
     Place("Kadtan", "*kad-stan", "Beacon-stand",
-          "the network throne; whoever holds it holds 'when'",
+          'the network throne; whoever holds it holds "when"',
           cited=("B-3",)),
     Place("Verstan", "*wer-stan", "Truth-station",
           "the high court; sister-city of Werstan and Ērstan",

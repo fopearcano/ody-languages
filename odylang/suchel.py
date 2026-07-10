@@ -3,7 +3,7 @@
 Seven ordered, regular sound changes (docs/01 §03) turn Old Pelagic into
 the tongue of the fleets; every canon name — Sōrn, Idrenes, Pelgar, jel —
 falls out as a regular outcome.  The full working lexicon of the codex
-(docs/01 §06, 80 entries) plus the phrasebook's fourteen appendix coinages
+(docs/01 §06, all 79 rows) plus the phrasebook's fourteen appendix coinages
 (docs/02 §F) live in :data:`LEXICON`; each proto-sourced entry is derived
 by the engine and the result is locked by tests.
 
@@ -423,6 +423,8 @@ _L: List[LexEntry] = [
     # -- numbers ----------------------------------------------------------------
     _E("sa", "sa", "one", "*sa-", "number", proto="*sa", cited=()),
     _E("vor", "vor", "two", "*wor- → SC-3", "number", proto="*wor", cited=("SC-3",)),
+    _E("telnum", "tel", "three (see tel)", "*tel-", "number",
+       kind="register", members=("tel",)),
     _E("mek", "mek", "four", "*mek-", "number", proto="*mek", cited=()),
     _E("pev", "pev", "five", "*pew- → SC-3 w→v", "number",
        proto="*pew", cited=("SC-3",)),
@@ -457,7 +459,7 @@ _L: List[LexEntry] = [
        "*les- → s→sh /_front (SC-1 analog)", "core",
        proto="*lesi", cited=("SC-1", "SC-7"), source="docs/02"),
     _E("maiel", "ˈmai.el", "kinsman; bound-one",
-       "-mai 'entangled' + agent -el", "core", kind="daughter",
+       '-mai "entangled" + agent -el', "core", kind="daughter",
        members=("-mai", "-el"), source="docs/02"),
     _E("om", "", "all, every", "*om-", "core", proto="*om", cited=(),
        source="docs/02"),

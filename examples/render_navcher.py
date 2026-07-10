@@ -5,7 +5,7 @@ Produces the full glyph chart, the four doc samples (canon names, the
 hail, careful-vs-bridge, the gap-stroke), and the showpiece — litany line
 40 rebuilt from core :class:`~odylang.word.Word` objects through the
 bridge hand, verified against the doc's own token stream.  All on the
-dark panel ground (#0c0c0e) with the doc's colors: gold letters, red for
+doc's dark ground (#08070a) with the doc's colors: gold letters, red for
 the special signs, blue for the bridge hand.
 
 Run from anywhere:  python3 examples/render_navcher.py

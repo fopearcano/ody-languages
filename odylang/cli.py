@@ -127,7 +127,7 @@ def cmd_texts(args):
         for t in TEXTS:
             print(f"\n== {t.title} ==")
             for p in t.lines:
-                print(f"  {p.sentence.text()}")
+                print(f"  {p.display()}")
                 print(f"    {p.sentence.gloss_line()}")
                 print(f"    “{p.translation}”")
             print(f"  — {t.commentary}")

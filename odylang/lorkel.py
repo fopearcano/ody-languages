@@ -78,7 +78,7 @@ class NeoTerm:
     meaning: str                    # the codex's meaning column
     suchel_reflex: Optional[str]    # the codex's comparison column (form)
     reflex_kind: str                # 'cognate' | 'formation' | 'none'
-    reflex_note: str = ""           # the codex's own aside, verbatim
+    reflex_note: str = ""           # codex aside where present, plus editorial gloss
 
     def coined(self) -> str:
         return coin(*self.formation)

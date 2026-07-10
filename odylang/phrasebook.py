@@ -7,7 +7,11 @@ IPA and docs/04 rhythm array are all generated, then locked against the
 codex by tests/test_phrasebook.py.
 
 Data carried per line: the codex pronunciation string verbatim (with its
-brackets), the translation, and an abridged usage note.  Documented
+brackets), the translation (stored *without* the codex's typographic
+quotation marks — a uniform storage convention; the em-dash annotations
+and every other character are byte-faithful), an abridged usage note, and
+the codex's call/response/showpiece marking (docs/02 §B/§E: "Call lines
+marked ◆, responses ◆"; the red-framed lines are ``star``).  Documented
 exceptions used here:
 
 * line 01 *ish-ol* is [iˈʃol] — lexicalized greeting prosody (docs/02 §01,
@@ -48,6 +52,34 @@ class Line:
     ipa: str            # the codex pronunciation string, verbatim
     translation: str
     note: str           # usage note, abridged from docs/02
+    role: str = ""      # 'call' or 'resp' (docs/02 ◆ marks), '' otherwise
+    star: bool = False  # red-framed showpiece line in the codex
+
+
+#: docs/02 HTML classes, per line: engineer/bridge calls vs crew responses.
+CALL_LINES = frozenset({9, 10, 11, 12, 13, 16, 33, 35, 37, 39})
+RESP_LINES = frozenset({14, 15, 34, 36, 40, 41})
+STAR_LINES = frozenset({24, 28, 30, 38, 40})
+
+#: The four end-notes of docs/02, for the letterer.
+LETTERING_NOTES: Dict[str, str] = {
+    "THE GAP": (
+        "Give ne (38) a full black panel or a thin vertical stroke-glyph "
+        "between panels. Never letter dialogue inside a crossing — the "
+        "grammar forbids it, so the page should too."),
+    "MOODS AS COLOR": (
+        "T plain white lettering · T⁻ cool tint · T⁺ warm tint · T• red or "
+        "double-stroked balloons."),
+    "ANCHORS AS TAILS": (
+        "=ka lines get normal balloon tails; =mi lines a tail to the "
+        "speaker's chest (their own clock); =zu lines no tail at all — "
+        "words unanchored, floating in the panel."),
+    "REGISTER CHEAT-SHEET": (
+        "Assembly speaks in T=ka (confidence). Pilots live in =mi "
+        "(self-reliance). Grief and heresy live in T• and =zu. If a "
+        "character's arc bends, bend their morphology one clitic at a "
+        "time."),
+}
 
 
 def _n(form: str, gloss: str) -> Word:
@@ -67,8 +99,9 @@ def _build() -> List[Line]:
     L: List[Line] = []
 
     def add(n, sec, words, ipa, trans, note, punct=".", breaks=(), gap=False):
+        role = "call" if n in CALL_LINES else ("resp" if n in RESP_LINES else "")
         L.append(Line(n, sec, Sentence(list(words), punct, list(breaks), gap),
-                      ipa, trans, note))
+                      ipa, trans, note, role, n in STAR_LINES))
 
     # -- A · HAILS & PARTINGS -------------------------------------------------
     add(1, "A",

@@ -21,6 +21,11 @@ Two attested exceptions are encoded (and only these two):
   * the dative hail ish-ol is [iˈʃol] (docs/02 §01, docs/04 line 01) —
     lexicalized greeting prosody.
 
+docs/04's RULE 4 example prints 'I-dre-nes'; the capital I there is
+the proper name's orthographic capital, not a stress mark — docs/01
+§02 and the lexicon both fix [iˈdre.nes] (penult), which this module
+follows.
+
 For the rhythm notation of docs/04 §03 a monosyllabic *word* counts as
 beat-carrying only when its nucleus is long or a diphthong (MĀN, ĀN, HAU,
 Ō — but ver, kad, jel stay low).

@@ -419,6 +419,31 @@ class FalseFriend:
     skip_note: str = ""
 
 
+#: docs/06 §01 THE TWO FLEETS — one rivalry, two grammars.  Each fleet
+#: grammaticalized the regime it lives in (the DESIGN THESIS): Sūchel built
+#: its verb around the seam, Nubhel around the dive.
+TWO_FLEETS = {
+    "sili": {
+        "name": "The Sīli · crossers · Sūchel",
+        "orientation": "horizontal; seam-oriented",
+        "prestige": "the crossing and the T• mood",
+        "wound": "the gap — lives punctuated by ne-holes no one can narrate",
+        "regime": "indeterminate",
+        "calls_the_others": ("nuvi", "the aged"),
+        "sneer": '"divers go fast to stay in one universe"',
+    },
+    "nubi": {
+        "name": "The Nūbi · divers · Nubhel",
+        "orientation": "vertical; depth-oriented",
+        "prestige": "class — how deep a hull can hold",
+        "wound": "the offset — they age past everyone they love, "
+                 "by a measurable count",
+        "regime": "determinate",
+        "calls_the_others": ("Sūl", "the gapped", "hollow-lived"),
+        "sneer": '"crossing is a shortcut; depth is the truth"',
+    },
+}
+
 FALSE_FRIENDS: Tuple[FalseFriend, ...] = (
     FalseFriend("*gel-", "jel", "yel",
                 "the seam — the shibboleth row extends: gel · jel · ghel · "
@@ -444,8 +469,8 @@ FALSE_FRIENDS: Tuple[FalseFriend, ...] = (
                 suchel_checks=(("*kad", "kad"),),
                 nubhel_checks=(("*kad", "kod"),)),
     FalseFriend("*wer-", "ver", "ber",
-                "truth — crossers joke that divers 'bury the truth'; divers "
-                "reply that crossers 'thin it'",
+                'truth — crossers joke that divers "bury the truth"; divers '
+                'reply that crossers "thin it"',
                 suchel_checks=(("*wer", "ver"),),
                 nubhel_checks=(("*wer", "ber"),)),
     FalseFriend("*nub-", "nuv", "nub",
@@ -467,13 +492,13 @@ FALSE_FRIENDS: Tuple[FalseFriend, ...] = (
                 suchel_checks=(("*tan", "tan"),),
                 nubhel_checks=(("*tan", "ton"),)),
     FalseFriend("*mar / *mor", "mar · mor", "mor",
-                "merger: pearl and rock are one word to divers — 'they "
-                "cannot tell a pearl from a stone'",
+                'merger: pearl and rock are one word to divers — "they '
+                'cannot tell a pearl from a stone"',
                 suchel_checks=(("*mar", "mar"), ("*mor", "mor")),
                 nubhel_checks=(("*mar", "mor"), ("*mor", "mor"))),
     FalseFriend("*wel / *bel", "vel · bel", "bel",
-                "merger: nothing and hearth are one word — 'the hearth is "
-                "nothing to us'",
+                'merger: nothing and hearth are one word — "the hearth is '
+                'nothing to us"',
                 suchel_checks=(("*wel", "vel"), ("*bel", "bel")),
                 nubhel_checks=(("*wel", "bel"), ("*bel", "bel"))),
     FalseFriend("*nex-", "ne", "neks",

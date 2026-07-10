@@ -303,3 +303,31 @@ def test_entangled_case_stress_is_automatic():
     for n, idx in ((2, 1), (31, 1)):
         w = line(n).sentence.words[idx]
         assert w.stress_override is None
+
+
+def test_call_response_and_star_marks():
+    """docs/02 §B/§E: 'Call lines marked ◆, responses ◆'; red-framed
+    showpiece lines (HTML classes call/resp/star)."""
+    from odylang.phrasebook import CALL_LINES, LINES, RESP_LINES, STAR_LINES
+    calls = {l.number for l in LINES if l.role == "call"}
+    resps = {l.number for l in LINES if l.role == "resp"}
+    stars = {l.number for l in LINES if l.star}
+    assert calls == CALL_LINES == {9, 10, 11, 12, 13, 16, 33, 35, 37, 39}
+    assert resps == RESP_LINES == {14, 15, 34, 36, 40, 41}
+    assert stars == STAR_LINES == {24, 28, 30, 38, 40}
+    # 'Orders are bare and anchor-less (they assert nothing)': every
+    # imperative in the book carries neither mood nor anchor
+    from odylang.word import ANCHOR, IMP, MOOD
+    for l in LINES:
+        for w in l.sentence.words:
+            cats = {m.cat for m in w.morphs}
+            if IMP in cats:
+                assert not cats & {ANCHOR, MOOD}, (l.number, w.display())
+
+
+def test_lettering_notes_carried():
+    from odylang.phrasebook import LETTERING_NOTES
+    assert set(LETTERING_NOTES) == {"THE GAP", "MOODS AS COLOR",
+                                    "ANCHORS AS TAILS", "REGISTER CHEAT-SHEET"}
+    assert "black panel" in LETTERING_NOTES["THE GAP"]
+    assert "=zu lines no tail at all" in LETTERING_NOTES["ANCHORS AS TAILS"]

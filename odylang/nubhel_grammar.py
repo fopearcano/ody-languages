@@ -1,5 +1,9 @@
 """Nubhel morphosyntax — the grammar of depth (docs/06 §03).
 
+``verb()`` deliberately differs from :func:`odylang.suchel_grammar.verb`
+in defaulting mood='plain' and anchor='mi': ``-ó=mi`` is 'the everyday
+music of the fleet' (docs/06 §03), so the unmarked call builds it.
+
 Same inherited machine as Sūchel, rebuilt for the determinate regime.
 The verb template is unchanged — STEM–(ASP)–MOOD=ANCHOR — but every
 slot drifted:

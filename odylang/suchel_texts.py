@@ -32,9 +32,19 @@ from .suchel_grammar import (Break, Sentence, Word, false_verb, noun,
 
 @dataclass
 class Passage:
-    """One glossed line of a text."""
+    """One glossed line of a text.
+
+    ``dash`` marks a dialogue turn: the catechism prints each turn with a
+    leading '— ' (docs/01 §07 TEXT 02), carried here so :meth:`display`
+    reproduces the page exactly while :meth:`Sentence.text` stays the bare
+    linguistic line.
+    """
     sentence: Sentence
     translation: str
+    dash: bool = False
+
+    def display(self) -> str:
+        return ("— " if self.dash else "") + self.sentence.text()
 
 
 @dataclass
@@ -98,17 +108,21 @@ CATECHISM = Text(
                           verb("dur", "T", "ka", gloss="endure"),
                           particle("vo")],
                          punct="?", breaks=[Break(2, ",", gloss=",")]),
-                "Does a pattern endure at the limit — no? "
-                "(the catechist, expecting the doctrinal denial)"),
+                '"Does a pattern endure at the limit — no?" '
+                "(the catechist, expecting the doctrinal denial)",
+                dash=True),
         Passage(Sentence([particle("vo"), verb("dur", "T", "ka", gloss="endure"),
                           noun("somath", case="GEN", gloss="assembly"),
                           noun("ver", case="LOC", gloss="truth")],
                          breaks=[Break(1, ",", gloss=",")]),
-                "It does not endure — in the Assembly's truth. "
-                "(the correct answer)"),
+                '"It does not endure — in the Assembly\'s truth." '
+                "(the correct answer)",
+                dash=True),
         Passage(Sentence([verb("dur", "Ts", "zu", gloss="endure")]),
-                "It endures — seam-true, in the dark. "
-                "(the pupil who will not pass)"),
+                '"It endures — seam-true, in the dark." '
+                "(the pupil who will not pass; the answer that cannot be "
+                "graded, only punished)",
+                dash=True),
     ],
     commentary="The pupil's heresy is two morphemes long: -eshe for -a, "
                "=zu for =ka. Doctrine and its undoing differ by a "
