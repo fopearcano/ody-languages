@@ -81,3 +81,10 @@ def test_write_and_chart(capsys, tmp_path):
     chart = tmp_path / "chart.svg"
     run(capsys, "chart", "-o", str(chart))
     assert ET.fromstring(chart.read_text()).tag.endswith("svg")
+
+
+def test_vocab(capsys):
+    out = run(capsys, "vocab", "--domain", "sea")
+    assert "mōr" in out and "*maur-" in out
+    out = run(capsys, "vocab", "--search", "cold", "--lang", "nubhel")
+    assert "hir" in out

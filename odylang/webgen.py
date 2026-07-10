@@ -221,6 +221,23 @@ def collect() -> Dict:
         "endonym": ENDONYM if isinstance(ENDONYM, str) else str(ENDONYM),
     }
 
+    # -- the vocabulary supplement ----------------------------------------------
+    from .vocabulary import VOCAB
+    vocab_rows = []
+    for e in VOCAB:
+        etym = e.proto or (" + ".join(e.members) + " (compound)")
+        if e.note:
+            etym += " — " + e.note
+        if e.homophone_of:
+            etym += " · homophone: " + e.homophone_of
+        vocab_rows.append({"form": e.suchel, "ipa": e.ipa, "gloss": e.gloss,
+                           "etym": etym, "domain": e.domain,
+                           "kind": "coined", "trace": e.trace()})
+    for e in VOCAB:
+        if e.proto:
+            fam_words.append({**family_word(e.proto), "gloss": e.gloss,
+                              "coined": True})
+
     # -- the Current Hand (design handoff 07-E) ---------------------------------
     from .currenthand import ARCPEN, HAND, LEADIN, LEADOUT
 
@@ -272,7 +289,8 @@ def collect() -> Dict:
                              for l, s, m in SUCHEL_MOODS],
                    "anchors": [{"clitic": c, "src": s, "meaning": m}
                                for c, s, m in SUCHEL_ANCHORS],
-                   "phon": PHONETIC_NOTES},
+                   "phon": PHONETIC_NOTES,
+                   "vocab": vocab_rows},
         "phrasebook": {"sections": SECTIONS, "lines": lines,
                        "lettering": LETTERING_NOTES},
         "texts": {"suchel": su_texts, "k5": k5, "nubhel": nb_texts},
@@ -722,9 +740,21 @@ function rSuchel(v){
     <div class="search"><input id="su-q" type="search" placeholder="search form · gloss · etymology…"
       aria-label="search the Sūchel lexicon"><span class="count" id="su-count">${s.lex.length} entries</span></div>
     ${lexTable(s.lex,"sulex")}
-    <p class="hint">click a derived row to replay its sound changes</p></div>`;
+    <p class="hint">click a derived row to replay its sound changes</p></div>
+  <div class="panel"><h3 class="sub">VOCABULARY SUPPLEMENT <span class="n">— coined, engine-derived (REV 1.2)</span></h3>
+    <p class="use" style="margin:0 0 12px">The plain furniture of a life — mother,
+    water, sleep, knife, cold — coined as new Old Pelagic roots and run through
+    the same seven changes as everything else. Coin once, inherit five times:
+    each of these roots also exists in Nubhel, Rudgar, Sel and Beltsel (see the
+    FAMILY tab, marked +).</p>
+    <div class="search"><input id="vc-q" type="search" placeholder="search…"
+      aria-label="search the vocabulary supplement"><span class="count" id="vc-count">${s.vocab.length} entries</span></div>
+    ${lexTable(s.vocab,"suvocab")}
+    <p class="hint">click a row to replay its derivation</p></div>`;
   bindLex(v,s.lex,"sulex");
   bindSearch(v,v.querySelector("#su-q"),s.lex,"sulex",v.querySelector("#su-count"));
+  bindLex(v,s.vocab,"suvocab");
+  bindSearch(v,v.querySelector("#vc-q"),s.vocab,"suvocab",v.querySelector("#vc-count"));
 }
 
 function beatChips(syl){
@@ -941,7 +971,7 @@ function rFamily(v){
     Object.values(D.langs).map(l=>`<th>${esc(l.name)}</th>`).join("")+
     `</tr></thead><tbody>`+
     D.family.words.map((w,i)=>`<tr class="exp" data-i="${i}" data-id="fam">
-      <td class="p">${esc(w.proto)}</td><td class="i">${esc(w.gloss.split(";")[0])}</td>`+
+      <td class="p">${esc(w.proto)}${w.coined?' <span style="color:var(--gold)" title="coined — vocabulary supplement">+</span>':''}</td><td class="i">${esc(w.gloss.split(";")[0])}</td>`+
       Object.keys(D.langs).map(l=>`<td class="f">${esc(w.forms[l]||"—")}</td>`).join("")+
       `</tr>`).join("")+
     `</tbody></table></div>

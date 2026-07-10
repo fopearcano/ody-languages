@@ -52,6 +52,15 @@ suite (~840 tests).
   from the script codex (one curve in the whole system, and it refuses to
   close), rendered to SVG in both careful hand and bridge hand.
   Samples in `examples/navcher/`.
+* **The vocabulary supplement** (`odylang.vocabulary`) — ~150 words of
+  daily speech (kin, body, sea, time, tools, everyday verbs…), coined as
+  new Old Pelagic roots and **derived by the engines, never typed** — so
+  every word automatically exists in all five daughters with its regular
+  sound laws applied (*kir- 'cold' → Sūchel chir, Nubhel hir, Rudgar khir,
+  Sel sir, Beltsel tsir). Homophone collisions with the canon lexicon are
+  engine-checked; the two that exist are deliberate and documented.
+  `odylang vocab --domain sea`, full table in
+  `docs/09_vocabulary-supplement.md`.
 * **The Current Hand** (`odylang.currenthand`) — the redesigned script,
   implemented from a Claude Design handoff (design 07-E): one connected,
   pressured pen-line per word riding a "current", the featural system
@@ -121,6 +130,7 @@ $ odylang chart -o navcher.svg                            # the glyph chart
 $ odylang phrase --all      # all 41 lines   · odylang texts nubhel
 $ odylang lex suchel --domain physics --etym
 $ odylang places beltsel    # the capital's twenty names
+$ odylang vocab --search water --lang nubhel   # the coined vocabulary
 ```
 
 As a library:

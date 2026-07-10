@@ -11,6 +11,8 @@
     odylang write 'ver ish-ol' -o hail.svg          # Navcher, careful hand
     odylang write --phrase 40 --hand bridge -o l40.svg
     odylang chart -o navcher.svg         # the full glyph chart
+    odylang vocab --domain sea           # the coined working vocabulary
+    odylang page vigil --seed 42 -o v.svg  # a Current Hand page study
 """
 
 from __future__ import annotations
@@ -204,6 +206,29 @@ def cmd_page(args):
           args.out)
 
 
+def cmd_vocab(args):
+    from .vocabulary import entries, reflexes
+    rows = entries(args.domain, args.search)
+    if args.lang:
+        lang = args.lang.lower()
+        for e in rows:
+            r = reflexes(e)
+            if lang not in r:
+                continue
+            print(f"{r[lang]:<12} {e.gloss}   "
+                  f"[{e.proto or ' + '.join(e.members)}]")
+        return
+    for e in rows:
+        src = e.proto or (" + ".join(e.members) + " (compound)")
+        print(f"{e.suchel:<10} [{e.ipa}]".ljust(28) + f" {e.gloss}")
+        print(f"{'':10} < {src}   ({e.domain})")
+        if e.note:
+            print(f"{'':10} · {e.note}")
+        if e.homophone_of:
+            print(f"{'':10} · homophone: {e.homophone_of}")
+    print(f"\n{len(rows)} entries")
+
+
 def cmd_chart(args):
     from .navcher import render_glyph_chart
     _emit(render_glyph_chart(), args.out)
@@ -277,6 +302,15 @@ def main(argv=None):
     p.add_argument("--scale", type=float, default=0.5)
     p.add_argument("-o", "--out")
     p.set_defaults(fn=cmd_write)
+
+    p = sub.add_parser("vocab", help="the vocabulary supplement (coined "
+                                     "roots, engine-derived)")
+    p.add_argument("--domain", help="kin body world sea sky time ship tools "
+                                    "food beasts qualities verbs mind number")
+    p.add_argument("--search")
+    p.add_argument("--lang", help="show the daughter's form instead "
+                                  "(nubhel, rudgar, sel, beltsel)")
+    p.set_defaults(fn=cmd_vocab)
 
     p = sub.add_parser("page", help="a Current Hand page study (SVG): the "
                                     "same specimen in five registers")
