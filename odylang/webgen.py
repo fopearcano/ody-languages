@@ -267,15 +267,18 @@ _TITLE = "SŪCHEL — the interactive language codex"
 _MARKUP = """
 <div class="shell">
 <aside class="rail">
-  <div class="brand">ODYLANG<span class="jp">言語資料体</span>
-    <span class="sub">NERV//PELAGIAN ASSEMBLY<br>INTERACTIVE CODEX · REV 1.0</span></div>
+  <div class="brand">ODYLANG
+    <span class="sub">NERV//PELAGIAN ASSEMBLY<br>INTERACTIVE CODEX · REV 1.1</span></div>
   <nav id="nav" aria-label="codex sections"></nav>
+  <div class="styletog"><span class="lbl">GLYPH STYLE</span>
+    <button id="st-carve" class="stbtn on">SHIP-CARVE</button>
+    <button id="st-trace" class="stbtn">LIGHT-TRACE</button></div>
   <div class="railfoot">one proto · two fleets · four mouths<br>
   YOU CANNOT SPEAK WITHOUT<br>CONJUGATING THE TRUTH</div>
 </aside>
 <main>
   <header class="hero frame">
-    <div class="eyebrow">序章 · 合言葉 — THE PALATAL SHIBBOLETH</div>
+    <div class="eyebrow">THE PALATAL SHIBBOLETH</div>
     <h1>ASK A STRANGER<br>TO NAME THE SEAM</h1>
     <p class="lede">One proto-tongue, a conquered universe of daughters.
     What each mouth did to old *k and *g files its birth certificate —
@@ -309,7 +312,6 @@ body{background:var(--bg);color:var(--ink);font-family:var(--mono);
   display:flex;flex-direction:column;gap:26px;position:sticky;top:0;
   align-self:flex-start;height:100vh}
 .brand{color:var(--gold);font-size:20px;letter-spacing:.35em;font-weight:700}
-.brand .jp{display:block;color:var(--red);font-size:11px;letter-spacing:.5em;margin-top:6px}
 .brand .sub{display:block;color:var(--faint);font-size:9px;letter-spacing:.18em;
   margin-top:10px;line-height:1.8;font-weight:400}
 #nav{display:flex;flex-direction:column;gap:2px}
@@ -318,7 +320,12 @@ body{background:var(--bg);color:var(--ink);font-family:var(--mono);
 #nav button:hover{color:var(--ink)}
 #nav button:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
 #nav button.on{color:var(--gold);border-left-color:var(--red)}
-#nav button .jp{color:var(--faint);margin-left:8px;letter-spacing:.1em}
+.styletog{display:flex;flex-direction:column;gap:6px}
+.styletog .lbl{color:var(--faint);font-size:9px;letter-spacing:.25em}
+.stbtn{all:unset;cursor:pointer;font-family:var(--mono);font-size:10px;
+  letter-spacing:.2em;padding:4px 10px;border:1px solid var(--goldline);color:var(--dim)}
+.stbtn.on{color:var(--bg);background:var(--gold);border-color:var(--gold)}
+.stbtn:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
 .railfoot{margin-top:auto;color:var(--faint);font-size:9px;letter-spacing:.15em;line-height:2}
 main{flex:1;min-width:0;padding:28px 30px 60px}
 .frame{position:relative;background:var(--panel);padding:26px 28px;
@@ -353,7 +360,6 @@ select.chip{max-width:100%;background:var(--bg)}
 section#view{margin-top:34px;display:flex;flex-direction:column;gap:26px}
 h2.sec{color:var(--gold);font-size:16px;letter-spacing:.3em;border-bottom:1px solid var(--line);
   padding-bottom:8px}
-h2.sec .jp{color:var(--red);font-size:11px;margin-left:12px;letter-spacing:.4em}
 h3.sub{color:var(--ink);font-size:12px;letter-spacing:.25em;margin-bottom:10px}
 h3.sub .n{color:var(--red)}
 .panel{background:var(--panel);border:1px solid var(--line);padding:18px 20px}
@@ -453,21 +459,45 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g,
 /* ---------- Navcher renderer (geometry embedded from odylang.navcher) --- */
 const SIGIL = {"@T":"mT","@T-":"mTm","@T+":"mTp","@Ts":"mTs","@F":"mF",
                "=ka":"aka","=mi":"ami","=zu":"azu","|":"gap","?":"q"};
+/* two display hands over the same canonical geometry (docs/03):
+   ship-carve — the stencil cut (7-unit square strokes, miter joints);
+   light-trace — the same letters as a HUD draws them: glow underlay,
+   hairline core, node points where the cuts would meet. */
+let GSTYLE = "carve";
+function strokeAttrs(color){
+  return GSTYLE==="carve"
+    ? `fill="none" stroke="${color}" stroke-width="7" stroke-linecap="square" stroke-linejoin="miter"`
+    : `fill="none" stroke="${color}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"`;
+}
+function glowAttrs(color){
+  return `fill="none" stroke="${color}" stroke-width="9" stroke-linecap="round"`+
+         ` stroke-linejoin="round" opacity="0.16"`;
+}
+function polyMarkup(pts,color){
+  const c=[]; for(let i=0;i<pts.length;i+=2) c.push(pts[i]+","+pts[i+1]);
+  let out="";
+  if(GSTYLE==="trace") out+=`<polyline points="${c.join(" ")}" ${glowAttrs(color)}/>`;
+  out+=`<polyline points="${c.join(" ")}" ${strokeAttrs(color)}/>`;
+  if(GSTYLE==="trace")
+    for(let i=0;i<pts.length;i+=2)
+      out+=`<circle cx="${pts[i]}" cy="${pts[i+1]}" r="3" fill="${color}"/>`;
+  return out;
+}
 function glyphMarkup(key,x,scale,color,long){
   const g = D.script.glyphs[key]; if(!g) return {m:"",w:0};
   let out = `<g transform="translate(${x},0) scale(${scale})">`;
-  for(const pts of g.strokes){
-    const c=[]; for(let i=0;i<pts.length;i+=2) c.push(pts[i]+","+pts[i+1]);
-    out += `<polyline points="${c.join(" ")}" fill="none" stroke="${color}"`+
-           ` stroke-width="7" stroke-linecap="square" stroke-linejoin="miter"/>`;
+  for(const pts of g.strokes) out += polyMarkup(pts,color);
+  for(const d of g.paths){
+    if(GSTYLE==="trace") out += `<path d="${d}" ${glowAttrs(color)}/>`;
+    out += `<path d="${d}" ${strokeAttrs(color)}/>`;
   }
-  for(const d of g.paths)
-    out += `<path d="${d}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="square"/>`;
-  for(const d of g.fills) out += `<path d="${d}" fill="${color}"/>`;
+  for(const d of g.fills){
+    if(GSTYLE==="trace") out += `<path d="${d}" fill="${color}" opacity="0.18" transform="translate(-2,-2) scale(1.02)"/>`;
+    out += `<path d="${d}" fill="${color}"/>`;
+  }
   if(long){
     const L=D.script.longbar;
-    out += `<polyline points="${L[0]},${L[1]} ${L[2]},${L[3]}" fill="none"`+
-           ` stroke="${color}" stroke-width="7" stroke-linecap="square"/>`;
+    out += polyMarkup([L[0],L[1],L[2],L[3]],color);
   }
   return {m: out+"</g>", w: g.w*scale};
 }
@@ -572,7 +602,7 @@ function renderHero(){
 }
 
 /* ---------- section renderers ------------------------------------------- */
-function sec(title,jp){ return `<h2 class="sec">${title}<span class="jp">${jp}</span></h2>`; }
+function sec(title){ return `<h2 class="sec">${title}</h2>`; }
 
 function lexTable(rows,id){
   return `<div class="tablewrap"><table id="${id}"><thead><tr>
@@ -612,7 +642,7 @@ function bindSearch(container,input,rows,id,countEl){
 
 function rSuchel(v){
   const s=D.suchel;
-  v.innerHTML = sec("SŪCHEL — THE CROSSING-SPEECH","渡りの言葉")+
+  v.innerHTML = sec("SŪCHEL — THE CROSSING-SPEECH")+
   `<div class="grid2">
     <div class="card"><h4>THE FIVE VERIDICAL MOODS · ΛL</h4>
       <div class="tablewrap"><table><thead><tr><th>ΛL</th><th>SUFFIX</th><th>MEANING</th></tr></thead><tbody>`+
@@ -628,7 +658,7 @@ function rSuchel(v){
     s.stress.map(r=>`<div class="card"><h4>${esc(r.rule)}</h4><p>${esc(r.text)}</p>
       <p style="color:var(--gold);margin-top:6px">${esc(r.ex)}</p></div>`).join("")+
     `</div></div>
-  <div class="panel"><h3 class="sub">LEXICON <span class="n">語彙</span></h3>
+  <div class="panel"><h3 class="sub">LEXICON</h3>
     <div class="search"><input id="su-q" type="search" placeholder="search form · gloss · etymology…"
       aria-label="search the Sūchel lexicon"><span class="count" id="su-count">${s.lex.length} entries</span></div>
     ${lexTable(s.lex,"sulex")}
@@ -646,7 +676,7 @@ function beatChips(syl){
 }
 function rPhrase(v){
   const P=D.phrasebook;
-  let html=sec("PHRASEBOOK — 41 LINES, READY TO LETTER","常用句集");
+  let html=sec("PHRASEBOOK — 41 LINES, READY TO LETTER");
   for(const [k,name] of Object.entries(P.sections)){
     html+=`<h3 class="sub"><span class="n">${k}</span> · ${esc(name)}</h3>`;
     html+=P.lines.filter(l=>l.sec===k).map(l=>{
@@ -699,7 +729,7 @@ function textBlock(t){
     `<p class="comm">${esc(t.comm)}</p></div>`;
 }
 function rTexts(v){
-  let html=sec("TEXTS — THE LANGUAGE BREATHING","例文");
+  let html=sec("TEXTS — THE LANGUAGE BREATHING");
   html+=D.texts.suchel.map(textBlock).join("");
   html+=`<h3 class="sub">THE SHOWPIECE <span class="n">— Κ5 AS CONJUGATION</span></h3><div class="grid2">`+
     D.texts.k5.map(s=>`<div class="card">
@@ -721,7 +751,7 @@ function rTexts(v){
 function rNubhel(v){
   const N=D.nubhel;
   const fleets=Object.values(N.fleets);
-  v.innerHTML = sec("NUBHEL — THE DEEP-SPEECH","深潜の言葉")+
+  v.innerHTML = sec("NUBHEL — THE DEEP-SPEECH")+
   `<div class="grid2">`+
   fleets.map(f=>`<div class="card"><h4>${esc(f.name.toUpperCase())}</h4>
     <p>${esc(f.orientation)} · prestige: ${esc(f.prestige)}</p>
@@ -750,7 +780,7 @@ function rNubhel(v){
       N.changes.map(c=>`<tr><td class="f">${esc(c.id)}</td><td class="i">${esc(c.summary)}</td></tr>`).join("")+
       `</tbody></table></div></div>
   </div>
-  <div class="panel"><h3 class="sub">ACROSS THE COGNATE GAP <span class="n">偽の友</span></h3>
+  <div class="panel"><h3 class="sub">ACROSS THE COGNATE GAP <span class="n">— false friends</span></h3>
     <div class="tablewrap"><table><thead><tr><th>PROTO</th><th>SŪCHEL</th><th>NUBHEL</th><th>NOTE</th></tr></thead><tbody>`+
     N.ff.map(f=>`<tr><td class="p">${esc(f.proto)}</td><td class="f">${esc(f.su)}</td>
       <td class="f" style="color:var(--blue)">${esc(f.nu)}</td><td class="i">${esc(f.note)}</td></tr>`).join("")+
@@ -764,7 +794,7 @@ function rNubhel(v){
 }
 
 function rSisters(v){
-  let html=sec("THE SISTERS — ONE PROTO, FOUR MOUTHS","姉妹語");
+  let html=sec("THE SISTERS — ONE PROTO, FOUR MOUTHS");
   html+=D.sisters.map(s=>`<div class="panel">
     <h3 class="sub">${esc(s.name)} <span class="n">· ${esc(s.where)}</span></h3>
     <p class="use" style="margin:0 0 12px">${esc(s.tagline)}</p>
@@ -788,7 +818,7 @@ function rSisters(v){
     <p class="use">${cities} — the same name through three mouths; pilgrims collect
     all three pronunciations, customs officers use them as a voice-test.</p></div>`;
   const L=D.lorkel;
-  html+=`<div class="panel"><h3 class="sub">LORKEL — THE ANCESTOR AT WORK <span class="n">無理数団</span></h3>
+  html+=`<div class="panel"><h3 class="sub">LORKEL — THE ANCESTOR AT WORK <span class="n">— the Irrationals</span></h3>
     <div class="grid2">`+
     L.custodians.map(c=>`<div class="card"><h4>CUSTODIAN ${esc(c.number)} · ${esc(c.name.toUpperCase())}</h4>
       <p style="color:var(--gold)">${esc(c.register)}</p><p>${esc(c.description)}</p></div>`).join("")+
@@ -806,11 +836,17 @@ function rSisters(v){
 
 function rScript(v){
   const S=D.script;
-  let html=sec("NAVCHER — THE FLEET SCRIPT","艦の文字")+
+  let html=sec("NAVCHER — THE FLEET SCRIPT")+
   `<div class="grid2">`+
   S.rules.map(r=>`<div class="card"><h4>${esc(r.name)}</h4><p>${esc(r.text)}</p></div>`).join("")+
   `</div>
-  <div class="panel writer"><h3 class="sub">SHIP-CARVE YOUR OWN <span class="n">— careful hand</span></h3>
+  <p class="use" style="margin-top:4px">Why the letters look cut rather than drawn:
+  Navcher is <b style="color:var(--gold)">featural</b> — the most engineered class of
+  script there is (Hangul is Earth's one example): the shapes are phonetic circuit
+  diagrams, and every stroke is straight because the fleets stencil them into hull
+  plate. SHIP-CARVE is the knife's rendering; LIGHT-TRACE (toggle in the rail) is the
+  same letters as a bridge HUD draws them.</p>
+  <div class="panel writer"><h3 class="sub">CARVE YOUR OWN <span class="n">— careful hand</span></h3>
     <input id="writer-in" type="text" value="ver ish-ol" spellcheck="false"
       aria-label="text to letter in Navcher">
     <div class="out" id="writer-out"></div>
@@ -834,7 +870,7 @@ function rScript(v){
 }
 
 function rFamily(v){
-  v.innerHTML = sec("THE FAMILY — EVERY ROOT, EVERY MOUTH","語族")+
+  v.innerHTML = sec("THE FAMILY — EVERY ROOT, EVERY MOUTH")+
   `<div class="panel"><p class="use" style="margin-bottom:12px">
     The full proto-lexicon run through every daughter's sound laws.
     Open a root for the derivation traces.</p>
@@ -863,23 +899,33 @@ function rFamily(v){
 
 /* ---------- nav ----------------------------------------------------------- */
 const TABS=[
-  ["family","FAMILY","語族",rFamily],
-  ["suchel","SŪCHEL","言語",rSuchel],
-  ["phrase","PHRASEBOOK","句集",rPhrase],
-  ["texts","TEXTS","例文",rTexts],
-  ["nubhel","NUBHEL","深語",rNubhel],
-  ["sisters","SISTERS","姉妹",rSisters],
-  ["script","SCRIPT","文字",rScript],
+  ["family","FAMILY",rFamily],
+  ["suchel","SŪCHEL",rSuchel],
+  ["phrase","PHRASEBOOK",rPhrase],
+  ["texts","TEXTS",rTexts],
+  ["nubhel","NUBHEL",rNubhel],
+  ["sisters","SISTERS",rSisters],
+  ["script","SCRIPT",rScript],
 ];
 const nav=document.getElementById("nav");
-nav.innerHTML=TABS.map(([k,name,jp])=>
-  `<button data-t="${k}">${name}<span class="jp">${jp}</span></button>`).join("");
+nav.innerHTML=TABS.map(([k,name])=>
+  `<button data-t="${k}">${name}</button>`).join("");
+let CURRENT="suchel";
 function show(key){
+  CURRENT=key;
   const view=document.getElementById("view");
   nav.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.t===key));
   const tab=TABS.find(t=>t[0]===key);
-  view.innerHTML=""; tab[3](view);
+  view.innerHTML=""; tab[2](view);
   if(location.hash!=="#"+key) history.replaceState(null,"","#"+key);
+}
+for(const st of ["carve","trace"]){
+  document.getElementById("st-"+st).onclick=()=>{
+    GSTYLE=st;
+    document.getElementById("st-carve").classList.toggle("on",st==="carve");
+    document.getElementById("st-trace").classList.toggle("on",st==="trace");
+    show(CURRENT);
+  };
 }
 nav.querySelectorAll("button").forEach(b=>b.onclick=()=>show(b.dataset.t));
 renderHero();
