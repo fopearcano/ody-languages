@@ -131,7 +131,9 @@ def cmd_texts(args):
             for p in t.lines:
                 print(f"  {p.display()}")
                 print(f"    {p.sentence.gloss_line()}")
-                print(f"    “{p.translation}”")
+                quoted = (p.translation if p.translation.startswith('"')
+                          else f"“{p.translation}”")
+                print(f"    {quoted}")
             print(f"  — {t.commentary}")
         print("\n== THE SHOWPIECE — Κ5 as conjugation ==")
         for s in K5:
