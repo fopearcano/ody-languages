@@ -108,6 +108,18 @@ suite (~840 tests).
   the old sacred **Logos** carving) on every lettered line. A prebuilt copy
   ships as
   `examples/odylang-web.html` — just open it in a browser.
+* **The printable manual** (`odylang.manual`) — `odylang manual -o
+  odylang-manual.pdf` renders the whole language into a real, multi-page
+  **PDF grammar, vocabulary & sentence book**: title page, contents,
+  phonology and stress, the noun and the verb, the four grammaticalized
+  systems, the full lexicon and coined vocabulary in balanced columns, the
+  forty-one phrasebook lines and the texts as interlinear glosses, and the
+  family shibboleth — every form generated from the package, nothing
+  retyped. The PDF is written by a **dependency-free** engine built here from
+  scratch: a tiny object/xref writer plus a TrueType reader and *subsetter*
+  that embeds a Type0 / Identity-H composite font, so the macrons and IPA
+  (`ā`, `ʃ`, `ˈ`, `ː`, `T•`, `Κ`) render true. A prebuilt copy ships as
+  `examples/odylang-manual.pdf`.
 * **Core** — `phonology` (segments, seam-aware syllabification, IPA),
   `word` (the four-rule stress algorithm: *the mood carries the beat*),
   `soundchange` (the ordered rewrite engine with full derivation traces),
@@ -203,6 +215,7 @@ SUCHEL.derive("*pelag-ar").trace()   # SC-2: pelagar -> pelgar ...
 ```
 docs/                 the six codices + Peterson's book (source of truth)
 odylang/              the package (stdlib only)
-tests/                ~840 tests locking every documented fact
-examples/             rendered Navcher SVGs + the render script
+tests/                1400+ tests locking every documented fact
+examples/             rendered artifacts: Navcher/Current-Hand SVGs, the web
+                      codex, the translator page, audio, the PDF manual
 ```

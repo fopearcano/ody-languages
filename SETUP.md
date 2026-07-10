@@ -87,9 +87,10 @@ actually running.
 ```bash
 open examples/translator.html     # translator chat   (Linux: xdg-open)
 open examples/odylang-web.html    # interactive codex
+open examples/odylang-manual.pdf  # the printable grammar/vocab/sentence manual
 ```
 
-Both are prebuilt, self-contained, and work offline.
+All three are prebuilt, self-contained, and work offline.
 
 ### B. Command line
 
@@ -101,6 +102,7 @@ odylang phrase 40                            # a phrasebook line, four ways
 odylang family '*gel-'                       # one proto-word through every mouth
 odylang vocab --domain sea                   # the coined working vocabulary
 odylang page vigil --seed 42 -o vigil.svg    # a Current Hand page study
+odylang manual -o odylang-manual.pdf         # the printable PDF manual
 ```
 
 Run `odylang --help` for the full command list.

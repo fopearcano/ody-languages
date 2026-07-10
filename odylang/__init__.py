@@ -28,6 +28,8 @@ tts          a stdlib formant speech synthesizer (Sūchel -> WAV audio)
 translator_web  the offline translator chat web app
 server       a stdlib HTTP service (the LibreChat tool surface) + chat page
 webgen       the interactive web codex (one self-contained HTML file)
+manual       the printable PDF manual (grammar + vocabulary + sentences),
+             rendered by a dependency-free PDF/TrueType engine
 """
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"

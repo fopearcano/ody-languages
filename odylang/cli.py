@@ -13,6 +13,7 @@
     odylang chart -o navcher.svg         # the full glyph chart
     odylang vocab --domain sea           # the coined working vocabulary
     odylang page vigil --seed 42 -o v.svg  # a Current Hand page study
+    odylang manual -o odylang-manual.pdf   # the printable PDF manual
 """
 
 from __future__ import annotations
@@ -241,6 +242,16 @@ def cmd_web(args):
     print(f"wrote {out} — open it in a browser (fully self-contained)")
 
 
+def cmd_manual(args):
+    from .manual import build_pdf
+    out = args.out or "odylang-manual.pdf"
+    pdf = build_pdf()
+    with open(out, "wb") as fh:
+        fh.write(pdf)
+    print(f"wrote {out} — {len(pdf) // 1024} KB, a printable grammar, "
+          "vocabulary & sentence manual")
+
+
 def cmd_translate(args):
     import dataclasses
     import json
@@ -362,6 +373,11 @@ def main(argv=None):
     p = sub.add_parser("web", help="build the interactive web codex (one HTML file)")
     p.add_argument("-o", "--out", help="output path (default odylang-web.html)")
     p.set_defaults(fn=cmd_web)
+
+    p = sub.add_parser("manual", help="build the printable PDF manual "
+                                      "(grammar + vocabulary + sentences)")
+    p.add_argument("-o", "--out", help="output path (default odylang-manual.pdf)")
+    p.set_defaults(fn=cmd_manual)
 
     p = sub.add_parser("translate", help="English <-> Sūchel translation")
     p.add_argument("text", help="the line to translate")
